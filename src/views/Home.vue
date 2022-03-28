@@ -8,11 +8,7 @@
     <div v-if="this.$store.state.page=='connect'">
         <h1>Se Connecter</h1>
         <p>Vous êtes déjà enregitré et voulez vous connecter</p>
-        <form action="http://localhost:3000/api/auth/connect" method='POST' enctype="multipart/form-data">
-          <User />
-          <button type="submit">Envoyer</button>
-          <button type="reset">Annuler</button>
-        </form>
+        <User />
     </div>
     <div v-if="this.$store.state.page=='sign'">
         <h1>S'enregistrer</h1>

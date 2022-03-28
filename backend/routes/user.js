@@ -38,6 +38,15 @@ router.get('/oneUser', async function(req, res, next) {
   }
 });
 
+router.post('/connectUser', async function(req, res, next) {
+  try {
+    return res.json(await userFunction.connectUser(req.body))  
+  } catch (err) {
+    console.error(`Error while getting users `, err.message);
+    next(err);
+  }
+});
+
 //U
 router.put('/updateUser', async function(req, res) {
   let body=req.body;

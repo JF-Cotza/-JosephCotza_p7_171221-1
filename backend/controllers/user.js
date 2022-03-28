@@ -1,7 +1,12 @@
+
 const query=require('../query');
 const helper=require('../helper');
 const config=require('../routes/connect');
 const bcrypt=require('bcrypt');
+const jwt = require('jsonwebtoken');
+const connect = require('./connect');
+let token=connect.token
+let crypted
 
 
 //C ajouter un utilisateur
@@ -17,59 +22,8 @@ exports.addUser=async function(req){
   }
 };
 
-exports.addUser1=async (req,res)=>{
-  let mail=req.email;
-  console.log(mail);
-  this.checkExisting(mail)
-    .then(user=>{
-      console.log('user ',user)
-      if(user=='void'){
-        console.log('not user')
-        this.create1(req)
-      }
-      else{
-        console.log('existing user')
-        //window.location.href='http://localhost:8080/'
-        //res.redirect('http://localhost:8080');
-        return {code:401,message:"l'utilisateur existe déjà"}
-
-        //return res.status(401).json({message:"l'utilisateur existe déjà"});
-    
-      }
-    })
-  
-  
-};
-
-exports.create1= async (req,res)=>{
-  await bcrypt.hash(req.password,10).then((hash)=>{crypted=(hash)}).catch((err)=>{console.log(err.message)})
-
-  console.log('create1',req.name, req.firstname, req.email, crypted)
-
-  let sql='INSERT INTO users (users_name, users_firstname ,users_mail, users_password) VALUES (?,?,?,?)'
-  let result = await query(sql, [req.name, req.firstname, req.email, crypted]);
-  let code=500
-  let message = 'Error in creating new user';
-
-  if (result.affectedRows) {
-    console.log('if', result.affectedRows )
-    code=200
-    message = 'User added successfully';
-    //return res.status(200).json({'code':code,'message':message});
-  }
-  console.log('else',result.affectedRows)
-  //return res.status(500).json({'code':code,'message':message});
-}
-
-
-
-let crypted
-
 exports.create= async function(user){
   await bcrypt.hash(user.password,10).then((hash)=>{crypted=(hash)}).catch((err)=>{console.log(err.message)})
-  //await this.hashed(user.password)
-  //crypted='test'+user.password+'déplentage'
-  //console.log('add user ', user.password,' hashed ', crypted)
   
   let sql='INSERT INTO users (users_name, users_firstname ,users_mail, users_password) VALUES (?,?,?,?)'
   let result = await query(sql, [user.name, user.firstname, user.email, crypted]);
@@ -131,9 +85,55 @@ exports.checkExisting=async function(mail) {
    }
 };
 
+
+exports.noData=async function(){
+  return data={code:401,message:"pas d'utilisateur correspondant"}
+}
+
+exports.invalide=async function(){
+  return data={code:500,message:"erreur de connexion"}
+}
+
+exports.pswComparaison=async function(user, checked){
+  return new Promise((resolve, reject)=> {bcrypt.compare(user.password, checked.users_password) // attention à l'ordre !
+    .then(function(res){
+        resolve(res)         
+    })
+    .catch(function(error){
+      console.log('new promise error', error.message)
+      reject(error);
+    })
+  })             
+}
+
 //R connexion
 exports.connectUser=async function(user){
-  console.log(user)
+  let mail=user.email;
+  let page=1;
+
+  const offset = helper.getOffset(page, config.listPerPage);
+  const rows = await query(
+    `SELECT * FROM users WHERE users_mail='${mail}'`
+      );
+  const check = helper.emptyOrRows(rows);
+  const meta = {page};
+  
+  if(check==''){
+    console.log('pas de data')
+    return this.noData()
+  }
+  if(check!=''){
+    console.log('des data')
+    let test=this.pswComparaison(user, check[0])
+    if(await test==false){
+      return data={code:500,message:'user non reconnu'}
+    }
+    if(await test==true){
+      let tok=await jwt.sign({userId:check[0].users_id},token.value ,{expiresIn:token.end})
+      console.log(tok)
+      return data={code:200,message:'user reconnu',id:tok}
+    }
+  }
 }
 
 //U mettre à jour un utilisateur
@@ -164,8 +164,6 @@ exports.update=async function(user){
     message = 'User updated successfully';
   }
   return {message};
-
-
 }
 
 //D suppression d'un utilisateur
@@ -196,9 +194,3 @@ exports.suppressUser=async function(user){
   }
   return {message};
 }
-
-
-
-/*
-
-*/

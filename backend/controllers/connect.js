@@ -30,3 +30,5 @@ exports.config_toad = {
   },
   listPerPage: 10,
 };
+
+exports.token = { value: 'RANDOM_TOKEN_SECRET_FOR_DEVELOPPEMENT', end: '24h' }

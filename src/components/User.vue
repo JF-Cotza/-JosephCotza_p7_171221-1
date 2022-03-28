@@ -10,6 +10,7 @@
                 
                 <button @click='switching'>{{see}}</button>
             </div>
+            <button v-if="this.$store.state.page=='connect'" type="submit" @click='connectUser'>Envoyer</button>
             <button v-if="this.$store.state.page=='sign'" type="submit" @click='addUser'>Envoyer</button>
             <button type="reset">Annuler</button>
         </form>
@@ -94,7 +95,7 @@ export default {
             this.checkingMail(checkMail)
             
         },
-
+        //C: for create user
         addUser(e){
             e.preventDefault();
             this.message='';
@@ -128,11 +129,51 @@ export default {
                 })
                 .catch(function(error){//ne marche pas ?
                     $this.message='Veuillez remplir tous les champs requis'
-                    console.log('erreur ajout ',error)
+                    console.log('erreur ajout ',error.message)
                     
                     $this.$router.push('http://localhost:8000/')
                 })
-        }
+        },
+        //R: for getting user and connect
+        connectUser(e){
+            e.preventDefault();
+            this.message='';
+            this.checkValidAdding()
+            if(!this.isValidMail || !this.isValidPassword){
+                return
+            }
+
+            let form=new FormData()
+        
+            let $this=this;
+            console.log('connectuser', 'name: ',this.mail,' firstname: ',this.password)
+            form.append('email',this.mail);
+            form.append('password',this.password);
+            instance.post('/auth/connectUser', form)
+                .then(function(res){
+                    console.log('instance then', res.data) 
+                    if(res.data.code==401 || res.data.code==500){
+                        console.log('res connect if ', res);
+                        
+                        $this.message=res.data.message;
+                        $this.$store.state.page='connect';
+                        $this.$router.push('/');
+                    }
+                    else{
+                        console.log('res connect else',res.data);
+                        $this.$store.state.token=res.data.id;
+                        console.log($this.$store.state.token)
+                        $this.$store.state.page='connected';
+                        $this.$router.push('Connected')
+                    }
+                })
+                .catch(function(error){//ne marche pas ?
+                    $this.message='Veuillez remplir tous les champs requis'
+                    console.log('erreur log ',error.message)
+                    
+                    $this.$router.push('http://localhost:8000/')
+                })
+        },
     }
 }
 
