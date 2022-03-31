@@ -1,7 +1,8 @@
 // appel des modules requis
 const express=require('express');
-const fileUpload = require('express-fileupload');
 const helper=require('./helper')
+
+const fileUpload = require('express-fileupload');
 
 //pour les requêtes
 const query=require('./query');
@@ -35,8 +36,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(fileUpload())
-
 // le code
 app.use(express.json());
 app.use(
@@ -44,6 +43,8 @@ app.use(
     extended: true,
   })
 );
+
+app.use(fileUpload())
 
 app.use('/api/auth', user);
 app.use('/api/publications', publication);

@@ -1,50 +1,33 @@
-//modules express
-const bcrypt=require('bcrypt');
-const jwt = require('jsonwebtoken');
 
-//modules créés
 const query=require('../query');
 const helper=require('../helper');
 const config=require('../routes/connect');
+const bcrypt=require('bcrypt');
+const jwt = require('jsonwebtoken');
 const connect = require('./connect');
-
-//variables globales
 let token=connect.token
 let crypted
 
-//C pour ajouter un utilisateur
-//1)on vérifie si l'email est déjà utilisée
-exports.checkExisting=async function(req,res,next) { 
-  let page =1;
-  let email=req.body.email
-  const offset = helper.getOffset(page, config.listPerPage);
-  const rows = await query(
-    `SELECT * FROM users WHERE users_mail = '${email}'`
-   );
-   const data = helper.emptyOrRows(rows);
 
-
-  console.log('checkexisting',req.body, data);
-   if (data==''){
-     console.log("l'utilisateur peut être créé")
-     next()
-   }
-   else{
-     return res.status(401).json({message:'email déjà utilisé'})
-   }
+//C ajouter un utilisateur
+exports.addUser=async function(req,res){
+  let mail=req.body.email;
+  let check=await this.checkExisting(mail)
+  
+  if (check=='void'){
+    return this.create(req)
+  }
+  else{
+    
+      return res.status(401).json({message:"l'utilisateur existe déjà"})
+    
+    //return {code:401, message:"l'utilisateur existe déjà"};
+  }
 };
 
-
-
-//appelée par la route addUser
-exports.addUser=async function(req,res,next){
-  console.log('add user', req.body);
-  let user=req.body
-  let mail=user.email;
-  
+exports.create= async function(user){
   await bcrypt.hash(user.password,10).then((hash)=>{crypted=(hash)}).catch((err)=>{console.log(err.message)})
   
-  console.log(crypted)
   let sql='INSERT INTO users (users_name, users_firstname ,users_mail, users_password) VALUES (?,?,?,?)'
   let result = await query(sql, [user.name, user.firstname, user.email, crypted]);
   let code=500
@@ -55,20 +38,10 @@ exports.addUser=async function(req,res,next){
     message = 'User added successfully';
   }
 
-  return res.status(code).json({'message':message})
+  return {'code':code,'message':message};
 }
 
-
-
-
-
-
-
-
-
-
 //R récupération de tous les utilisateurs
-//appelé par la route get allUsers
 exports.getAllUsers=async function(page = 1){
   const offset = helper.getOffset(page, config.listPerPage);
   const rows = await query(
@@ -106,6 +79,21 @@ exports.getOneUser=async function(mail){
 }
 
 //R vérification si l'utilisateur existe déjà
+exports.checkExisting=async function(mail) {
+  let page =1;
+  const offset = helper.getOffset(page, config.listPerPage);
+  const rows = await query(
+    `SELECT * FROM users WHERE users_mail = '${mail}'`
+   );
+   const data = helper.emptyOrRows(rows);
+  console.log('checkexisting');
+   if (data==''){
+     return 'void'
+   }
+   else{
+     return {code:401,message:"l'utilisateur existe déjà" }
+   }
+};
 
 
 exports.noData=async function(){
@@ -158,9 +146,6 @@ exports.connectUser=async function(user){
     }
   }
 }
-
-
-
 
 //U mettre à jour un utilisateur
 exports.updateUser=async function(user){
@@ -219,38 +204,4 @@ exports.suppressUser=async function(user){
     message = 'User deleted successfully';
   }
   return {message};
-}
-
-
-
-
-
-exports.searchForReset=async function(req, res, next){
-  console.log('searchForReset', req.query)
-  
-  let page=1
-  let email=req.query.email
-  const offset = helper.getOffset(page, config.listPerPage);
-  const rows = await query(
-    `SELECT * FROM users WHERE users_mail='${email}'` //attention, ne pas oublier les '' car sinon, il y a un bug avec @
-  );
-  const data = helper.emptyOrRows(rows);
-  const meta = {page};
-
-    console.log('data', data);
-    if(data==''){
-      console.log('utilisateur non trouvé')
-      return res.status(200).json({message:'utilisateur inexistant'})
-    }
-    else{
-      console.log('envoyer le mail')
-      return res.status(200).json({message:'un mail vous a été envoyé'})
-    }
-
-
-  /*
-  return {
-    data
-  }
-  */
 }

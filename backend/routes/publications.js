@@ -1,19 +1,19 @@
 //structure de base bour les futures routes
 const express = require('express');
+const authorization=require('../middleware/auth')
 const router = express.Router();
 const pubFunction=require('../controllers/publications')
 
 
 //C
-router.post('/addPublication', async function(req, res) {
+router.post('/addPublication', authorization, async function(req, res) {
     let body=req.body;
   try {
-    res.json(await pubFunction.addPublication(body))
+    console.log('route addpublications',req.files,body)
+    res.json(await pubFunction.addPublication(req))
   } catch (err) {
     console.error(`Error while adding publication `, err.message);
   }
-  
-  
 });
 
 //R

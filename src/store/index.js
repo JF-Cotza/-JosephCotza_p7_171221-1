@@ -4,7 +4,9 @@ export default createStore({
   state: {
     connectionStatus:'unconnected',
     page:'/',
-    token:''
+    token:'',
+
+    message:'',
   },
   mutations: {
   },

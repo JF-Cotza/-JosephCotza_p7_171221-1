@@ -4,13 +4,12 @@
       <router-link to="/" @click="toIndex">Accueil</router-link> |
       <router-link to="/" @click="toConnect">Connect</router-link> |
       <router-link to="/" @click="toSigning">Signing</router-link> |
-      <router-link to="/test1" @click="toTest1">test1</router-link> |
       <router-link to="/" @click="toAbout">About</router-link>
     </div>
     <div v-else>
       <router-link to="/connected" @click="toConnected">Accueil</router-link> |
       <router-link to="/connected" @click="toProfile">Voir mon profil</router-link> |
-      <router-link to="/connected" @click="toCreate">Signing</router-link> |
+      <router-link to="/connected" @click="toCreate">Ajouter une publication</router-link> |
       <router-link to="/" @click="deconnection">Deconnecter</router-link>
     </div>
     
@@ -45,6 +44,7 @@ export default {
     },
     //connected
     toProfile(){
+      
       return this.$store.state.page='profile'
     },
     toConnected(){

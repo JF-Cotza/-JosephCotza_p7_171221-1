@@ -13,8 +13,12 @@
     <div v-if="this.$store.state.page=='sign'">
         <h1>S'enregistrer</h1>
         <p>Vous travaillez pour Groupomania et voulez vous enregistrer</p>
-        <User />
-        
+        <User /> 
+    </div>
+    <div v-if="this.$store.state.page=='forgotten'">
+        <h1>Réinitialiser votre mot de passe</h1>
+        <p>Vous travaillez pour Groupomania et voulez vous enregistrer</p>
+        <User /> 
     </div>
     <div v-if="this.$store.state.page=='about'">
         <h1>A propos</h1>
@@ -27,7 +31,6 @@
 <script>
 // @ is an alias to /src
 import User from '../components/User.vue'
-
 
 export default {
   name: 'Unconnected',

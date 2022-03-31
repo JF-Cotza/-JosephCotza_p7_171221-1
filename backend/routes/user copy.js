@@ -5,7 +5,7 @@ const userFunction=require('../controllers/user')
 const authorization=require('../middleware/auth')
 
 //C
-router.post('/addUser', userFunction.checkExisting, userFunction.addUser);
+router.post('/addUser', userFunction.addUser);
   
 //R
 router.get('/getAllUsers', async function(req, res, next) {
