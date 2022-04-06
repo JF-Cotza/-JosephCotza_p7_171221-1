@@ -4,27 +4,30 @@ const authorization=require('../middleware/auth')
 const router = express.Router();
 const pubFunction=require('../controllers/publications')
 
+//pour les test
+const consoleHeader=function(req,res,next){
+  console.log('consoleHeader',req.headers, req.query)
+  //console.log('body',req.body)
+  //console.log('file',req.files)
+  //console.log(req)
+  next();
+}
+
 
 //C
-router.post('/addPublication', authorization, async function(req, res) {
-    let body=req.body;
-  try {
-    console.log('route addpublications',req.files,body)
-    res.json(await pubFunction.addPublication(req))
-  } catch (err) {
-    console.error(`Error while adding publication `, err.message);
-  }
-});
+router.post('/addPublication', authorization, pubFunction.addPublication)
 
-//R
-router.get('/getAllPublications', async function(req, res, next) {
-  try {
-    res.json(await pubFunction.getAllPublications(req.query.page));
-  } catch (err) {
-    console.error(`Error while getting pubs `, err.message);
-    next(err);
-  }
-});
+//R-AP : récupérer toutes les publications
+router.get('/getAllPublications', authorization, pubFunction.getPublications)
+
+//R-OP : récupérer une publication:
+router.get('/getOnePublication', authorization, pubFunction.getOnePublication)
+
+//D ; supprimer une publication
+router.delete('/suppressOne', authorization, pubFunction.deleteOnePublication)
+
+
+
 
 /*
 router.get('/oneUser', async function(req, res, next) {

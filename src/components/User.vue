@@ -2,25 +2,29 @@
     <div>
         {{ message }}
         <form :action="defaultUrl+cible" method="POST" enctype="multipart/form-data" class='flex column'>
+        <!-- nom et prénom visible lors de la création et lorsque l'on est connecté sur le profile -->
             <label for="name" v-if="this.$store.state.page=='profile'">Votre Nom :</label>
                 <input type="text" name="name" id="name" v-model='nom' :class='isMasked' placeholder="Votre nom" :required='isRequired_A' :disabled='disabledChange'>
             <label for="firstname" v-if="this.$store.state.page=='profile'">Votre Prénom :</label>
                 <input type="text" name="firstname" id="firstname" v-model='prenom' :class='isMasked' placeholder="Votre prénom" :required='isRequired_A' :disabled='disabledChange'>
+        <!-- email toujours visible et requis -->
             <label for="email" v-if="this.$store.state.page=='profile'">Votre mail :</label>
                 <input type="email" name="email" id="email" v-model='mail' placeholder="Votre mail" title='Votre mail servira à vous identifier' :rules='validMail' required :disabled='disabledChange'>
-            <div :class='dontShow'  class='flex  row' v-if='this.$store.state.page!="forgotten"'>
+        <!-- mot de passe masqué lorsqu'il est oublié ou juste sur l'affichage du profil mais non modification -->
+            <div :class='maskPassword'  class='flex  row' v-if='this.$store.state.page!="forgotten"'>
                <input :type='psw'  name="password" id="password" placeholder='Saississez votre mot de passe' v-model='password' title="Saisissez le mot de passe. Il doit contenir au moins 8 caractéres, 1 majuscule, 1 minuscule,1 chiffre, 1 caractére spécial parmi: é è_çà=$ù!:;,?./§%µ£°@+" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[é è_çà=$ù!:;,?./§%µ£°@+]).{8,}" :required='isRequired_B'>  
                 <button @click='switching'>{{see}}</button>
             </div>
             <div class='button flex row'>
             <!-- unconnected -->
-                <button class='send' v-if="this.$store.state.page=='connect'" type="submit" @click='connectUser'>Envoyer</button>
+                <button class='send' v-if="this.$store.state.page=='connect'" type="submit" @click='toConnectUser'>Envoyer</button>
                 <button class='send' v-if="this.$store.state.page=='sign'" type="submit" @click='addUser'>Envoyer</button>
                 <button class='send' v-if="this.$store.state.page=='forgotten'" type="submit" @click='resetPassword'>Envoyer</button>
                 <button class='yellow' v-if="this.$store.state.page!='profile' && this.$store.state.page!='forgotten'"  @click='toForgotten'>Mot de passe oublié</button>
             <!-- connected -->
                 <button class='send' v-if="this.$store.state.page=='profile'" @click='toAccessData' :class='masking'>Oui</button>
-                <button class='send' v-if="this.$store.state.page=='profile'" :class='dontShow'>Modifier</button>
+                <button class='send' v-if="this.$store.state.page=='profile'" :class='maskModifyButton'>Modifier</button>
+                <button class='danger' v-if="this.$store.state.page=='profile'" @click='suppressProfile' :class='masking'>Supprimer mon profil</button>
             <!-- global -->
                 <button class='reset' :class='masking' type="reset" >Annuler</button>
             </div>
@@ -31,7 +35,6 @@
 <script>
 import FormData from 'form-data';
   const defaultUrl='http://localhost:3000/api';
-  const frontDefault='http://localhost:8080'
   const axios=require('axios');
   const instance =axios.create({ baseURL:defaultUrl});
 
@@ -41,9 +44,9 @@ export default {
     data(){
         return{
             //pour masquer / révéler des élément
-            isMasked:'',
-            dontShow:'',
-            masking:'',
+            isMasked:'',            //nom et prénom lors du log
+            maskPassword:'',
+            maskModifyButton:'masked',
             see:'Voir le mot de passe',
             //status
             isDisabled:true,
@@ -82,7 +85,7 @@ export default {
         }
         else if(this.$store.state.page=='profile'){
             this.cible='/auth/getUser';
-            this.dontShow='masked';
+            this.maskPassword='masked';
             this.token=this.$store.state.token;
             this.message=this.token
             this.disabledChange=true;
@@ -94,7 +97,7 @@ export default {
         toAccessData(e){
             e.preventDefault()
             this.disabledChange=false;
-            this.dontShow='';
+            this.maskPassword='';
             this.masking='masked'
         },
         toForgotten(e){
@@ -102,6 +105,7 @@ export default {
             this.$store.state.page='forgotten'
             this.$router.push('/')
         },
+        //afficher / masquer le mot de passe
         switching(e){
             e.preventDefault();
             if(this.psw=='password'){
@@ -113,6 +117,7 @@ export default {
                 this.see="Masquer le mot de passe"
             }
         },
+        //vérifier si le mot de passe obéi au pattern
         checkingPassword(tocheck){
             if(tocheck.validity.patternMismatch){
                 this.isValidPassword=false;
@@ -122,6 +127,7 @@ export default {
                 this.isValidPassword=true;
             }
         },
+        //vérifier si on a bien saisi une adresse mail
         checkingMail(tocheck){
             if(tocheck.validity.typeMismatch){
                 this.isValidMail=false;
@@ -131,6 +137,7 @@ export default {
                 this.isValidMail=true
             }
         },
+        //pour lancer les vérification en cas d'enregistrement
         checkValidAdding(){
             this.message='';
             let checkMail=document.getElementById('email')
@@ -139,9 +146,10 @@ export default {
             this.checkingMail(checkMail)
             
         },
-        //C: for create user
+        //C-A: for create user
         addUser(e){
             e.preventDefault();
+            let $this=this;
             this.message='';
             this.checkValidAdding()
             if(!this.isValidMail || !this.isValidPassword){
@@ -150,35 +158,37 @@ export default {
 
             let form=new FormData()
         
-            let $this=this;
+            
             console.log('adduser', 'name: ',this.nom,' firstname: ',this.prenom)
+            
             form.append('name',this.nom);
             form.append('firstname',this.prenom);
             form.append('email',this.mail);
             form.append('password',this.password);
+            
             instance.post('/auth/addUser', form)
                 .then(function(res){
                     console.log('add res then',res) 
-                    if(res.data.code==401){
-                        console.log('res add if ', res)
-                        $this.message=res.data.message,
-                        $this.$router.push(frontDefault)
-                    }
-                    else{
-                        console.log('res add else',res);
-                        $this.$store.state.page='connected';
-                        $this.$router.push('Connected')
-                    }
-                    $this.message=res.data.message;
+                    $this.message+='ajouté'
+                    $this.connectUser();
+                    /*
+                    $this.$store.state.page='connected';
+                    $this.$router.push('Connected')
+                    */
                 })
                 .catch(function(){
                     $this.message="l'utilisateur existe déjà"
-                    $this.$router.push('http://localhost:8000/')
+                    $this.$router.push('/')
                 })
         },
-        //R: for getting user and connect
-        connectUser(e){
+        //R-C: for getting user and connect
+        toConnectUser(e){
             e.preventDefault();
+            this.connectUser();
+        },
+        connectUser(){
+            console.log('connectUser')
+            let $this=this;
             this.message='';
             this.checkValidAdding()
             if(!this.isValidMail || !this.isValidPassword){
@@ -187,36 +197,58 @@ export default {
 
             let form=new FormData()
         
-            let $this=this;
             console.log('connectuser', 'name: ',this.mail,' firstname: ',this.password)
             form.append('email',this.mail);
             form.append('password',this.password);
             
             instance.post('/auth/connectUser', form)
                 .then(function(res){
-                    console.log('instance then', res.data) 
-                    if(res.data.code==401 || res.data.code==500){
-                        console.log('res connect if ', res);
-                        
-                        $this.message=res.data.message;
-                        $this.$store.state.page='connect';
-                        $this.$router.push('/');
-                    }
-                    else{
-                        console.log('res connect else',res.data);
-                        $this.$store.state.token=res.data.id;
-                        console.log($this.$store.state.token)
-                        $this.$store.state.page='connected';
-                        $this.$store.state.message='Connecté';
-                        $this.$router.push('Connected')
-                    }
+                    $this.$store.state.token=res.data.id;
+                    $this.$store.state.author=res.data.author;
+                    $this.$store.state.authorStatus=res.data.authorStatus;
+                    console.log('connectuser ',res)
+                    console.log($this.$store.state.token,' ',res.data.message)
+
+                    $this.$store.state.page='connected';
+                    $this.$store.state.message+='Connecté';
+                    $this.$router.push('Connected')
+
                 })
-                .catch(function(error){//ne marche pas ?
-                    $this.message='Veuillez remplir tous les champs requis'
-                    console.log('erreur log ',error.message)
-                    
+                .catch(function(error){
+                    $this.message='Utilisateur non reconnu'
+                    console.log('erreur log ',error.message,'user non reconnu ?')
                     $this.$router.push('http://localhost:8000/')
                 })
+        },
+        //R-P: voir le profil
+        getUser(){
+            console.log('userVue getUser')
+            let $this=this;
+            let userInfo={id:this.$store.state.token}
+            console.log('R-P getUser userinfo', userInfo)
+            instance.get('/auth/getMyProfile',{params:userInfo})
+            .then(res=>{
+                console.log(res)
+                let user=res.data.data[0];
+                $this.nom=user.users_name;
+                $this.prenom=user.users_firstname;
+                $this.mail=user.users_mail,
+                localStorage.setItem('user',JSON.stringify(user))
+                $this.message='Vos infos. Voulez-vous les modifier ?'
+            })
+            .catch(err=>console.log(err.message))
+        },
+        //D: supprimer le profil
+        suppressProfile(){
+            console.log('userVue suppressProfile')
+            let $this=this;
+            let userInfo={id:this.$store.state.token}
+            instance.delete('/auth/suppressMyProfile',{params:userInfo})
+            .then(res=>{
+                console.log(res)
+                $this.message='suppress then'
+            })
+            .catch(err=>console.log(err.message))
         },
         resetPassword(e){
             this.message=''
@@ -236,20 +268,7 @@ export default {
                     })
             }
         },
-        getUser(){
-            let $this=this;
-            let userInfo={id:this.$store.state.token}
-            instance.get('auth/getUser',{params:userInfo})
-            .then(res=>{
-                let user=res.data.data[0];
-                $this.nom=user.users_name;
-                $this.prenom=user.users_firstname;
-                $this.mail=user.users_mail,
-                localStorage.setItem('user',JSON.stringify(user))
-                $this.message='Vos infos. Voulez-vous les modifier ?'
-            })
-            .catch(err=>console.log(err.message))
-        },
+        
     }
 }
 
@@ -257,10 +276,6 @@ export default {
 </script>
 
 <style scoped>
-.masked{
-    display: none;
-}
-
 form{
     min-width: 300px;
     width: 50%;
@@ -298,6 +313,7 @@ form{
 .button{
     width:50px;
     min-width: 300px;
+    position:relative
 }
 
 .button * {
@@ -314,7 +330,19 @@ form{
     background: red;
 }
 
+.danger{
+    background: black;
+    color:red;
+    font-weight: bold;
+    position:absolute;
+    top:50px;
+}
+
 .yellow{
     background: yellow;
+}
+
+.masked{
+    display: none;
 }
 </style>

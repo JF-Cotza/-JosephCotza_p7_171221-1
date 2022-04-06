@@ -38,3 +38,50 @@ exports.create1= async (req,res)=>{
   console.log('else',result.affectedRows)
   //return res.status(500).json({'code':code,'message':message});
 }
+
+
+//********************* pour admin ? ***************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+//R récupération de tous les utilisateurs
+//appelé par la route get allUsers
+exports.getAllUsers=async function(page = 1){
+  const offset = helper.getOffset(page, config.listPerPage);
+  const rows = await query(
+    `SELECT * FROM users LIMIT ${offset},${config.listPerPage}`
+  );
+  const data = helper.emptyOrRows(rows);
+  const meta = {page};
+
+  return {
+    data,
+    meta
+  }
+}
+
+//R vérification si l'utilisateur existe déjà
+
+
+exports.noData=async function(){
+  return data={code:401,message:"pas d'utilisateur correspondant"}
+}
+
+exports.invalide=async function(){
+  return data={code:500,message:"erreur de connexion"}
+}
+
+
+
+
+

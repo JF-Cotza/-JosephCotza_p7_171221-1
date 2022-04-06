@@ -1,6 +1,7 @@
 //modules express
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer=require('nodemailer');
 
 //modules créés
 const query=require('../query');
@@ -13,7 +14,7 @@ let token=connect.token
 let crypted
 
 //C pour ajouter un utilisateur
-//1)on vérifie si l'email est déjà utilisée
+//C-A1)on vérifie si l'email est déjà utilisée
 exports.checkExisting=async function(req,res,next) { 
   let page =1;
   let email=req.body.email
@@ -26,21 +27,20 @@ exports.checkExisting=async function(req,res,next) {
 
   console.log('checkexisting',req.body, data);
    if (data==''){
-     console.log("l'utilisateur peut être créé")
+     console.log("l'utilisateur peut être créé", data)
      next()
    }
    else{
+     console.log('check data', data)
      return res.status(401).json({message:'email déjà utilisé'})
    }
 };
 
-
-
-//appelée par la route addUser
+//c-A2) Appelée par la route addUser pour ajouter l'utilisateur
 exports.addUser=async function(req,res,next){
   console.log('add user', req.body);
   let user=req.body
-  let mail=user.email;
+  
   
   await bcrypt.hash(user.password,10).then((hash)=>{crypted=(hash)}).catch((err)=>{console.log(err.message)})
   
@@ -58,106 +58,88 @@ exports.addUser=async function(req,res,next){
   return res.status(code).json({'message':message})
 }
 
-
-
-
-
-
-
-
-
-
-//R récupération de tous les utilisateurs
-//appelé par la route get allUsers
-exports.getAllUsers=async function(page = 1){
-  const offset = helper.getOffset(page, config.listPerPage);
-  const rows = await query(
-    `SELECT * FROM users LIMIT ${offset},${config.listPerPage}`
-  );
-  const data = helper.emptyOrRows(rows);
-  const meta = {page};
-
-  return {
-    data,
-    meta
-  }
-}
-
-//R récupération d'un seul utilisateur
-exports.getOneUser=async function(mail){
-  console.log('get1-mail',mail)
-  const checkToken=jwt.verify(mail,token.value).userId;
-  let split=checkToken.split(' ')
-  console.log('get1',checkToken,'split', split);
-  let email=split[1];
-  let id=split[0]
-
-  let page=1
-  const offset = helper.getOffset(page, config.listPerPage);
-  const rows = await query(
-    `SELECT * FROM users WHERE users_mail='${email}' AND users_id=`+id //attention, ne pas oublier les '' car sinon, il y a un bug avec @
-  );
-  const data = helper.emptyOrRows(rows);
-  const meta = {page};
-
-  return {
-    data
-  }
-}
-
-//R vérification si l'utilisateur existe déjà
-
-
-exports.noData=async function(){
-  return data={code:401,message:"pas d'utilisateur correspondant"}
-}
-
-exports.invalide=async function(){
-  return data={code:500,message:"erreur de connexion"}
-}
-
-exports.pswComparaison=async function(user, checked){
-  return new Promise((resolve, reject)=> {bcrypt.compare(user.password, checked.users_password) // attention à l'ordre !
-    .then(function(res){
-        resolve(res)         
-    })
-    .catch(function(error){
-      console.log('new promise error', error.message)
-      reject(error);
-    })
-  })             
-}
-
 //R connexion
-exports.connectUser=async function(user){
+//R-C1
+exports.connectUser=async function(req,res,next){
+  console.log('connectUset async', req.body)
+  let user=req.body;
   let mail=user.email;
-  let page=1;
 
-  const offset = helper.getOffset(page, config.listPerPage);
   const rows = await query(
     `SELECT * FROM users WHERE users_mail='${mail}'`
       );
   const check = helper.emptyOrRows(rows);
-  const meta = {page};
   
   if(check==''){
     console.log('pas de data', user)
-    return this.noData()
+    return res.status(500).json({message:"l'utililisateur n'existe pas"})
   }
   if(check!=''){
-    console.log('des data')
-    let test=this.pswComparaison(user, check[0])
-    if(await test==false){
-      return data={code:500,message:'user non reconnu'}
-    }
-    if(await test==true){
-      console.log('check0', check[0])
-      let tok=await jwt.sign({userId:check[0].users_id+' '+check[0].users_mail},token.value ,{expiresIn:token.end})
-      console.log(tok)
-      return data={code:200,message:'user reconnu',id:tok}
-    }
+    req.body.check=check;
+    next()
   }
 }
+
+//R-C2 verification du mot de passe
+exports.pswComparaison=async function(req, res, next){
+  console.log('psw comparaison ',req.body)
+  let user=req.body;
+  let checked=user.check[0]
+  console.log('user password:',user.password,' checked  password: ', checked.users_password)
+ 
+  bcrypt.compare(user.password, checked.users_password) // attention à l'ordre !
+    .then(function(bcryptResult){
+      if(!bcryptResult){
+        console.log('mot de passe erroné', bcryptResult)
+        return res.status(401).json({message:'mot de passe erroné'})
+      }
+      else{
+        console.log('mot de passe confirmé')
+        next()      
+      } 
+    })
+    .catch(function(error){
+      return res.status(500).json(error)
+    })
+}
+
+//R-C3 confirmation que l'utilisateur est reconnu, envoi du token
+exports.confirmUser=async function(req,res,next){
+    console.log('R-C3 : des data',req.body)
+    let user=req.body.check[0]
+
+    let tok=await jwt.sign({userId:user.users_id+' '+user.users_mail},token.value ,{expiresIn:token.end})
+    console.log('R-c3 token', tok)
+    res.status(200).json({message:'user reconnu',id:tok, author:user.users_id, authorStatus:user.users_status})
+}
+
+//R-P1 
+exports.getMyProfile=async function(req,res,next){
+  console.log('get1-mail','headers',req.headers, 'query', req.headers, 'body', req.body)
+  const checkToken=jwt.verify(req.headers.authorization.split(' ')[1],token.value).userId;
+  let split=checkToken.split(' ')
+  console.log('get1',checkToken,'split', split);
+  
+  let email=split[1];
+  let id=split[0]
+
+  const rows = await query(
+    `SELECT * FROM users WHERE users_mail='${email}' AND users_id=`+id //attention, ne pas oublier les '' car sinon, il y a un bug avec @
+  );
+  const data = helper.emptyOrRows(rows);
+
+  
+
+  if(data){
+    console.log('profile : ', data)
+    return res.status(200).json({'data':data})
+  }
+  else{
+    return res.status(500).json({error})
+  }
+}
+
+
 
 
 

@@ -17,7 +17,7 @@
     </div>
     <div v-if="this.$store.state.page=='forgotten'">
         <h1>Réinitialiser votre mot de passe</h1>
-        <p>Vous travaillez pour Groupomania et voulez vous enregistrer</p>
+        <p>Vous êtes déjà enregistré et avez oublié votre mot de passe</p>
         <User /> 
     </div>
     <div v-if="this.$store.state.page=='about'">

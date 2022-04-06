@@ -1,6 +1,7 @@
+/*
 exports.config_4free = {
   db: {
-    /* don't expose password or any sensitive info, done only for demo */
+     don't expose password or any sensitive info, done only for demo
     host: "db4free.net",
     user: "freejackjc",
     password: "Fr33jack$01-DE",
@@ -8,6 +9,7 @@ exports.config_4free = {
   },
   listPerPage: 10,
 };
+*/
 
 exports.config_local = {
   db: {
@@ -28,7 +30,7 @@ exports.config_toad = {
     password: "Fr33jack$01-PN",
     database: "groupomaniadb",
   },
-  listPerPage: 10,
+  listPerPage: 5,
 };
 
 exports.token = { value: 'RANDOM_TOKEN_SECRET_FOR_DEVELOPPEMENT', end: '24h' }

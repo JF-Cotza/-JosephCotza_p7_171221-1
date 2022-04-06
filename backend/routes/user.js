@@ -4,9 +4,21 @@ const router = express.Router();
 const userFunction=require('../controllers/user')
 const authorization=require('../middleware/auth')
 
-//C
+//C-A : ajouter un utilisateur
 router.post('/addUser', userFunction.checkExisting, userFunction.addUser);
-  
+
+//R-C: connexion
+router.post('/connectUser', userFunction.connectUser, userFunction.pswComparaison, userFunction.confirmUser);
+
+//R-P: voir mon profil
+router.get('/getMyProfile', authorization, userFunction.getMyProfile);
+
+//D
+router.delete('/suppressMyProfile',authorization)
+
+
+
+/*
 //R
 router.get('/getAllUsers', async function(req, res, next) {
   try {
@@ -18,23 +30,7 @@ router.get('/getAllUsers', async function(req, res, next) {
 });
 
 
-router.get('/oneUser', async function(req, res, next) {
-  try {
-    res.json(await userFunction.getOneUser(req.query.page));
-  } catch (err) {
-    console.error(`Error while getting user `, err.message);
-    next(err);
-  }
-});
-
-router.post('/connectUser', async function(req, res, next) {
-  try {
-    return res.json(await userFunction.connectUser(req))  
-  } catch (err) {
-    console.error(`Error while getting users `, err.message);
-    next(err);
-  }
-});
+*/
 
 /*
 router.get('/resetPassword', async function(req,res,next){
@@ -76,7 +72,7 @@ router.delete('/suppressUser', async function(req, res) {
 
 
 
-
+/*
 router.get('/getUser', authorization, async function(req, res, next) {
   console.log('getUser', req.query.id)
   try {
@@ -86,5 +82,5 @@ router.get('/getUser', authorization, async function(req, res, next) {
     next(err);
   }
 });
-
+*/
 module.exports = router;

@@ -46,6 +46,8 @@ export default {
     },
     created:function(){
         this.$store.state.message=this.message
+        axios.defaults.headers.common = {'Authorization': `bearer ${this.$store.state.token}`}
+
     },
     computed:{
         isDisabled(){
@@ -94,14 +96,16 @@ export default {
             form.append('title',this.title);
             form.append('texte',this.texte);
             form.append('image',this.fileToUpdate);
-            form.append('token',this.$store.state.token);
+            form.append('id',this.$store.state.author)
             instance.post('/addPublication',form)
                 .then(res=>{
                     $this.$store.state.page='connected'
                     $this.$store.state.message=res.data.message
                     console.log('adpub',res)
-                    $this.$router.push('Connected')
+                    $this.$store.dispatch('getPublication',{id:this.$store.state.token})
+                    $this.$router.push('Connected')      
                 })
+                .catch(err=>console.lopg('addpub error',err.message))
         }
     }
 
