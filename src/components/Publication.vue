@@ -105,7 +105,7 @@ export default {
                     $this.$store.dispatch('getPublication',{id:this.$store.state.token})
                     $this.$router.push('Connected')      
                 })
-                .catch(err=>console.lopg('addpub error',err.message))
+                .catch(err=>console.log('addpub error',err.message))
         }
     }
 

@@ -11,7 +11,7 @@ const query=require('./query');
 const connect=require('./routes/connect');
 const user=require('./routes/user');
 const publication=require('./routes/publications');
-
+const admin=require('./routes/admin');
 
 //paramètres divers
 const port = 3000;
@@ -48,6 +48,7 @@ app.use(fileUpload())
 
 app.use('/api/auth', user);
 app.use('/api/publications', publication);
+app.use('/api/admin',admin)
 
 app.get("/", (req, res) => {
   console.log('ok');

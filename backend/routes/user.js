@@ -4,6 +4,15 @@ const router = express.Router();
 const userFunction=require('../controllers/user')
 const authorization=require('../middleware/auth')
 
+//pour les test
+const consoleHeader=function(req,res,next){
+  console.log('admin consoleHeader',req.headers, req.query)
+  //console.log('body',req.body)
+  //console.log('file',req.files)
+  //console.log(req)
+  next();
+}
+
 //C-A : ajouter un utilisateur
 router.post('/addUser', userFunction.checkExisting, userFunction.addUser);
 
@@ -11,7 +20,7 @@ router.post('/addUser', userFunction.checkExisting, userFunction.addUser);
 router.post('/connectUser', userFunction.connectUser, userFunction.pswComparaison, userFunction.confirmUser);
 
 //R-P: voir mon profil
-router.get('/getMyProfile', authorization, userFunction.getMyProfile);
+router.get('/getMyProfile', consoleHeader, authorization, userFunction.getMyProfile);
 
 //D
 router.delete('/suppressMyProfile',authorization)

@@ -19,9 +19,9 @@ const routes = [
     path: '/admin',
     name: 'Admin',
     // route level code-splitting
-    // this generates a separate chunk (connected   .[hash].js) for this route
+    // this generates a separate chunk (admin   .[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "connected" */ '../views/Admin.vue')
+    component: () => import(/* webpackChunkName: "admin" */ '../views/Admin.vue')
   },
   {
     path: '/:pathMatch(.*)*',

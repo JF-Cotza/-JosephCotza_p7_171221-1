@@ -11,16 +11,10 @@
             <label for="email" v-if="this.$store.state.page=='profile'">Votre mail :</label>
                 <input type="email" name="email" id="email" v-model='mail' placeholder="Votre mail" title='Votre mail servira à vous identifier' :rules='validMail' required :disabled='disabledChange'>
         <!-- mot de passe masqué lorsqu'il est oublié ou juste sur l'affichage du profil mais non modification -->
-            <div :class='maskPassword'  class='flex  row' v-if='this.$store.state.page!="forgotten"'>
-               <input :type='psw'  name="password" id="password" placeholder='Saississez votre mot de passe' v-model='password' title="Saisissez le mot de passe. Il doit contenir au moins 8 caractéres, 1 majuscule, 1 minuscule,1 chiffre, 1 caractére spécial parmi: é è_çà=$ù!:;,?./§%µ£°@+" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[é è_çà=$ù!:;,?./§%µ£°@+]).{8,}" :required='isRequired_B'>  
-                <button @click='switching'>{{see}}</button>
-            </div>
             <div class='button flex row'>
             <!-- unconnected -->
                 <button class='send' v-if="this.$store.state.page=='connect'" type="submit" @click='toConnectUser'>Envoyer</button>
                 <button class='send' v-if="this.$store.state.page=='sign'" type="submit" @click='addUser'>Envoyer</button>
-                <button class='send' v-if="this.$store.state.page=='forgotten'" type="submit" @click='resetPassword'>Envoyer</button>
-                <button class='yellow' v-if="this.$store.state.page!='profile' && this.$store.state.page!='forgotten'"  @click='toForgotten'>Mot de passe oublié</button>
             <!-- connected -->
                 <button class='send' v-if="this.$store.state.page=='profile'" @click='toAccessData' :class='masking'>Oui</button>
                 <button class='send' v-if="this.$store.state.page=='profile'" :class='maskModifyButton'>Modifier</button>
@@ -78,17 +72,12 @@ export default {
             this.isRequired_A=true;
             this.cible='/auth/connectUser'
         }
-        else if(this.$store.state.page=='forgotten'){
-            this.isMasked='masked';
-            this.isRequired_B=false;
-            this.cible='/auth/connectUser'
-        }
         else if(this.$store.state.page=='profile'){
             this.cible='/auth/getUser';
             this.maskPassword='masked';
             this.token=this.$store.state.token;
             this.message=this.token
-            this.disabledChange=true;
+            this.disabledChange=true;            
             this.getUser();
 
         }
@@ -99,11 +88,6 @@ export default {
             this.disabledChange=false;
             this.maskPassword='';
             this.masking='masked'
-        },
-        toForgotten(e){
-            e.preventDefault()
-            this.$store.state.page='forgotten'
-            this.$router.push('/')
         },
         //afficher / masquer le mot de passe
         switching(e){
@@ -205,8 +189,8 @@ export default {
                 .then(function(res){
                     $this.$store.state.token=res.data.id;
                     $this.$store.state.author=res.data.author;
-                    $this.$store.state.authorStatus=res.data.authorStatus;
-                    console.log('connectuser ',res)
+                    $this.$store.state.authorStatus=res.data.authorStatus.users_status;
+                    console.log('connectuser ',res.data)
                     console.log($this.$store.state.token,' ',res.data.message)
 
                     $this.$store.state.page='connected';
@@ -222,9 +206,11 @@ export default {
         },
         //R-P: voir le profil
         getUser(){
+            axios.defaults.headers.common = {'Authorization': `bearer ${this.token}`}
             console.log('userVue getUser')
             let $this=this;
-            let userInfo={id:this.$store.state.token}
+            let userInfo=this.$store.state.token
+            
             console.log('R-P getUser userinfo', userInfo)
             instance.get('/auth/getMyProfile',{params:userInfo})
             .then(res=>{

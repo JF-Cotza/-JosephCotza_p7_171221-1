@@ -110,7 +110,7 @@ exports.confirmUser=async function(req,res,next){
 
     let tok=await jwt.sign({userId:user.users_id+' '+user.users_mail},token.value ,{expiresIn:token.end})
     console.log('R-c3 token', tok)
-    res.status(200).json({message:'user reconnu',id:tok, author:user.users_id, authorStatus:user.users_status})
+    res.status(200).json({message:'user reconnu',id:tok, author:user.users_id, authorStatus:user})
 }
 
 //R-P1 

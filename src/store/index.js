@@ -18,6 +18,8 @@ export default createStore({
     publication:'',
     publicationPage:1,
     message:'',
+    userList:{},
+
   },
   mutations: {
   },
@@ -39,7 +41,25 @@ export default createStore({
             reject(err)
           })
       })
-    }
+    },
+    getAllUsers({commit},admin){
+      instance.defaults.headers.common['Authorization']='bearers '+admin.token
+      console.log('getAllUsers,' , admin)
+      //this.publication='getPublication'
+      //this.message+=' '+this.token;
+      return new Promise((resolve, reject)=>{
+        console.log(commit)
+        instance.get('/admin/getAllusers', {params:admin}) 
+          .then(function(res){
+            console.log('then',res);
+            resolve(res);
+          })
+          .catch(function(err){
+            console.log('err',err.message)
+            reject(err)
+          })
+      })
+    },
   },
   modules: { 
   }

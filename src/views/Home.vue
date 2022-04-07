@@ -3,7 +3,7 @@
     <div v-if="this.$store.state.page=='/'">
       <h1>Bienvenue</h1>
       <p>Ce site est réservé aux employés de Groupomania.</p>
-      <div v-if="mess!=''">{{mess}}</div>
+      <div v-if="mess!=''">{{ mess }}</div>
     </div>
     <div v-if="this.$store.state.page=='connect'">
         <h1>Se Connecter</h1>
@@ -13,11 +13,6 @@
     <div v-if="this.$store.state.page=='sign'">
         <h1>S'enregistrer</h1>
         <p>Vous travaillez pour Groupomania et voulez vous enregistrer</p>
-        <User /> 
-    </div>
-    <div v-if="this.$store.state.page=='forgotten'">
-        <h1>Réinitialiser votre mot de passe</h1>
-        <p>Vous êtes déjà enregistré et avez oublié votre mot de passe</p>
         <User /> 
     </div>
     <div v-if="this.$store.state.page=='about'">

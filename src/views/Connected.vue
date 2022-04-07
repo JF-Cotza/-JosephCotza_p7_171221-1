@@ -82,14 +82,13 @@ export default {
     methods:{
         listePublication(){
             let $this=this;
-            //axios.defaults.headers.common = {'Authorization': `bearer ${this.$store.state.token}`}
             this.$store.dispatch('getPublication',{id:this.$store.state.token})
             .then(function(res){
                 let data=res.data;
                 $this.message+=' '+data.message;
                 $this.list=data.liste;
                 $this.nombrePage=Math.ceil(data.message.split(' ')[0]/5)
-                console.log($this.nombrePage)
+                console.log('nombre de page',$this.nombrePage)
             })
             .catch(function(err){console.log(err.message)})
         },
