@@ -19,9 +19,22 @@ export default createStore({
     publicationPage:1,
     message:'',
     userList:{},
-
+    
+    profileUser:''
   },
   mutations: {
+    resetConnexion(state){
+      state.connectionStatus='unconnected';
+      state.page='/';
+      state.token='';
+      state.message='';
+      
+      axios.defaults.headers.common = {'Authorization': ''}
+      //suppression du contenu du local storage
+      localStorage.clear();
+      //pour vérifier que le store est bien vide
+      console.log('state deconnecté', state)
+    }
   },
   actions: {
     getPublication({commit},userInfo){
@@ -45,8 +58,7 @@ export default createStore({
     getAllUsers({commit},admin){
       instance.defaults.headers.common['Authorization']='bearers '+admin.token
       console.log('getAllUsers,' , admin)
-      //this.publication='getPublication'
-      //this.message+=' '+this.token;
+
       return new Promise((resolve, reject)=>{
         console.log(commit)
         instance.get('/admin/getAllusers', {params:admin}) 
@@ -59,6 +71,12 @@ export default createStore({
             reject(err)
           })
       })
+    },
+    deconnection({commit}){
+      //réinitialisation du store
+      console.log('deco',commit)
+
+      commit('resetConnexion')
     },
   },
   modules: { 

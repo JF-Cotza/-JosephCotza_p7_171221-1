@@ -10,7 +10,13 @@
         <!-- email toujours visible et requis -->
             <label for="email" v-if="this.$store.state.page=='profile'">Votre mail :</label>
                 <input type="email" name="email" id="email" v-model='mail' placeholder="Votre mail" title='Votre mail servira à vous identifier' :rules='validMail' required :disabled='disabledChange'>
-        <!-- mot de passe masqué lorsqu'il est oublié ou juste sur l'affichage du profil mais non modification -->
+        <!-- mot de passe maské sur l'affichage du profil mais non modification -->
+            <div :class='maskPassword'>
+                <label for="password" v-if="this.$store.state.page=='profile'">Votre nouveau mot de passe </label>
+                    <input  v-on:change='emitPassword' :type="psw" name="password" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[é è_çà=$ù!:;,?./§%µ£°@+]).{8,}" v-model='password' placeholder="Saisissez le mot de passe. Il doit contenir au moins 8 caractéres, 1 majuscule, 1 minuscule,1 chiffre, 1 caractére spécial parmi: é è_çà=$ù!:;,?./§%µ£°@+ ">
+                    <button @click='switching'>{{see}}</button>
+            </div>
+        <!-- les bouton de formulaire -->
             <div class='button flex row'>
             <!-- unconnected -->
                 <button class='send' v-if="this.$store.state.page=='connect'" type="submit" @click='toConnectUser'>Envoyer</button>
@@ -50,6 +56,8 @@ export default {
             isValidMail:false,
             isValidPassword:false,
             //variables utilisateur
+            user:'',
+            
             nom:'',
             prenom:'',
             mail:'',
@@ -73,12 +81,22 @@ export default {
             this.cible='/auth/connectUser'
         }
         else if(this.$store.state.page=='profile'){
+            this.user=this.$store.state.profileUser;
+            console.log('User created', this.user)
+
             this.cible='/auth/getUser';
             this.maskPassword='masked';
             this.token=this.$store.state.token;
             this.message=this.token
             this.disabledChange=true;            
-            this.getUser();
+            
+            console.log('user profile',this.user)
+            this.nom=this.user.users_name;
+            this.prenom=this.user.users_firstname;
+            this.mail=this.user.users_mail,
+            
+            this.message='Vos infos. Voulez-vous les modifier ?'
+            localStorage.setItem('user',JSON.stringify(this.user))
 
         }
     },
@@ -88,6 +106,7 @@ export default {
             this.disabledChange=false;
             this.maskPassword='';
             this.masking='masked'
+            this.password='';            
         },
         //afficher / masquer le mot de passe
         switching(e){
@@ -140,8 +159,7 @@ export default {
                 return this.message='Mail ou mot de passe non validé'
             }
 
-            let form=new FormData()
-        
+            let form=new FormData();
             
             console.log('adduser', 'name: ',this.nom,' firstname: ',this.prenom)
             
@@ -204,35 +222,19 @@ export default {
                     $this.$router.push('http://localhost:8000/')
                 })
         },
-        //R-P: voir le profil
-        getUser(){
-            axios.defaults.headers.common = {'Authorization': `bearer ${this.token}`}
-            console.log('userVue getUser')
-            let $this=this;
-            let userInfo=this.$store.state.token
-            
-            console.log('R-P getUser userinfo', userInfo)
-            instance.get('/auth/getMyProfile',{params:userInfo})
-            .then(res=>{
-                console.log(res)
-                let user=res.data.data[0];
-                $this.nom=user.users_name;
-                $this.prenom=user.users_firstname;
-                $this.mail=user.users_mail,
-                localStorage.setItem('user',JSON.stringify(user))
-                $this.message='Vos infos. Voulez-vous les modifier ?'
-            })
-            .catch(err=>console.log(err.message))
-        },
+        
         //D: supprimer le profil
-        suppressProfile(){
+        suppressProfile(e){
+            e.preventDefault();
             console.log('userVue suppressProfile')
             let $this=this;
-            let userInfo={id:this.$store.state.token}
-            instance.delete('/auth/suppressMyProfile',{params:userInfo})
+            
+            instance.delete('/auth/suppressMyProfile',{headers: {'Authorization': `bearer ${this.token}`}})
             .then(res=>{
                 console.log(res)
                 $this.message='suppress then'
+                this.$store.dispatch('deconnection');
+                this.$router.push({name:'Home'});
             })
             .catch(err=>console.log(err.message))
         },

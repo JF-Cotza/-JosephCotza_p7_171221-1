@@ -10,11 +10,7 @@ const config=require('../routes/connect');
 module.exports =async (req, res, next) =>{
     try{
         let token=req.headers.authorization.split(' ')[1];
-        
-            //console.log('   mdw files', req.files)
-            //console.log('   mdw body', req.body);
-            //console.log('   split', token)
-         
+                 
         const checkToken=jwt.verify(token,linkedKey);
         
         const user_id=checkToken.userId.split(' ')[0];

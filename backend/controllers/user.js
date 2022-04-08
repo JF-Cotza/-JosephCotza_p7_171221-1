@@ -1,6 +1,8 @@
 //modules express
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
+const link = require('../controllers/connect');
+const linkedKey=link.token.value;
 const nodemailer=require('nodemailer');
 
 //modules créés
@@ -139,11 +141,6 @@ exports.getMyProfile=async function(req,res,next){
   }
 }
 
-
-
-
-
-
 //U mettre à jour un utilisateur
 exports.updateUser=async function(user){
   let mail=user.email;
@@ -174,33 +171,28 @@ exports.update=async function(user){
   return {message};
 }
 
-//D suppression d'un utilisateur
-exports.update=async function(user){
-  console.log('update user ', user)
+//D-P suppression d'un utilisateur
+exports.deleteProfile=async function(req, res, next){
+  let token=req.headers.authorization.split(' ')[1];
+                 
+  const checkToken=jwt.verify(token,linkedKey);
   
-  let sql=`UPDATE users SET users_name=?, users_firstname=?, users_mail=?, users_password=? WHERE users_id=?`
-  let result = await query(sql,[user.name, user.firstname,user.email,user.password,user.id]);
+  const user_id=checkToken.userId.split(' ')[0];
+  const user_mail=checkToken.userId.split(' ')[1]
+ 
+  let sql=`DELETE FROM users WHERE users_id=? AND users_mail=?`
+  let result = await query(sql,[user_id, user_mail]);
 
-  let message = 'Error in creating new user';
-
-  if (result.affectedRows) {
-    message = 'User updated successfully';
-  }
-  return {message};
-}
-
-exports.suppressUser=async function(user){
-  console.log('update user ', user)
-  
-  let sql=`DELETE FROM users WHERE users_id=?`
-  let result = await query(sql,[user.id]);
-
+  let code=500;
   let message = 'Error in deleting user';
 
+  console.log('delete')
+
   if (result.affectedRows) {
+    code=200
     message = 'User deleted successfully';
   }
-  return {message};
+  return res.status(code).json({'message':message})
 }
 
 

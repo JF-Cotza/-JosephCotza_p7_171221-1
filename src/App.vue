@@ -1,5 +1,5 @@
 <template>
-  <div id="nav">{{ texture }}
+  <div id="nav">
     <div v-if="this.$store.state.connectionStatus=='unconnected' || this.$store.state.token==''">
       <router-link to="/" @click="toIndex">Accueil</router-link> |
       <router-link to="/" @click="toConnect">Connect</router-link> |
@@ -20,11 +20,14 @@
 </template>
 
 <script>
-const axios=require('axios');
+import axios from 'axios'
+const defaultUrl='http://localhost:3000/api';
+const instance =axios.create({ baseURL:defaultUrl});
+
 export default {
   data(){
     return{
-      texture:'',
+      token:'',
     }
   },
   created:function(){
@@ -71,7 +74,8 @@ export default {
       this.$router.push('Admin');
     },
     toProfile(){
-      return this.$store.state.page='profile'
+      this.token=this.$store.state.token;
+      this.getUser()
     },
     toConnected(){
       this.$store.dispatch('getPublication',{id:this.$store.state.token})
@@ -81,7 +85,11 @@ export default {
       return this.$store.state.page='create'
     },
     deconnection(){
+      this.$store.dispatch('deconnection');
+      this.$router.push({name:'Home'});
       //réinitialisation du store
+
+      /*
       this.$store.state.connectionStatus='unconnected';
       this.$store.state.page='/';
       this.$store.state.token='';
@@ -92,11 +100,25 @@ export default {
       localStorage.clear();
       //pour vérifier que le store est bien vide
       console.log('state deconnecté', this.$store.state)
-    }
+      */
+    },
+    //R-P: voir le profil
+    getUser(){      
+      console.log('userVue getUser')
+      let $this=this;
+     
+      instance.get('/auth/getMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
+      .then(res=>{
+        
+        let user=res.data.data[0];
+        console.log(user)
+        
+        $this.$store.state.profileUser=user;
+        this.$store.state.page='profile'
+      })
+      .catch(err=>console.log(err.message))
+    },
   },
-  mounted:function(){
-    this.texture=this.$route.query.id
-  }
 }
 </script>
 
