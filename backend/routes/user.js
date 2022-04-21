@@ -7,36 +7,18 @@ const authorization=require('../middleware/auth')
 const rt=require('../middleware/routeTesting')
 
 //C-A : ajouter un utilisateur
-router.post('/addUser', rt.ru1, userFunction.checkExisting, userFunction.addUser);
+router.post('/addUser',  userFunction.checkExisting, userFunction.addUser);
 
 //R-C: connexion
-router.post('/connectUser', rt.ru2, userFunction.connectUser, userFunction.pswComparaison, userFunction.confirmUser);
+router.post('/connectUser', userFunction.connectUser, userFunction.pswComparaison, userFunction.confirmUser);
 
 //R-P: voir mon profil
-router.get('/getMyProfile', rt.ru3, rt.consoleHeader, authorization, userFunction.getMyProfile);
+router.get('/getMyProfile', authorization, userFunction.getMyProfile);
 
 //D-P: supprimer mon profil
-router.delete('/suppressMyProfile', rt.ru4, rt.consoleHeader, authorization, userFunction.deleteProfile)
+router.delete('/suppressMyProfile', authorization, userFunction.deleteProfile)
 
-
-
-
-
-
-
-
-
-
-
-//U
-router.put('/updateUser', async function(req, res) {
-  let body=req.body;
-  console.log('update', body)  
-  try {
-    res.json(await userFunction.updateUser(body));
-  } catch (err) {
-    console.error(`Error while adding user `, err.message);
-  }
-});
+//U-P: mettre à jour le profil
+router.put('/updateUser',authorization, userFunction.uniqueMail,userFunction.updatingUser, rt.ruUpdate, userFunction.connectUser, userFunction.confirmUser)
 
 module.exports = router;

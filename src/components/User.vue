@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class='containing'>
         {{ message }}
         <form :action="defaultUrl+cible" method="POST" enctype="multipart/form-data" class='flex column'>
         <!-- nom et prénom visible lors de la création et lorsque l'on est connecté sur le profile -->
@@ -12,9 +12,17 @@
                 <input type="email" name="email" id="email" v-model='mail' placeholder="Votre mail" title='Votre mail servira à vous identifier' :rules='validMail' required :disabled='disabledChange'>
         <!-- mot de passe maské sur l'affichage du profil mais non modification -->
             <div :class='maskPassword'>
-                <label for="password" v-if="this.$store.state.page=='profile'">Votre nouveau mot de passe </label>
-                    <input  v-on:change='emitPassword' :type="psw" name="password" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[é è_çà=$ù!:;,?./§%µ£°@+]).{8,}" v-model='password' placeholder="Saisissez le mot de passe. Il doit contenir au moins 8 caractéres, 1 majuscule, 1 minuscule,1 chiffre, 1 caractére spécial parmi: é è_çà=$ù!:;,?./§%µ£°@+ ">
+                <label for="password" v-if="this.$store.state.page=='profile'" >Votre nouveau mot de passe </label>
+                    <input  v-on:keyup='placeholding' :type="psw" name="password" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[é è_çà=$ù!:;,?./§%µ£°@+]).{8,}" v-model='password' :title=pswForm placeholder='le mot de passe'>
+                    <span :class='placeholder'>{{ pswForm }}</span>
                     <button @click='switching'>{{see}}</button>
+            </div>
+            <div :class='textPassword' >
+                <p>Si vous ne saisissez pas de nouveau mot de passe, la valeur ne sera pas modifiée</p>
+                <div class='button flex row'>
+                    <button class='send' @click='sendingModification'>Valider</button>
+                    <button class='reset' @click="resetProfile">Annuler</button>
+                </div>
             </div>
         <!-- les bouton de formulaire -->
             <div class='button flex row'>
@@ -26,7 +34,7 @@
                 <button class='send' v-if="this.$store.state.page=='profile'" :class='maskModifyButton'>Modifier</button>
                 <button class='danger' v-if="this.$store.state.page=='profile'" @click='suppressProfile' :class='masking'>Supprimer mon profil</button>
             <!-- global -->
-                <button class='reset' :class='masking' type="reset" >Annuler</button>
+                <button class='reset' :class='masking' type="reset" @click='backHome'>Annuler</button>
             </div>
         </form>
     </div>
@@ -48,6 +56,9 @@ export default {
             maskPassword:'',
             maskModifyButton:'masked',
             see:'Voir le mot de passe',
+            textPassword:'masked',
+            placeholder:'',
+
             //status
             isDisabled:true,
             isRequires_A:false, //utilisé quand on veut toutes les infos de l'utilisateur : active ou désactive Nom et prénom
@@ -67,6 +78,7 @@ export default {
             //divers
             message:'',
             cible:'',
+            pswForm:"Saisissez le mot de passe. Il doit contenir au moins 8 caractéres, 1 majuscule, 1 minuscule,1 chiffre, 1 caractére spécial parmi: é è_çà=$ù!:;,?./§%µ£°@+ ",
         }
     },
     created:function(){
@@ -101,13 +113,7 @@ export default {
         }
     },
     methods:{
-        toAccessData(e){
-            e.preventDefault()
-            this.disabledChange=false;
-            this.maskPassword='';
-            this.masking='masked'
-            this.password='';            
-        },
+    //global
         //afficher / masquer le mot de passe
         switching(e){
             e.preventDefault();
@@ -149,6 +155,7 @@ export default {
             this.checkingMail(checkMail)
             
         },
+    //unconnected
         //C-A: for create user
         addUser(e){
             e.preventDefault();
@@ -173,10 +180,6 @@ export default {
                     console.log('add res then',res) 
                     $this.message+='ajouté'
                     $this.connectUser();
-                    /*
-                    $this.$store.state.page='connected';
-                    $this.$router.push('Connected')
-                    */
                 })
                 .catch(function(){
                     $this.message="l'utilisateur existe déjà"
@@ -189,7 +192,6 @@ export default {
             this.connectUser();
         },
         connectUser(){
-            console.log('connectUser')
             let $this=this;
             this.message='';
             this.checkValidAdding()
@@ -222,14 +224,34 @@ export default {
                     $this.$router.push('http://localhost:8000/')
                 })
         },
-        
+    //connected
+        backHome(e){
+            e.preventDefault();
+            this.$store.dispatch('getPublication');
+            this.$store.state.page='connected';
+            this.$router.push('Connected');
+        },
+        //U-R: reset du profil
+        resetProfile(e){
+            e.preventDefault();
+            let user=JSON.parse(localStorage.getItem('user'));
+            console.log('reset',user,'name',user.users_name)
+            this.nom=user.users_name;
+            this.prenom=user.users_firstname;
+            this.mail=user.users_mail;
+            this.password='';
+            localStorage.removeItem('user');
+            this.$store.dispatch('getPublication')
+            this.$store.state.page='connected';
+            this.$router.push('Connected')
+        },
         //D: supprimer le profil
         suppressProfile(e){
             e.preventDefault();
             console.log('userVue suppressProfile')
             let $this=this;
             
-            instance.delete('/auth/suppressMyProfile',{headers: {'Authorization': `bearer ${this.token}`}})
+            instance.delete('/auth/suppressMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
             .then(res=>{
                 console.log(res)
                 $this.message='suppress then'
@@ -238,25 +260,58 @@ export default {
             })
             .catch(err=>console.log(err.message))
         },
-        resetPassword(e){
-            this.message=''
-            console.log(this.mail);
-            e.preventDefault();
-            let checkMail=document.getElementById('email');
-            this.checkingMail(checkMail);
-            if(this.isValidMail){
-                instance.get('/auth/resetPassword',{params:{email:this.mail}})
-                .then(res=>{
-                    this.message=res.data.message
-                    
-                    })
-                .catch(err=>{
-                    console.log('reset catch err',err)
-                    console.log(err.message)
-                    })
-            }
+        toAccessData(e){
+            e.preventDefault()
+            this.disabledChange=false;
+            this.maskPassword='';
+            this.masking='masked';
+            this.password='';
+            this.textPassword='';            
         },
-        
+        sendingModification(e){
+            e.preventDefault()
+            let $this=this;
+            let form=new FormData();
+            form.append('name',this.nom);
+            form.append('firstname',this.prenom);
+            this.checkValidAdding();//on vérifie le mail et le mot de passe
+            console.log('name',this.nom,'firstname',this.prenom,'email',this.mail,'password',this.password,'localStorage',JSON.parse(localStorage.getItem('user')))
+            
+            //validation du mail
+            if(!this.isValidMail){    //la saisie n'est pas un email
+                return
+            }
+            else{                     //la saisie est valide
+                form.append('email',this.mail)
+            }
+
+            //validation du mot de passe
+            if(this.password.length!=0){    //le mot de passe n'est pas nul et doit donc être changé
+                if(!this.isValidPassword){          //le mot de passe ne respecte pas le pattern
+                    return
+                }
+                else{                               //le mot de passe respecte le pattern
+                    form.append('psw',this.password)
+                }
+            }
+            else{                           //le mot de passe est nul et ne doit ponc pas être changé
+                form.append('psw','')       //on vérifiera la valeur dans le backend.
+            }
+            instance.put('/auth/updateUser', form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
+            .then(res=>{
+                $this.$store.dispatch('deconnection');
+                console.log(res)
+            })    
+            .catch(err=>{console.log(err)})
+        },
+        placeholding(){
+            if(this.password.length==0){
+                this.placeholder=''
+            }
+            else{
+                this.placeholder='masked'
+            }
+        }
     }
 }
 
@@ -264,10 +319,18 @@ export default {
 </script>
 
 <style scoped>
-form{
-    min-width: 300px;
-    width: 50%;
+.containg{
+    width:300px;
     margin:auto;
+}
+
+.psw{
+    height: 80px;
+}
+
+form{
+    width:100%;
+    max-width: 300px;
 }
 
 .flex{
@@ -299,8 +362,8 @@ form{
 }
 
 .button{
-    width:50px;
-    min-width: 300px;
+    width: 300px;
+    margin:auto;
     position:relative
 }
 
@@ -310,27 +373,5 @@ form{
     margin:1px;
 }
 
-.send{
-    background: green;
-}
 
-.reset{
-    background: red;
-}
-
-.danger{
-    background: black;
-    color:red;
-    font-weight: bold;
-    position:absolute;
-    top:50px;
-}
-
-.yellow{
-    background: yellow;
-}
-
-.masked{
-    display: none;
-}
 </style>

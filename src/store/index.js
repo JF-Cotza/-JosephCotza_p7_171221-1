@@ -9,20 +9,40 @@ const instance =axios.create({ baseURL:defaultUrl});
 export default createStore({
   state: {
     connectionStatus:'unconnected',   //connecté ou non
-    page:'/',
-                             //page correspondant à la route
+    page:'/',                         //page correspondant à la route
+    wait:true,
+  // utilisateur                             
     token:'',
     author:'',
     authorStatus:'',
-
+  //les publication
     publication:'',
     publicationPage:1,
+    publicationListe:{},
+    nombrePage:0,
+    selectedPublication:{},
+    commentList:[],
+    
+
     message:'',
     userList:{},
     
     profileUser:''
   },
   mutations: {
+    listOfPublication(state,publication){
+      console.log('liste of ',publication)
+      state.publicationListe=publication.liste
+      
+      let nombrePage=Math.ceil(publication.message.split(' ')[0]/5)
+      state.nombrePage=nombrePage
+      if(nombrePage==0){
+        state.message="Il n'y a pas encore de publication. Soyez le premier à le faire"
+      }
+      else{
+        state.message=publication.message
+      }
+    },
     resetConnexion(state){
       state.connectionStatus='unconnected';
       state.page='/';
@@ -34,19 +54,26 @@ export default createStore({
       localStorage.clear();
       //pour vérifier que le store est bien vide
       console.log('state deconnecté', state)
+    },
+    waiting(state,value){
+      state.wait=value;
     }
   },
   actions: {
-    getPublication({commit},userInfo){
-      instance.defaults.headers.common['Authorization']='bearers '+userInfo.id
-      console.log('store getpub,' , userInfo.id)
+    getPublications({commit}){
+      console.log('store getpub,' , this.state.token, 'page', this.state.publicationPage)
       //this.publication='getPublication'
       //this.message+=' '+this.token;
       return new Promise((resolve, reject)=>{
-        console.log(commit)
-        instance.get('/publications/getAllPublications', {params:{'page':this.state.publicationPage}}) 
+        commit('waiting',true)
+
+        instance.defaults.headers.common={'Authorization':'bearers '+this.state.token}
+        instance.get('/publications/getAllPublications', {params:{'page':this.state.publicationPage}}) //attention à l'ordre si l'on met le headers après le params, il n'est pas pris en compte
           .then(function(res){
-            console.log('then',res);
+            console.log('then',res.data);
+            commit('waiting',false);
+            commit('listOfPublication',res.data)
+            
             resolve(res);
           })
           .catch(function(err){

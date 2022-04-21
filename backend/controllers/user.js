@@ -3,7 +3,6 @@ const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
 const link = require('../controllers/connect');
 const linkedKey=link.token.value;
-const nodemailer=require('nodemailer');
 
 //modules créés
 const query=require('../query');
@@ -63,7 +62,7 @@ exports.addUser=async function(req,res,next){
 //R connexion
 //R-C1
 exports.connectUser=async function(req,res,next){
-  console.log('connectUset async', req.body)
+  console.log('connectUser async', req.body)
   let user=req.body;
   let mail=user.email;
 
@@ -72,6 +71,8 @@ exports.connectUser=async function(req,res,next){
       );
   const check = helper.emptyOrRows(rows);
   
+    console.log('R-C1 check', check)
+
   if(check==''){
     console.log('pas de data', user)
     return res.status(500).json({message:"l'utililisateur n'existe pas"})
@@ -141,34 +142,77 @@ exports.getMyProfile=async function(req,res,next){
   }
 }
 
-//U mettre à jour un utilisateur
-exports.updateUser=async function(user){
-  let mail=user.email;
-  console.log('add',user)
-  let check=await this.checkExisting(mail)
-  console.log('adduser check', check)
-  
-  if (check=='void' || check[0].users_id==user.id){ 
+//U-P mettre à jour un utilisateur
+//U-P1 : vérification que l'émail n'est pas utilisé par quelqu'un d'autre => profil unique
+exports.uniqueMail=async function(req,res,next) { 
+  let page =1;
+  let email=req.body.email;
+  const checkToken=jwt.verify(req.headers.authorization.split(' ')[1],token.value).userId;
+  let id=checkToken.split(' ')[0]
+
+  console.log('U-P1 checktoken',checkToken)
+
+  const offset = helper.getOffset(page, config.listPerPage);
+  const rows = await query(
+    `SELECT * FROM users WHERE users_mail = '${email}'`
+   );
+   const data = helper.emptyOrRows(rows);
+
+  //console.log('U-P1',req.body, data,data[0].users_id,id);
+    if(data==''){
+      console.log("pas d'id",id)
+    }  
+    else if(data[0].users_id==id){
+      console.log('to next')
+    }
     
-    return this.update(user)
+    if(data=='' || data[0].users_id==id){
+      console.log('U-P1 next',id)
+      req.body.id=id;
+      next()
+    }
+    else{
+      console.log('U-P1 else')
+      let message='Un autre utilisateur utilise déjà cette adresse mail'
+      return res.status(500).json({error:message})
+    }
+
+
+};
+
+//U-P2 : mise à jour
+exports.updatingUser=async function(req,res,next){
+  let user=req.body
+  console.log('U-P2',user)
+  let code=500;
+  let message='erreur lors de la mise à jour'
+
+  if(user.psw==''){
+    console.log('pas de mise à jour du mot de passe')
+    update = await query(
+    `UPDATE users SET users_name='${user.name}', users_firstname='${user.firstname}', users_mail='${user.email}' WHERE users_id=${user.id}`)
   }
   else{
-    return {message:"l'email est utilisé par un autre utilisateur"}
+    console.log('on doit hasher le mot de passe')
+    await bcrypt.hash(user.psw,10).then((hash)=>{crypted=(hash)}).catch((err)=>{console.log(err.message)})
+    console.log('U-P2 hash',user.psw,crypted)
+    update = await query(
+    `UPDATE users SET users_name='${user.name}', users_firstname='${user.firstname}', users_mail='${user.email}', users_password='${crypted}' WHERE users_id=${user.id}`)
   }
-}
-
-exports.update=async function(user){
-  console.log('update user ', user)
   
-  let sql=`UPDATE users SET users_name=?, users_firstname=?, users_mail=?, users_password=? WHERE users_id=?`
-  let result = await query(sql,[user.name, user.firstname,user.email,user.password,user.id]);
-
-  let message = 'Error in creating new user';
-
-  if (result.affectedRows) {
-    message = 'User updated successfully';
+  const verified = helper.emptyOrRows(update);
+  console.log('U-P2 verified',verified.affectedRows)
+  if(verified.affectedRows!=0){
+    code=200
+    message=verified.affectedRows + ' mises à jours'
+    //res.status(code).json({'message':message});   
+    
+    next()
   }
-  return {message};
+  else{
+    return res.status(code).json({'message':message})
+  }
+  
 }
 
 //D-P suppression d'un utilisateur
@@ -193,38 +237,4 @@ exports.deleteProfile=async function(req, res, next){
     message = 'User deleted successfully';
   }
   return res.status(code).json({'message':message})
-}
-
-
-
-
-
-exports.searchForReset=async function(req, res, next){
-  console.log('searchForReset', req.query)
-  
-  let page=1
-  let email=req.query.email
-  const offset = helper.getOffset(page, config.listPerPage);
-  const rows = await query(
-    `SELECT * FROM users WHERE users_mail='${email}'` //attention, ne pas oublier les '' car sinon, il y a un bug avec @
-  );
-  const data = helper.emptyOrRows(rows);
-  const meta = {page};
-
-    console.log('data', data);
-    if(data==''){
-      console.log('utilisateur non trouvé')
-      return res.status(200).json({message:'utilisateur inexistant'})
-    }
-    else{
-      console.log('envoyer le mail')
-      return res.status(200).json({message:'un mail vous a été envoyé'})
-    }
-
-
-  /*
-  return {
-    data
-  }
-  */
 }
