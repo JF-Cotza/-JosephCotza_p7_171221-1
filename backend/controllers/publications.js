@@ -26,15 +26,46 @@ exports.getPublications=async function(req,res, next){
     `SELECT * FROM publications join users ON publications.publications_author=users.users_id ORDER BY publications_date DESC LIMIT ${offset},${config.listPerPage} `
   );
   const publications = helper.emptyOrRows(publicationList);
-  console.log('R-AP publication',publications)
+  
   
   let total=count.split(':')[1].split('}')[0]
   
+  const comments = await query(
+    `SELECT comments_publication, count(*) FROM comments GROUP BY comments_publication`
+  );
+  
+  const commentsGrouped = helper.emptyOrRows(comments);
+  
+  
+  let table=[];
+  for(let i=0;i<commentsGrouped.length;i++){
+    console.log(i, commentsGrouped[i])
+    let a=JSON.stringify(commentsGrouped[i])
+    let b=a.split(',')[1].split(':')[1].split('}')[0]
+    console.log(a)
+    let id=a.split(':')[1].split(',')[0]
+    table.push({id:id,value:b})
+  }
+
+console.log('R-AP publication',publications)
+//  console.log(table)
+
   const meta = {page};
   //console.log(' list,', publications,'counting ',total)
-  
+  for(let i=0;i<publications.length;i++){
+    let item=publications[i].publications_id
+    for(let j=0;j<table.length;j++){
+      let key=table[j].id
+      if(item==key){
+        console.log(key,table[j].value)
+        publications[i].counted=table[j].value
+      }
+    }
+  }
+  console.log(publications)
+
   if(publications){
-    return res.status(200).json({message: total+' publications trouvées',liste: publications})
+    return res.status(200).json({message: total+' publications trouvées',liste: publications, counted:table})
   }
   else{
     return res.status(500).json({error})
@@ -158,29 +189,81 @@ exports.deleteOnePublication=async function(req, res, next){
 
 //U-UP : Update Publication
 exports.updatePublication=async function(req, res, next){
-   console.log('U-UP',req.body)
+   console.log('U-UP: body: ',req.body, '/ files: ',req.files)
+
    let publication=req.body
 
-   if (publication.image=={}||publication.image==[]){publication.image=''}
-   console.log('publication', publication.image)
+  //import et renommage de la nouvelle image
+  let image=req.files.image
+  let imageFile;
+  let uploadPath;
+  let name;
+  let date=Date.now();
+    
+  if(req.files){
+    console.log('U-UP update if files',image)  
+    const extension=MIMES_TYPES[image.mimetype];
+    if(!extension){console.log('format non reconnu')};
+    if (!req.files || Object.keys(req.files).length === 0 || !extension) {
+        return res.status(400).send('No files were uploaded.');
+    }
 
+    imageFile= image;
+    name=imageFile.name.split('.')[0]+'_'+date+'.'+extension;
+    uploadPath = './images'+'/'+ name;//'./images' car le répertoire est défini avec static.
+    
+    let imageUrl=`${req.protocol}://${req.get('host')}/images/${imageFile}`;
+    console.log('create imageUrl',imageUrl)
+
+    imageFile.mv(uploadPath, function(err) {  
+        if (err){
+          return res.status(500).send(err);
+        }
+        else{
+          //console.log('name '+name)
+        }
+      })
+    }
+    else{
+      //console.log('else')
+      name=''
+    }
+
+  //récupération de l'ancienne image
+  const select = await query(
+    `SELECT * from publications WHERE publications_id=${publication.publicationId}`
+  );
+
+  const selected = helper.emptyOrRows(select);
+  let oldFile=selected[0].publications_image
+  console.log('selected',selected,'oldfile: ',oldFile);
+
+  //suppression de l'ancienne image
+  if(oldFile){ //il y avait déjà une image dans la publication
+    console.log('image: stockée', oldFile,'importée: ',image) 
+    fileSystem.unlink(`./images/${oldFile}`, ()=>console.log('fichier supprimé'))
+  }
+  else{ // il n'y en avait pas
+    console.log('pas d image stockée / importée',image )
+  }
+
+  //mise à jour
   const update = await query(
-    `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${publication.image}' WHERE publications_id=${publication.publicationId}`
+    `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${name}' WHERE publications_id=${publication.publicationId}`
   );
 
   
 
-  const verified = helper.emptyOrRows(update);
- // let result = await query(update,[publication.publicationId]);
-  console.log(verified)
-  /*  
+  const updating = helper.emptyOrRows(update);
+
+  console.log(updating)
+  
   const verify = await query(
-    `SELECT * from publications WHERE publications_id=?`
+    `SELECT * from publications WHERE publications_id=${publication.publicationId}`
   );
 
   const verified = helper.emptyOrRows(verify);
   console.log(verified)
-  */
   res.status(200).json({message:'publication mise à jour'})
 }  
 

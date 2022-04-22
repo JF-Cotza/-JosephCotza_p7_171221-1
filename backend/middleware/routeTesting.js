@@ -67,3 +67,14 @@ exports.rc1=function(req,res,next){
   console.log('comment post add')
   next();
 }
+
+exports.rcCount=function(req,res,next){
+  console.log('comment get count')
+  next();
+}
+
+exports.test=function(req,res,next){
+  console.log('test route return')
+  res.status(200).json({message:'toto'})
+}
+

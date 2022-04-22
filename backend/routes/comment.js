@@ -10,6 +10,10 @@ const rt=require('../middleware/routeTesting')
 //C
 router.post('/addComment', rt.rc1, rt.consoleHeader, authorization, rt.consoleDetails, commentFunction.addComment)
 
+//R-G-CC:comptage des comentaires
+//router.post('/countingComments',rt.rcCount, rt.consoleHeader, authorization,rt.consoleDetails, commentFunction.counting)
+
+
 module.exports = router; //si on l'oublie, il y a une erreur qui apparait 
 /*
 TypeError: Router.use() requires a middleware function but got a Object

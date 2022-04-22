@@ -22,7 +22,7 @@ export default createStore({
     nombrePage:0,
     selectedPublication:{},
     commentList:[],
-    
+    countedComment:'',
 
     message:'',
     userList:{},
@@ -57,6 +57,9 @@ export default createStore({
     },
     waiting(state,value){
       state.wait=value;
+    },
+    commentsCount(state,count){
+      state.countedComment=count;
     }
   },
   actions: {
@@ -71,9 +74,10 @@ export default createStore({
         instance.get('/publications/getAllPublications', {params:{'page':this.state.publicationPage}}) //attention à l'ordre si l'on met le headers après le params, il n'est pas pris en compte
           .then(function(res){
             console.log('then',res.data);
+            console.log(res.data.counted)
             commit('waiting',false);
             commit('listOfPublication',res.data)
-            
+            commit('commentsCount',res.data.counted)
             resolve(res);
           })
           .catch(function(err){

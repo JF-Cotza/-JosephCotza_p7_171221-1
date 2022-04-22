@@ -27,6 +27,40 @@ exports.addComment=async function(req,res,next){
   return res.status(code).json({message:message})
 }
 
+//G-CC:contange des commentaires
+/*exports.counting=async function(req,res,next){
+  
+  let id=req.body.id
+  console.log('R-CC',id)
+  const rows = await query(
+    `SELECT comments_publication, count(comments_id) FROM comments GROUP BY comments_publication ` 
+    //WHERE comments_publication = `+id+` 
+   );
+   const data = helper.emptyOrRows(rows);
+  
+   console.log('counting R-CC',data)
+    let table=[];
+    let i=0
+    for(let item in data[0]){
+      console.log(i, item);
+      i++;
+    }
+
+    /*
+   let string=JSON.stringify(data[0]).split(':')[1].split('}')[0]
+   console.log('stringify',string);
+  
+   let counting;
+   if(string!=0){
+     counting=string;
+   }
+   else{
+    counting=0
+   }
+   res.status(200).json({counted:counting})
+   
+  }
+*/
 
 /*
 //R-AP pour récupérer toutes les publications

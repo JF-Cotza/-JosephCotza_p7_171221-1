@@ -62,10 +62,11 @@
                     </ul>
                 </div>
     <!-- ajouter un commentaire -->
-                <div>
+                <div class='addingComment'>
                 <!--
                     {{ this.$store.state }}
                 -->
+                    <p>Ajouter un commentaire</p>
                     <Comment
                         :pubId={id:this.$store.state.selectedPublication.publications_id,masked:masked}
                         :propAuthor={id:this.$store.state.author,masked:masked,class:masked}
@@ -102,6 +103,10 @@
                         :publicationAuthorFirstname=onePublication.users_firstname
                         :publicationAuthorId=onePublication.publications_author
                     />
+                    
+                     <p v-if="onePublication.counted"> Nombre de commentaires : {{ onePublication.counted }} </p>
+                     <p v-else>Pas de commentaires</p>  
+                
                 </li>
             </ul>
         </div>
@@ -118,7 +123,7 @@ import Publication from '../components/Publication.vue'
 import Comment from '../components/Comment.vue'
 import axios from 'axios'
 ;
-const defaultLink='http://localhost:3000/';
+const defaultLink='http://localhost:3000';
 const defaultUrl=defaultLink+'/api';
 const instance =axios.create({ baseURL:defaultUrl});
 
@@ -133,7 +138,7 @@ export default {
             list:{},
             onePublication:{},
             tokenValue:'',
-
+            counted:'',
             masked:'masked',
             toDisabled:'disabled',
             not:'',
@@ -255,6 +260,20 @@ div p{
     border:1px solid black;
 }
 
+.addingComment{
+    background: #ffffff;
+    background: -moz-linear-gradient(top,  #ffffff 0%, #79f5fc 7%, #db36a4 23%, #ff0000 88%, #000000 100%);
+    background: -webkit-linear-gradient(top,  #ffffff 0%,#79f5fc 7%,#db36a4 23%,#ff0000 88%,#000000 100%);
+    background: linear-gradient(to bottom,  #ffffff 0%,#79f5fc 7%,#db36a4 23%,#ff0000 88%,#000000 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#000000',GradientType=0 );
+    border-radius:10px;
+    border:1px solid grey;
+    margin:5px 0;
+}
+
+.addingComment p{
+    border:none;
+}
 
 .flex{
     width:100%;
@@ -277,5 +296,6 @@ span{
 .back{
     background: silver;
 }
+
 
 </style>

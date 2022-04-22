@@ -407,6 +407,8 @@ h1{
 }
 
 
+
+
 @media screen and (min-width: 681px) and (max-width: 1023px){
   .grid{
     margin: 5px 0;

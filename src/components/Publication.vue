@@ -8,7 +8,6 @@
             <input type="text" id='title'    name='title'    v-model="title"    :placeholder=propsTitle :disabled='disabling'>
             <input type="text" id='texte'    name='texte'    v-model='texte'    :placeholder=propsTexte :disabled='disabling'>
             
-            not connected
             <input v-if='this.$store.state.page!="connected"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling'>
 
             <div v-if='fileToUpdate.size>0 && imageUrl!="http://localhost:3000/images" ' class='flex column'>
@@ -182,6 +181,7 @@ export default {
             }
 
             form.append('image',image);
+            form.append('url',this.imageUrl);
             form.append('publicationId',this.publicationId)
 
             console.log('titre:',this.title, this.propsTitle, ' texte:',this.texte, 'form',form)
