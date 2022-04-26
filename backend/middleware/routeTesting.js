@@ -5,6 +5,16 @@ exports.consoleHeader=function(req,res,next){
   next();
 }
 
+exports.consoleAdminHeader=function(req,res,next){
+  console.log('admin consoleHeader',req.headers, req.query)
+  //console.log('body',req.body)
+  //console.log('file',req.files)
+  //console.log(req)
+  next();
+}
+
+
+
 exports.consoleDetails=function(req,res,next){
   console.log('console details',' files ',req.files,' body ', req.body)
   next();
@@ -78,3 +88,7 @@ exports.test=function(req,res,next){
   res.status(200).json({message:'toto'})
 }
 
+exports.raUU=function(req,res,next){
+ console.log('admin put update user') 
+ next();
+}

@@ -1,6 +1,6 @@
 <template>
     <div @click='consoling' class='containing'>
-        <!-- /{{ message }} /-->  page store : {{ this.$store.state.page}} / disabling {{ disabling }}
+        <!-- /{{ message }}  page store : {{ this.$store.state.page}} / disabling {{ disabling }} /--> 
         <h1> {{ propMessage }} </h1>
         <form action="" method="post" enctype="multipart/form-data" class='flex column' disabled='disabling'>
             <input type="text" name='publicationId' :value=publicationId class='masked'>
@@ -8,14 +8,19 @@
             <input type="text" id='title'    name='title'    v-model="title"    :placeholder=propsTitle :disabled='disabling'>
             <input type="text" id='texte'    name='texte'    v-model='texte'    :placeholder=propsTexte :disabled='disabling'>
             
-            <input v-if='this.$store.state.page!="connected"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling'>
+            <input v-if='this.$store.state.page!="connected" && this.$store.state.page!="modifier"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
+            <input v-if='this.$store.state.page=="modifier"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >{{ 'http://localhost:3000/images/'+propsImage }}
 
             <div v-if='fileToUpdate.size>0 && imageUrl!="http://localhost:3000/images" ' class='flex column'>
                 <img :src="imageUrl" alt="image importé" >
                 <button @click='resetImage'>supprimer l'image</button>
             </div>
 
-            <img v-if='propsImage!=""' :src="'http://localhost:3000/images/'+propsImage" alt="image importée">
+            <div v-if='this.$store.state.page!="modifier"'> 
+                <img v-if='propsImage!=""' :src="'http://localhost:3000/images/'+propsImage" alt="image importée">
+            </div>
+            
+            
     <!-- bouton page create -->            
             <div class='flex row' v-if="this.$store.state.page=='create'">
                 <button type="reset" @click='voidImage'>Annuler</button>
@@ -93,7 +98,15 @@ export default {
             else{
                 return false
             }
-        },   
+        },
+        defaultImage(){
+            if(this.propsImage!=''){
+                return 'http://localhost:3000/images/'+this.propsImage
+            }
+            else{
+                return ''
+            }
+        }   
     },    
     methods:{
         image(e){
@@ -181,7 +194,7 @@ export default {
             }
 
             form.append('image',image);
-            form.append('url',this.imageUrl);
+            //form.append('url',this.imageUrl);
             form.append('publicationId',this.publicationId)
 
             console.log('titre:',this.title, this.propsTitle, ' texte:',this.texte, 'form',form)

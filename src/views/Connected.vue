@@ -16,7 +16,7 @@
         </div>
 <!-- modifier la publication -->
         <div v-if='this.$store.state.page=="modifier"'>
-            {{ this.$store.state.selectedPublication }} / {{ this.onePublication}}
+            <!--{{ this.$store.state.selectedPublication }} / {{ this.onePublication}}-->
             <Publication
              
                 :propsTitle=this.$store.state.selectedPublication.publications_title

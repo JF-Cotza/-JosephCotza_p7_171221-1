@@ -26,7 +26,7 @@ export default createStore({
 
     message:'',
     userList:{},
-    
+    administredList:{},
     profileUser:''
   },
   mutations: {
@@ -60,6 +60,18 @@ export default createStore({
     },
     commentsCount(state,count){
       state.countedComment=count;
+    },
+    page(state,cible){
+      if(cible=='admin'){
+        state.page=cible
+
+      }
+    },
+    users(state,users){
+      state.administredList=users.data
+    },
+    pubs(state,pub){
+      state.administredList=pub.data;
     }
   },
   actions: {
@@ -86,15 +98,34 @@ export default createStore({
           })
       })
     },
-    getAllUsers({commit},admin){
-      instance.defaults.headers.common['Authorization']='bearers '+admin.token
-      console.log('getAllUsers,' , admin)
-
+    getAllUsers({commit}){
+      console.log('index admin get all users')
       return new Promise((resolve, reject)=>{
-        console.log(commit)
-        instance.get('/admin/getAllusers', {params:admin}) 
+        //console.log(commit)
+        instance.get('/admin/getAllusers', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
-            console.log('then',res);
+            commit('users',res.data)
+            commit('page','admin')
+            console.log('get all users then',res.data);
+          
+            resolve(res);
+          })
+          .catch(function(err){
+            console.log('err',err.message)
+            reject(err)
+          })
+      })
+    },
+    getAllPubs({commit}){
+      console.log('index admin get all pubs')
+      return new Promise((resolve, reject)=>{
+        //console.log(commit)
+        instance.get('/admin/getAllPubs', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
+          .then(function(res){
+            commit('pubs',res.data)
+            commit('page','admin')
+            console.log('get all pub then',res.data);
+          
             resolve(res);
           })
           .catch(function(err){

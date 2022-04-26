@@ -3,17 +3,17 @@ const authorization=require('../middleware/adminAuth')
 const router = express.Router();
 const adminFunction=require('../controllers/admin')
 
+
 //pour les test
-const consoleHeader=function(req,res,next){
-  console.log('admin consoleHeader',req.headers, req.query)
-  //console.log('body',req.body)
-  //console.log('file',req.files)
-  //console.log(req)
-  next();
-}
+const rt=require('../middleware/routeTesting')
 
 //R-AU: voir mon profil
-router.get('/getAllUsers', authorization, consoleHeader, adminFunction.getAllProfile);
+router.get('/getAllUsers', rt.consoleAdminHeader, authorization, adminFunction.getAllProfile);
+
+//R-AP: voir mon profil
+router.get('/getAllPubs', rt.consoleAdminHeader, authorization, adminFunction.getAllPublications);
+
+router.put('/userUpdate',rt.raUU,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.updateUser)
 
 
 /*

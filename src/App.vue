@@ -16,7 +16,7 @@
           <router-link class='link cnt_grid_one' to="/connected" @click="toConnected">Accueil</router-link>
           <router-link class='link cnt_grid_two' to="/connected" @click="toProfile">Voir mon profil</router-link>
           <router-link class='link cnt_grid_three' to="/connected" @click="toCreate">Ajouter une publication</router-link>
-          <router-link class='link' v-if="this.$store.state.authorStatus==2" to="/connected" @click="toAdmin">Gérer</router-link>
+          <router-link class='link' v-if="this.$store.state.authorStatus==2" to="/admin" >Gérer</router-link>
           <router-link class='link cnt_grid_four' to="/" @click="deconnection">Deconnecter</router-link>
         </div>
       </div>
@@ -71,21 +71,6 @@ export default {
       return this.$store.state.page='about'
     },
   //connected
-    toAdmin(){
-      let adminId=this.$store.state.author;
-      let adminStatus=this.$store.state.authorStatus;
-      let adminToken=this.$store.state.token;
-      let $this=this;
-
-      this.$store.dispatch('getAllUsers',{id:adminId, status:adminStatus, token:adminToken})
-      .then(res=>{
-        console.log('toAdmin',res.data.data)
-        $this.$store.state.userList=res.data.data
-        })
-      .catch(err=>console.log(err.message))
-      this.$store.state.page='admin';
-      this.$router.push('Admin');
-    },
     toProfile(){
       this.token=this.$store.state.token;
       this.getUser()
@@ -96,6 +81,10 @@ export default {
     },
     toCreate(){
       this.$store.state.page='create'
+      console.log(this.$store.state.page)
+    },
+    toAdmin(){
+      this.$store.state.page='admin'
       console.log(this.$store.state.page)
     },
     deconnection(){
