@@ -18,7 +18,8 @@
                     <button @click='switching'>{{see}}</button>
             </div>
             <div :class='textPassword' >
-                <p>Si vous ne saisissez pas de nouveau mot de passe, la valeur ne sera pas modifiée</p>
+                <p class='align'>Si vous ne saisissez pas de nouveau mot de passe, la valeur ne sera pas modifiée</p>
+                <p class='align'>Après modification, vous serez déconnecté pour raison de sécurité. Vous devrez donc vous reconnecter</p>
                 <div class='button flex row'>
                     <button class='send' @click='sendingModification'>Valider</button>
                     <button class='reset' @click="resetProfile">Annuler</button>
@@ -207,20 +208,33 @@ export default {
             
             instance.post('/auth/connectUser', form)
                 .then(function(res){
-                    $this.$store.state.token=res.data.id;
-                    $this.$store.state.author=res.data.author;
+                    console.log('status',res.data.authorStatus.users_status)
                     $this.$store.state.authorStatus=res.data.authorStatus.users_status;
-                    console.log('connectuser ',res.data)
-                    console.log($this.$store.state.token,' ',res.data.message)
+                    if(res.data.authorStatus.users_status!=0){
+                        $this.$store.state.token=res.data.id;
+                        $this.$store.state.author=res.data.author;
+                        sessionStorage.setItem('token',JSON.stringify({id:res.data.id,authorStatus:res.data.authorStatus.users_status}))
+                        $this.$store.state.authorStatus=res.data.authorStatus.users_status;
+                        console.log('connectuser ',res.data)
+                        console.log($this.$store.state.token,' ',res.data.message)
 
-                    $this.$store.state.page='connected';
-                    $this.$store.state.message+='Connecté';
-                    $this.$router.push('Connected')
-
+                        $this.$store.state.page='connected';
+                        $this.$store.state.message+='Connecté';
+                        $this.$router.push('Connected')
+                    }
+                    else{    
+                        $this.message+='Votre compte a été suspendu. Contactez un administrateur pour plus de détails'
+                        return $this.message
+                    }
                 })
                 .catch(function(error){
-                    $this.message='Utilisateur non reconnu'
-                    console.log('erreur log ',error.message,'user non reconnu ?')
+                    $this.message='Accés refusé'
+                    if($this.$store.state.authorStatus==0){
+                        $this.message+='votre compte a été suspendu contacté un administrateur pour plus de détails'
+                    }
+                    
+                    
+                    console.log('erreur log ',error.message, $this.message)
                     $this.$router.push('http://localhost:8000/')
                 })
         },
@@ -373,5 +387,8 @@ form{
     margin:1px;
 }
 
+.align{
+    text-align: justify;
+}
 
 </style>

@@ -73,6 +73,12 @@ exports.rp2=function(req,res,next){
   next();
 }
 
+exports.rpSupp=function(req,res,next){
+  console.log('publication supress')
+  next();
+}
+
+
 exports.rc1=function(req,res,next){
   console.log('comment post add')
   next();
@@ -88,7 +94,25 @@ exports.test=function(req,res,next){
   res.status(200).json({message:'toto'})
 }
 
+
+
+exports.raGC=function(req,res,next){
+ console.log('admin get all comments') 
+ next();
+}
+
+
 exports.raUU=function(req,res,next){
  console.log('admin put update user') 
+ next();
+}
+
+exports.raUP=function(req,res,next){
+ console.log('admin put update publication') 
+ next();
+}
+
+exports.raUC=function(req,res,next){
+ console.log('admin put update comments') 
  next();
 }

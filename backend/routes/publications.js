@@ -17,7 +17,7 @@ router.get('/getAllPublications', authorization, pubFunction.getPublications)
 router.get('/getOnePublication', authorization, pubFunction.getOnePublication)
 
 //D : supprimer une publication
-router.delete('/suppressOne', authorization, pubFunction.deleteOnePublication)
+router.delete('/suppressOne', rt.rpSupp, rt.consoleHeader, rt.consoleDetails, authorization, pubFunction.deleteOnePublication)
 
 //U : modifier une publication
 router.put('/modifyPublication',authorization, rt.consoleDetails,rt.rp2, pubFunction.updatePublication)

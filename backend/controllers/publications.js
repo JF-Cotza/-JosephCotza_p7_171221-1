@@ -194,13 +194,14 @@ exports.updatePublication=async function(req, res, next){
    let publication=req.body
 
   //import et renommage de la nouvelle image
-  let image=req.files.image
+  let image;
   let imageFile;
   let uploadPath;
   let name;
   let date=Date.now();
     
   if(req.files){
+    image=req.files.image;
     console.log('U-UP update if files',image)  
     const extension=MIMES_TYPES[image.mimetype];
     if(!extension){console.log('format non reconnu')};
@@ -225,7 +226,7 @@ exports.updatePublication=async function(req, res, next){
       })
     }
     else{
-      //console.log('else')
+      console.log('else')
       name=''
     }
 

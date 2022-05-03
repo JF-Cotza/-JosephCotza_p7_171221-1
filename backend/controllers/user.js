@@ -2,6 +2,8 @@
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
 const link = require('../controllers/connect');
+const fileSystem=require('fs');  
+
 const linkedKey=link.token.value;
 
 //modules créés
@@ -62,25 +64,28 @@ exports.addUser=async function(req,res,next){
 //R connexion
 //R-C1
 exports.connectUser=async function(req,res,next){
-  console.log('connectUser async', req.body)
-  let user=req.body;
-  let mail=user.email;
+  try{
+    console.log('connectUser async', req.body)
+    let user=req.body;
+    let mail=user.email;
 
-  const rows = await query(
-    `SELECT * FROM users WHERE users_mail='${mail}'`
-      );
-  const check = helper.emptyOrRows(rows);
-  
-    console.log('R-C1 check', check)
+    const rows = await query(
+      `SELECT * FROM users WHERE users_mail='${mail}'`
+        );
+    const check = helper.emptyOrRows(rows);
+    
+      console.log('R-C1 check', check)
 
-  if(check==''){
-    console.log('pas de data', user)
-    return res.status(500).json({message:"l'utililisateur n'existe pas"})
+    if(check==''){
+      console.log('pas de data', user)
+      return res.status(500).json({message:"l'utililisateur n'existe pas"})
+    }
+    if(check!=''){
+      req.body.check=check;
+      next()
+    }
   }
-  if(check!=''){
-    req.body.check=check;
-    next()
-  }
+  catch(err){console.log(err.message)}
 }
 
 //R-C2 verification du mot de passe
@@ -218,12 +223,30 @@ exports.updatingUser=async function(req,res,next){
 //D-P suppression d'un utilisateur
 exports.deleteProfile=async function(req, res, next){
   let token=req.headers.authorization.split(' ')[1];
-                 
+  let imageName='';
   const checkToken=jwt.verify(token,linkedKey);
   
   const user_id=checkToken.userId.split(' ')[0];
   const user_mail=checkToken.userId.split(' ')[1]
  
+  const rows = await query(
+    `SELECT * FROM publications WHERE publications_author = '${user_id}'`
+   );
+   const data = helper.emptyOrRows(rows);
+
+   console.log('D-P select publications',data)
+  
+   for(let i=0;i<data.length; i++){
+     imageName=data[i].publications_image
+     console.log(data[i].publications_image)
+      if(imageName){
+        fileSystem.unlink(`./images/${imageName}`,async function(){       
+           // on appele la méthode unlink de fs pour supprimer le fichier .unlink('chemin+nom du fichier à supprimer', fonction à éxécuter quand la suppression est effectuée)
+           console.log('suppression de : '+imageName+' effectué')
+        })
+      }
+   }
+  
   let sql=`DELETE FROM users WHERE users_id=? AND users_mail=?`
   let result = await query(sql,[user_id, user_mail]);
 
@@ -237,4 +260,5 @@ exports.deleteProfile=async function(req, res, next){
     message = 'User deleted successfully';
   }
   return res.status(code).json({'message':message})
+
 }

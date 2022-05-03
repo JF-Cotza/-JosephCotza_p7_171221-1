@@ -7,39 +7,30 @@ const adminFunction=require('../controllers/admin')
 //pour les test
 const rt=require('../middleware/routeTesting')
 
-//R-AU: voir mon profil
+//G-AU: récupérer tous les utilisateurs
 router.get('/getAllUsers', rt.consoleAdminHeader, authorization, adminFunction.getAllProfile);
 
-//R-AP: voir mon profil
+//G-AP: récupérer toutes les publications
 router.get('/getAllPubs', rt.consoleAdminHeader, authorization, adminFunction.getAllPublications);
 
+//G-AC: récupérer tous les commentaires
+router.get('/getAllComments', rt.consoleAdminHeader, authorization, rt.raGC,adminFunction.getAllComments);
+
+
+//P-UU
 router.put('/userUpdate',rt.raUU,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.updateUser)
 
+//P-UP
+router.put('/publicationUpdate',rt.raUP,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.updatePublication)
 
-/*
-router.get('/resetPassword', async function(req,res,next){
-  try {
-    return res.json(await userFunction.searchForReset(req,res))  
-  } catch (err) {
-    console.error(`Error while getting users `, err.message,'get');
-  }
-});
+//P-UOP
+router.put('/publicationUpdateOne',rt.raUP,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.publicationUpdateOne)
 
-router.get('/resetPassword', userFunction.searchForReset);
+//P-UC
+router.put('/commentsUpdate',rt.raUC,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.updateComments)
 
+//P-UOC
+router.put('/commentsUpdateOne',rt.raUP,rt.consoleHeader, authorization, rt.consoleDetails, adminFunction.commentsUpdateOne)
 
-//U
-router.put('/updateUser', async function(req, res) {
-  let body=req.body;
-  console.log('update', body)  
-  try {
-    res.json(await userFunction.updateUser(body));
-  } catch (err) {
-    console.error(`Error while adding user `, err.message);
-  }
-  //window.location.href('http://localhost:8000/test/?ok=ok')
-  //res.redirect('http://localhost:8000/test/?ok=ok')
-});
-*/
 
 module.exports = router;

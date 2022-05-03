@@ -3,8 +3,10 @@ node_modules
 /dist
 /backend/images
 /backend/node_modules
+
 retires
 
+/backend/middleware/routeTesting.js
 
 # local env files
 .env.local

@@ -1,7 +1,5 @@
 <template>
     <div class='corps'>
-        <!--{{ message }}
-        state:{{ this.$store.state }}-->
         <div v-if='this.$store.state.page=="profile"'>
             <h1>Mon profil</h1>
             <User />
@@ -18,7 +16,6 @@
         <div v-if='this.$store.state.page=="modifier"'>
             <!--{{ this.$store.state.selectedPublication }} / {{ this.onePublication}}-->
             <Publication
-             
                 :propsTitle=this.$store.state.selectedPublication.publications_title
                 :propsTexte=this.$store.state.selectedPublication.publications_texte
                 :publicationId=this.$store.state.selectedPublication.publications_id
@@ -28,11 +25,10 @@
         </div>
 <!-- voir la publication -->
         <div v-if='this.$store.state.page=="view"'>
-            <!--{{ this.$store.state.selectedPublication }} {{ this.$store.state.commentList }}-->
             <div> 
                 <div v-if='this.$store.state.selectedPublication.publications_author==this.$store.state.author'>
                     <p>Voulez vous la <button @click='toModifier'>Modifier</button> ? </p>
-                    <p>Voulez vous la <button @click='supprimer' class='danger'>Supprimer</button> ? </p>
+                    <p>Voulez vous la <button @click='supprimer' class='danger' :value=this.$store.state.selectedPublication.publications_id>Supprimer</button> ? </p>
                 </div>
                 <Publication 
                     :propsTitle=this.$store.state.selectedPublication.publications_title
@@ -50,14 +46,24 @@
                     <p v-if="this.$store.state.commentList.length==0" >Il n'y a pas de commentaires. Soyez le premier à en ajouter</p>
                     <ul v-else class='flex'>
                         <li v-for="commented in this.$store.state.commentList" :key=commented.comments_id>
-                            <Comment  
-                                :propAuthor={id:commented.comments_author,name:commented.users_name,firstname:commented.users_firstname,masked:masked,class:not}
-                                :propDate=commented.comments_date
-                                :propTexte={texte:commented.comments_texte,toDisabled:disabled}
-                                :pubId={id:this.$store.state.selectedPublication.publications_id,masked:masked}
-                                forAdding='masked'
-                                forComments=' '
-                            />
+                            <div v-if="commented.users_status==0" class='userSuspend'>
+                                Cet utilisateur a été suspendu et ses commentaires ne sont plus visible
+                            </div>
+                            <div v-if="commented.comments_status==0" class='publicationModerated relative'>
+                                 <button v-if='this.$store.state.authorStatus==2' class='moderate' act='reveal' :value="commented.comments_id" ><img src="../assets/modere_valid.png" alt="demasquer un commentaire" @click='forCommentsActing'></button>
+                                Ce commentaire a été modéré et n'est plus visible
+                            </div>
+                            <div v-if='commented.comments_status!=0 && commented.users_status!=0' class='relative'>
+                                <button v-if='this.$store.state.authorStatus==2' class='moderate' act='block' :value="commented.comments_id" ><img src="../assets/modere_refus.png" alt="masquer un commentaire" @click='forCommentsActing'></button>
+                                <Comment
+                                    :propAuthor={id:commented.comments_author,name:commented.users_name,firstname:commented.users_firstname,masked:masked,class:not}
+                                    :propDate=commented.comments_date
+                                    :propTexte={texte:commented.comments_texte,toDisabled:disabled}
+                                    :pubId={id:this.$store.state.selectedPublication.publications_id,masked:masked}
+                                    forAdding='masked'
+                                    forComments=' '
+                                />
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -76,34 +82,32 @@
                         propTexte=''                        
                     />
                 </div>
-<!--                
-                <div  class='flex column' disabled='disabled'>
-                    <p class='masked' name='publicationId' disabled='disabled' >{{ onePublication.publications_id }}</p>
-                    <p class='masked' name='authorId' disabled='disabled'>{{ onePublication.publications_author }} </p>
-                    <p class='author' name='authorName' disabled='disabled'>Auteur : {{ onePublication.users_name + ' ' +onePublication.users_firstname}} </p>
-                    <p class='title' name='title' disabled='disabled'> Titre : {{onePublication.publications_title }}</p>
-                    <p class='back justify ' name='texte' disabled='disabled' > {{ onePublication.publications_texte }} </p>
-                    <img class='back' disabled='disabled' v-if="onePublication.publications_image!=''" :src="onePublication.publications_image" :alt="'image importé : '+onePublication.publications_image" >
-                    <p class='back' v-else disabled='disabled'>Pas d'image</p>
-                    <img :src="onePublication.link" :alt="'link :' + onePublication.link">
-                </div>
--->
             </div>
         </div>
 <!-- page d'accueil -->
         <div v-if='this.$store.state.page=="connected"'>
             <ul class='flex'>
                 <li v-for="onePublication in this.$store.state.publicationListe" :key="onePublication.publications_id" >
-                    <Publication
-                        :propsTitle=onePublication.publications_title
-                        :propsTexte=onePublication.publications_texte
-                        :propsImage=onePublication.publications_image
-                        :publicationId=onePublication.publications_id
-                        :publicationAuthorName=onePublication.users_name 
-                        :publicationAuthorFirstname=onePublication.users_firstname
-                        :publicationAuthorId=onePublication.publications_author
-                    />
-                    
+                    <div v-if='onePublication.users_status==0' >
+                        <p class='userSuspend'>Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
+                    </div>
+                    <div v-if='onePublication.publications_status==0' class='relative'>
+                        <button v-if='this.$store.state.authorStatus==2' class='moderate' act='reveal' :value="onePublication.publications_id" ><img src="../assets/modere_valid.png" alt="demasquer une publication" @click='forActing'></button>
+                        <p class='publicationModerated'>Cet publication a été modérée et n'est donc plus visible</p>
+                    </div>
+                    <div v-if='onePublication.publications_status!=0 && onePublication.users_status!=0' class='relative'>
+                        <button v-if='this.$store.state.authorStatus==2' class='moderate' act='block' :value="onePublication.publications_id" @click='forActing'><img src="../assets/modere_refus.png" alt="masquer une publication"></button>
+                        
+                        <Publication
+                            :propsTitle=onePublication.publications_title
+                            :propsTexte=onePublication.publications_texte
+                            :propsImage=onePublication.publications_image
+                            :publicationId=onePublication.publications_id
+                            :publicationAuthorName=onePublication.users_name 
+                            :publicationAuthorFirstname=onePublication.users_firstname
+                            :publicationAuthorId=onePublication.publications_author
+                        />
+                    </div>
                      <p v-if="onePublication.counted"> Nombre de commentaires : {{ onePublication.counted }} </p>
                      <p v-else>Pas de commentaires</p>  
                 
@@ -169,14 +173,15 @@ export default {
             this.$store.dispatch('getPublications')
         },
         
-        supprimer(){
-            let publicationId=this.onePublication.publications_id;
+        supprimer(e){
+
+            let publicationId=e.target.value;
             let authorId=this.$store.state.author;
             console.log('supprimer la publication',this.onePublication, publicationId)
             let data={id:publicationId,author:authorId}
             let $this=this;
 
-            instance.delete('/publications/suppressOne',{params:data})
+            instance.delete('/publications/suppressOne',{params:data},{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 $this.message=res.data.message;
                 $this.$store.state.page='connected'
@@ -210,6 +215,50 @@ export default {
         },
         addComment(){
             console.log('pour ajouter un commentaire, state',this.$store.state)
+        },
+        forActing(e){
+            let cible=e.target;
+            let $this=this;
+            if(cible.tagName=='img' || cible.tagName=='IMG'){
+                cible=e.target.parentNode
+            }
+            
+            console.log('to show',cible.value,cible.getAttribute('act'))
+            let toDo={id:cible.value,action:cible.getAttribute('act')}
+
+            instance.put('/admin/publicationUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
+            .then(res=>{
+                console.log(res)
+                
+                
+                console.log('go')
+                $this.$router.go() //déconnecte
+            })
+            .catch(err=>console.log(err))
+        },
+        forCommentsActing(e){
+            let cible=e.target;
+            let $this=this;
+
+            if(cible.tagName=='img' || cible.tagName=='IMG'){
+                cible=e.target.parentNode
+            }
+            
+            let action=cible.getAttribute('act')
+            
+
+            let toDo={id:cible.value,action:action}
+
+            instance.put('/admin/commentsUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
+            .then(res=>{
+                console.log(res)
+                
+                
+                console.log('go')
+                $this.$router.go() //déconnecte
+                
+            })
+            .catch(err=>console.log(err))
         },
     }
 }
@@ -249,8 +298,6 @@ li{
 
 li div{   
     background: green;
-    padding-top: 20px;
-    margin-top: 10px;
     border:1px solid white;
     border-radius:20px;
 }
@@ -297,5 +344,38 @@ span{
     background: silver;
 }
 
+
+.userSuspend,.publicationModerated{
+    opacity: 75%;
+    border-radius:20px;
+    padding:10px 0;
+}
+
+.userSuspend{
+    background: black;
+    color:red;
+}
+
+.publicationModerated{
+    background: black;
+    color:white;
+}
+
+
+.relative{
+  position: relative;
+}
+
+.moderate{
+    z-index: 1;
+    position: absolute;
+    top:0px;
+    right: 0px;
+}
+
+.moderate img{
+    height: 20px;
+    width: auto;
+}
 
 </style>

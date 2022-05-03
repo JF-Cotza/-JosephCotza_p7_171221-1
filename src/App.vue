@@ -12,19 +12,27 @@
           <router-link class='link unc_grid_three' to="/" @click="toSigning">Signing</router-link>
           <router-link class='link unc_grid_four' to="/" @click="toAbout">About</router-link>
         </div>
-        <div v-if="this.$store.state.connectionStatus=='connected' && this.$store.state.token!=''" class='connectedGrid'>
+        <div v-if="this.$store.state.connectionStatus=='connected' && this.$store.state.token!='' && this.$store.state.authorStatus==1" class='connectedGrid'>
           <router-link class='link cnt_grid_one' to="/connected" @click="toConnected">Accueil</router-link>
           <router-link class='link cnt_grid_two' to="/connected" @click="toProfile">Voir mon profil</router-link>
           <router-link class='link cnt_grid_three' to="/connected" @click="toCreate">Ajouter une publication</router-link>
-          <router-link class='link' v-if="this.$store.state.authorStatus==2" to="/admin" >Gérer</router-link>
           <router-link class='link cnt_grid_four' to="/" @click="deconnection">Deconnecter</router-link>
+        </div>
+        <div v-if="this.$store.state.connectionStatus=='connected' && this.$store.state.token!='' && this.$store.state.authorStatus==2" class='connectedAdminGrid'>
+          <router-link class='link cnt_admin_one' to="/connected" @click="toConnected">Accueil</router-link>
+          <router-link class='link cnt_admin_two' to="/connected" @click="toProfile">Voir mon profil</router-link>
+          <router-link class='link cnt_admin_three' to="/connected" @click="toCreate">Ajouter une publication</router-link>
+          <router-link class='link cnt_admin_four' to="/admin" >Gérer</router-link>
+          <router-link class='link cnt_admin_five' to="/" @click="deconnection">Deconnecter</router-link>
         </div>
       </div>
     </div>
     <div v-if="this.$store.state.wait==true" class='clearBack'>
       <Waiting />
     </div>
+    <p> {{ this.$store.state.message }} </p>
     <router-view/>
+    
   </div>
 </template>
 
@@ -46,15 +54,8 @@ export default {
   created:function(){
     console.log('created', this.$store.state.token)
     console.log('state',this.$store.state)
-    if(this.$store.state.token==''){
-      console.log('non connecté')
-      this.$router.push('/')
-    }
-    else{
-      console.log('ok')
-      this.$router.push('Connected')
-      console.log('state connected',this.$store.state)
-    }
+    this.$store.dispatch('tokenChecking','App')
+    
   },
   methods:{
   //unconnected
@@ -239,6 +240,9 @@ h1{
   padding: 0;
 }
 
+
+
+
 @media screen and (max-width: 680px)
 {
   .container{
@@ -284,7 +288,7 @@ h1{
     display: grid;
     grid-template-columns: repeat(2, .9fr);
     grid-gap:5px;
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     padding:1rem 0 ;
   }
 
@@ -304,6 +308,41 @@ h1{
     grid-column: 2 / 3;
     grid-row: 1 / 2;
   }
+
+
+  .connectedAdminGrid{
+    height: 150px;
+    padding:5px 0;
+    display: grid;
+    grid-template-columns: repeat(2, .9fr);
+    grid-gap:5px;
+    grid-template-rows: repeat(3, 1fr);
+  }
+
+  .cnt_admin_one{
+    grid-column: 1 / 2;
+    grid-row: 1/2;
+  }
+
+  .cnt_admin_four{
+    grid-column: 1 / 2;
+    grid-row: 2 / 4;
+    background: red;
+    padding-top:30px;
+  }
+
+  .cnt_admin_five{
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+  }
+
+  .cnt_admin_two{
+    grid-column: 2 / 3;
+    grid-row: 2/3
+  }
+  
+
+
 
 //
   .link{
@@ -357,6 +396,15 @@ h1{
   }
 
 //nav connectée
+  .link{
+    padding: 10px 0 0 10px;
+    font-size: 1rem;
+  }
+  .link:hover{
+    font-size: 1.5rem;
+  }
+  
+  
   .connectedGrid{
     height: 120px;
     padding:5px 0;
@@ -384,15 +432,6 @@ h1{
   }
 
 
-  .link{
-    height: 40px;
-    padding: 10px 0 0 10px;
-    font-size: 1rem;
-  }
-  .link:hover{
-    font-size: 1.5rem;
-  }
-
 }
 
 
@@ -407,7 +446,6 @@ h1{
   }
   
   .link{
-    height: 40px;
     padding: 10px 0 0 10px;
     font-size: 1.2rem;
   }
@@ -426,6 +464,44 @@ h1{
     background:rgba(0,50,10,.5);
     border-radius:30%;
   }
+
+.connectedAdminGrid{
+    height: 150px;
+    padding:5px 0;
+    display: grid;
+    grid-template-columns: repeat(2, .9fr);
+    grid-gap:5px;
+    grid-template-rows: repeat(3, 1fr);
+  }
+
+  .cnt_admin_one{
+    grid-column: 1 / 2;
+    grid-row: 1/2;
+  }
+  
+  .cnt_admin_five{
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+  }
+
+  .cnt_admin_four{
+    padding-top: 30px;
+    grid-column: 1 / 2;
+    grid-row: 2 / 4;
+    background: red;
+  }
+
+  .cnt_admin_two{
+    grid-column: 2 / 3;
+    grid-row: 2/3
+  }
+  
+   .cnt_admin_three{
+    grid-column: 2 / 3;
+    grid-row: 3/4
+  }
+
+
 } 
 
 @media screen and (min-width:1024px){
@@ -457,5 +533,42 @@ h1{
     border-radius:30% 50%;
 
   }
+
+  .connectedAdminGrid{
+    height: 80px;
+    padding:5px 0;
+    display: grid;
+    grid-template-columns: repeat(5, .9fr);
+    grid-gap:5px;
+    grid-template-rows: 1;
+  }
+
+  .cnt_admin_one{
+    grid-column: 1 / 2;
+    grid-row: 1/2;
+  }
+  
+  .cnt_admin_four{
+    grid-column: 2 / 3;
+    grid-row: 1/2;
+    background: red;
+  }
+
+  .cnt_admin_two{
+    grid-column: 3 / 4;
+    grid-row: 1/2;
+  }
+  
+   .cnt_admin_three{
+    grid-column: 4 / 5;
+    grid-row: 1/2;
+  }
+
+  
+  .cnt_admin_five{
+    grid-column: 5 / 6;
+    grid-row: 1/2;
+  }
+
 } 
 </style>

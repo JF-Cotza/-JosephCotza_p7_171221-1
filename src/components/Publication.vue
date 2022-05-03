@@ -1,22 +1,35 @@
 <template>
     <div @click='consoling' class='containing'>
-        <!-- /{{ message }}  page store : {{ this.$store.state.page}} / disabling {{ disabling }} /--> 
+        <!-- /{{ message }}-->   <!--/ disabling {{ disabling }} /--> 
         <h1> {{ propMessage }} </h1>
         <form action="" method="post" enctype="multipart/form-data" class='flex column' disabled='disabling'>
+            <!-- masqué -->
             <input type="text" name='publicationId' :value=publicationId class='masked'>
-            <p>Auteur {{ publicationAuthorName }} {{ publicationAuthorFirstname }}</p>
-            <input type="text" id='title'    name='title'    v-model="title"    :placeholder=propsTitle :disabled='disabling'>
-            <input type="text" id='texte'    name='texte'    v-model='texte'    :placeholder=propsTexte :disabled='disabling'>
             
-            <input v-if='this.$store.state.page!="connected" && this.$store.state.page!="modifier"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
-            <input v-if='this.$store.state.page=="modifier"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >{{ 'http://localhost:3000/images/'+propsImage }}
+            <!-- pas visible lors de la création -->
+            <p v-if='this.$store.state.page!="create"'>Auteur {{ publicationAuthorName }} {{ publicationAuthorFirstname }}</p>
+            
+            <!-- les textes de la publications -->
+            <input type="text" id='title'    name='title'    v-model="title"    :placeholder=propsTitle :disabled='disabling' maxlength="255">
+            <input type="text" id='texte'    name='texte'    v-model='texte'    :placeholder=propsTexte :disabled='disabling' maxlength="255">
+            
+            <!-- l'image -->
+            
+            <input v-if='this.$store.state.page=="create"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
+
+            <div v-if='this.$store.state.page=="modifier"' >
+                <p>Image originale</p>
+                <img v-if='propsImage!=""' :src="'http://localhost:3000/images/'+propsImage" alt="image importée" class='original'>
+                <p>Pour la nouvelle </p>
+            </div>
+            <input v-if='this.$store.state.page=="modifier"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
 
             <div v-if='fileToUpdate.size>0 && imageUrl!="http://localhost:3000/images" ' class='flex column'>
                 <img :src="imageUrl" alt="image importé" >
                 <button @click='resetImage'>supprimer l'image</button>
             </div>
 
-            <div v-if='this.$store.state.page!="modifier"'> 
+            <div v-if='this.$store.state.page!="modifier" && this.$store.state.page!="create"'> 
                 <img v-if='propsImage!=""' :src="'http://localhost:3000/images/'+propsImage" alt="image importée">
             </div>
             
@@ -274,6 +287,11 @@ form input:disabled{
 
 .row button{
     width:100px;
+}
+
+.orginal{
+    height: 300px;
+    width: auto;
 }
 
 </style>

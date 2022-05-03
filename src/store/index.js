@@ -44,6 +44,8 @@ export default createStore({
       }
     },
     resetConnexion(state){
+      localStorage.clear();
+      sessionStorage.clear();
       state.connectionStatus='unconnected';
       state.page='/';
       state.token='';
@@ -51,7 +53,7 @@ export default createStore({
       
       axios.defaults.headers.common = {'Authorization': ''}
       //suppression du contenu du local storage
-      localStorage.clear();
+      
       //pour vérifier que le store est bien vide
       console.log('state deconnecté', state)
     },
@@ -72,6 +74,15 @@ export default createStore({
     },
     pubs(state,pub){
       state.administredList=pub.data;
+    },
+    comments(state,comments){
+      state.administredList=comments.data;
+    },
+    setUser(state,user){
+      state.token=user.id
+      state.authorStatus=user.authorStatus;
+      console.log('commit set user',user, state.token, state.authorStatus);
+      state.page='connected';
     }
   },
   actions: {
@@ -82,7 +93,7 @@ export default createStore({
       return new Promise((resolve, reject)=>{
         commit('waiting',true)
 
-        instance.defaults.headers.common={'Authorization':'bearers '+this.state.token}
+        instance.defaults.headers.common={'Authorization':'Bearers '+this.state.token}
         instance.get('/publications/getAllPublications', {params:{'page':this.state.publicationPage}}) //attention à l'ordre si l'on met le headers après le params, il n'est pas pris en compte
           .then(function(res){
             console.log('then',res.data);
@@ -134,12 +145,50 @@ export default createStore({
           })
       })
     },
+    getAllComments({commit}){
+      console.log('index admin get all comments')
+      return new Promise((resolve, reject)=>{
+        //console.log(commit)
+        instance.get('/admin/getAllComments', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
+          .then(function(res){
+            commit('comments',res.data)
+            commit('page','admin')
+            console.log('get all comments then',res.data);
+          
+            resolve(res);
+          })
+          .catch(function(err){
+            console.log('err',err.message)
+            reject(err)
+          })
+      })
+    },
     deconnection({commit}){
       //réinitialisation du store
       console.log('deco',commit)
 
       commit('resetConnexion')
     },
+    tokenChecking({commit},value){
+      console.log('tokenCheking call by',value,'  ',sessionStorage.getItem('token'))
+      console.log(commit);
+      if(sessionStorage.getItem('token')){
+        let user=JSON.parse(sessionStorage.getItem('token'))
+        commit('setUser',user)
+      //this.$router.push('Connected')
+      //console.log('state connected',this.$store.state)
+      }
+    /*
+    if(this.$store.state.token==''){
+      console.log('non connecté')
+      this.$router.push('/')
+    }
+    else{
+      console.log('ok')
+      this.$router.push('Connected')
+      console.log('state connected',this.$store.state)
+    }*/
+    }
   },
   modules: { 
   }
