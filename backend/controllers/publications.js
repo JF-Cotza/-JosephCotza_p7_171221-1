@@ -197,7 +197,7 @@ exports.updatePublication=async function(req, res, next){
   let image;
   let imageFile;
   let uploadPath;
-  let name;
+  let name='';
   let date=Date.now();
     
   if(req.files){
@@ -240,20 +240,19 @@ exports.updatePublication=async function(req, res, next){
   console.log('selected',selected,'oldfile: ',oldFile);
 
   //suppression de l'ancienne image
-  if(oldFile){ //il y avait déjà une image dans la publication
+  if(oldFile && name!=''){ //il y avait déjà une image dans la publication
     console.log('image: stockée', oldFile,'importée: ',image) 
     fileSystem.unlink(`./images/${oldFile}`, ()=>console.log('fichier supprimé'))
+     sql = 
+    `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${name}' WHERE publications_id=${publication.publicationId}`;
   }
   else{ // il n'y en avait pas
     console.log('pas d image stockée / importée',image )
+      sql =    `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}' WHERE publications_id=${publication.publicationId}`;
   }
 
   //mise à jour
-  const update = await query(
-    `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${name}' WHERE publications_id=${publication.publicationId}`
-  );
-
-  
+  const update= await query(sql)
 
   const updating = helper.emptyOrRows(update);
 

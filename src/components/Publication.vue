@@ -22,7 +22,7 @@
                 <img v-if='propsImage!=""' :src="'http://localhost:3000/images/'+propsImage" alt="image importée" class='original'>
                 <p>Pour la nouvelle </p>
             </div>
-            <input v-if='this.$store.state.page=="modifier"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
+            <input v-if='this.$store.state.page=="modifier"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling'>
 
             <div v-if='fileToUpdate.size>0 && imageUrl!="http://localhost:3000/images" ' class='flex column'>
                 <img :src="imageUrl" alt="image importé" >
