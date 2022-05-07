@@ -8,6 +8,7 @@ retires
 
 /backend/middleware/routeTesting.js
 /src/assets/modere_valid1.png
+/src/components/Publications\ copy.vue
 
 # local env files
 .env.local
