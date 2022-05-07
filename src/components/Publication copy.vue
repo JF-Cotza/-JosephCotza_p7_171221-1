@@ -18,22 +18,11 @@
             <input v-if='this.$store.state.page=="create"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
 
             <div v-if='this.$store.state.page=="modifier"' >
-                <!-- l'ancienne -->
-                <div v-if='propsImage!="" && changed==false'>
-                    <p>Image originale</p>
-                    <img :src="'http://localhost:3000/images/'+propsImage" alt="image importée" class='original' id='oldImage'>
-                </div>
+                <p>Image originale</p>
+                <img v-if='propsImage!=""' :src="'http://localhost:3000/images/'+propsImage" alt="image importée" class='original'>
                 <p>Pour la nouvelle </p>
-                <div v-if='propsImage!="" && changed==false'>
-                    <button @click='suppressOld'>Supprimer l'image</button>
-                    <p>Changer l'image</p>
-                </div>
-                <div v-if='propsImage==""'>
-                    <p>ajouter une image</p>
-                </div>
             </div>
-            
-            <input v-if='this.$store.state.page=="modifier"' type="file" id='modImage'    name='image'    title="ajouter une image" @change='image' :disabled='disabling'>
+            <input v-if='this.$store.state.page=="modifier"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling'>
 
             <div v-if='fileToUpdate.size>0 && imageUrl!="http://localhost:3000/images" ' class='flex column'>
                 <img :src="imageUrl" alt="image importé" >
@@ -95,8 +84,7 @@ export default {
             fileToUpdate:{name:'', size:0},
             title:'',
             texte:'',
-
-            changed:false,
+            
             //disabling:'',
             //message:'',
         }
@@ -104,17 +92,15 @@ export default {
     created:function(){
         this.$store.state.message=this.message
         axios.defaults.headers.common = {'Authorization': `bearer ${this.$store.state.token}`}
+        
     },
     computed:{
         isDisabled(){
             if(this.texte.length!=0 || this.fileToUpdate.size!=0){
                 return false
             }
-            if(this.$store.state.page=='modifier'){
-                if(this.title.length!=0 || this.texte.length!=0 || this.changed==true){
-                    return false    
-                }
-                return true
+            if(this.$store.state.page=='modifier' && this.title.length!=0){
+                return false
             }
                 return true
         },
@@ -137,7 +123,6 @@ export default {
     },    
     methods:{
         image(e){
-            this.changed=true;
             this.fileToUpdate=e.target.files[0]
             if(this.fileToUpdate.size==0)
             {
@@ -160,7 +145,7 @@ export default {
             }
         },
         voidImage(){
-            document.getElementById('oldImage').value='';
+            document.getElementById('image').value='';
             this.fileToUpdate={name:'', size:0}
             this.imageUrl='';
         },
@@ -213,9 +198,6 @@ export default {
 
             form.append('texte',texte);
             
-            form.append('imageChanged',this.changed)
-            
-
             let image
             if(!this.fileToUpdate){
                 image=this.propsImage
@@ -237,7 +219,6 @@ export default {
                     $this.$router.push('Connected')      
                 })
                 .catch(err=>console.log('addpub error',err.message))
-
         },
         backToHome(e){
             e.preventDefault()
@@ -265,14 +246,6 @@ export default {
             })
             .catch(function(err){console.log(err.message)})
         },
-        suppressOld(e){
-            e.preventDefault();
-            this.changed=true;
-            let old=document.getElementById('oldImage');
-            console.log(old.getAttribute('src'))
-            old.removeAttribute('src')
-            console.log(old.getAttribute('src'))
-        }
     }
 
 }

@@ -20,6 +20,6 @@ router.get('/getOnePublication', authorization, pubFunction.getOnePublication)
 router.delete('/suppressOne', rt.rpSupp, rt.consoleHeader, rt.consoleDetails, authorization, pubFunction.deleteOnePublication)
 
 //U : modifier une publication
-router.put('/modifyPublication',authorization, rt.consoleDetails,rt.rp2, pubFunction.updatePublication)
+router.put('/modifyPublication',authorization, rt.consoleDetails,rt.rpUpdate, pubFunction.updatePublication)
 
 module.exports = router;

@@ -189,72 +189,84 @@ exports.deleteOnePublication=async function(req, res, next){
 
 //U-UP : Update Publication
 exports.updatePublication=async function(req, res, next){
-   console.log('U-UP: body: ',req.body, '/ files: ',req.files)
+  console.log('U-UP: body: ',req.body, '/ files: ',req.files)
 
-   let publication=req.body
-
-  //import et renommage de la nouvelle image
-  let image;
-  let imageFile;
-  let uploadPath;
-  let name='';
-  let date=Date.now();
+  let publication=req.body
+  let sql;
+    if(publication.imageChanged=='false'){ //l'image n'a pas été changée, ni supprimée
+      console.log("l'image n'a pas été changée, ni supprimée")
+      sql =await query(`UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}' WHERE publications_id=${publication.publicationId}`);
+    }
+    else{//l'image a été changée ou supprimée
+      console.log("l'image a été changée ou supprimée")
     
-  if(req.files){
-    image=req.files.image;
-    console.log('U-UP update if files',image)  
-    const extension=MIMES_TYPES[image.mimetype];
-    if(!extension){console.log('format non reconnu')};
-    if (!req.files || Object.keys(req.files).length === 0 || !extension) {
+      //import et renommage de la nouvelle image
+      let image;
+      let imageFile;
+      let uploadPath;
+      let name='';
+      let date=Date.now();
+      
+      if(req.files){
+        image=req.files.image;
+        console.log('U-UP update if, il y a un nouveau fichier',image)  
+        const extension=MIMES_TYPES[image.mimetype];
+        
+        if(!extension){console.log('format non reconnu')};
+        
+        if (!req.files || Object.keys(req.files).length === 0 || !extension) {
         return res.status(400).send('No files were uploaded.');
-    }
-
-    imageFile= image;
-    name=imageFile.name.split('.')[0]+'_'+date+'.'+extension;
-    uploadPath = './images'+'/'+ name;//'./images' car le répertoire est défini avec static.
-    
-    let imageUrl=`${req.protocol}://${req.get('host')}/images/${imageFile}`;
-    console.log('create imageUrl',imageUrl)
-
-    imageFile.mv(uploadPath, function(err) {  
-        if (err){
-          return res.status(500).send(err);
         }
-        else{
-          //console.log('name '+name)
-        }
-      })
-    }
-    else{
-      console.log('else')
-      name=''
-    }
 
-  //récupération de l'ancienne image
-  const select = await query(
-    `SELECT * from publications WHERE publications_id=${publication.publicationId}`
-  );
+        imageFile= image;
+        name=imageFile.name.split('.')[0]+'_'+date+'.'+extension;
+        uploadPath = './images'+'/'+ name;//'./images' car le répertoire est défini avec static.
+        
+        //récupération de l'image et import dans le repertoire /backend/images
+        let imageUrl=`${req.protocol}://${req.get('host')}/images/${imageFile}`;
+        console.log('create imageUrl',imageUrl)
 
-  const selected = helper.emptyOrRows(select);
-  let oldFile=selected[0].publications_image
-  console.log('selected',selected,'oldfile: ',oldFile);
+        imageFile.mv(uploadPath, function(err) {  
+          if (err){
+            return res.status(500).send(err);
+          }
+          else{
+            console.log('image importé dans /backend/images')
+          }
+        })
+      }
+      else{
+        console.log('U-UP update else, pas de fichier')
+        name=''
+      }
+
+      //récupération de l'ancienne image
+      const select = await query(
+        `SELECT * from publications WHERE publications_id=${publication.publicationId}`
+      );
+
+      const selected = helper.emptyOrRows(select);
+      let oldFile=selected[0].publications_image
+      console.log('selected',selected,'oldfile: ',oldFile);
+
 
   //suppression de l'ancienne image
-  if(oldFile && name!=''){ //il y avait déjà une image dans la publication
+  /*
+  
+  if(oldFile){ //il y avait déjà une image dans la publication
     console.log('image: stockée', oldFile,'importée: ',image) 
     fileSystem.unlink(`./images/${oldFile}`, ()=>console.log('fichier supprimé'))
      sql = 
     `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${name}' WHERE publications_id=${publication.publicationId}`;
   }
-  else{ // il n'y en avait pas
+  else if(!oldFile && name) { // il n'y en avait pas
     console.log('pas d image stockée / importée',image )
-      sql =    `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}' WHERE publications_id=${publication.publicationId}`;
+      
   }
-
+  
   //mise à jour
-  const update= await query(sql)
 
-  const updating = helper.emptyOrRows(update);
+  const updating = helper.emptyOrRows(sql);
 
   console.log(updating)
   
@@ -265,20 +277,6 @@ exports.updatePublication=async function(req, res, next){
   const verified = helper.emptyOrRows(verify);
   console.log(verified)
   res.status(200).json({message:'publication mise à jour'})
-}  
-
-/*
-exports.getAllPublications=async function(page = 1){
-  const offset = helper.getOffset(page, config.listPerPage);
-  const rows = await query(
-    `SELECT * FROM publications LIMIT ${offset},${config.listPerPage}`
-  );
-  const data = helper.emptyOrRows(rows);
-  const meta = {page};
-
-  return {
-    data,
-    meta
-  }
-}
 */
+}  
+}

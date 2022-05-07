@@ -68,7 +68,7 @@ exports.rp1=function(req,res,next){
 }
 
 
-exports.rp2=function(req,res,next){
+exports.rpUpdate=function(req,res,next){
   console.log('publication put update')
   next();
 }

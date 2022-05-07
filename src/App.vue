@@ -7,22 +7,22 @@
       
       <div id="nav" class='nav'>
         <div v-if="this.$store.state.connectionStatus=='unconnected' || this.$store.state.token==''" class='grid'>
-          <router-link class='link unc_grid_one' to="/" @click="toIndex"><img src="../src/assets/icon.svg" alt="logo groupomania" class='logo'>Accueil</router-link >          
+          <router-link class='link unc_grid_one' to="/" @click="toIndex"><img src="../src/assets/icon.svg" alt="logo groupomania" class='logo'><span>Accueil</span></router-link >          
           <router-link class='link unc_grid_two' to="/" @click="toConnect">Connect</router-link>
           <router-link class='link unc_grid_three' to="/" @click="toSigning">Signing</router-link>
           <router-link class='link unc_grid_four' to="/" @click="toAbout">About</router-link>
         </div>
         <div v-if="this.$store.state.connectionStatus=='connected' && this.$store.state.token!='' && this.$store.state.authorStatus==1" class='connectedGrid'>
-          <router-link class='link cnt_grid_one' to="/connected" @click="toConnected">Accueil</router-link>
-          <router-link class='link cnt_grid_two' to="/connected" @click="toProfile">Voir mon profil</router-link>
-          <router-link class='link cnt_grid_three' to="/connected" @click="toCreate">Ajouter une publication</router-link>
-          <router-link class='link cnt_grid_four' to="/" @click="deconnection">Deconnecter</router-link>
+          <router-link class='link cnt_grid_one' to="/connected" @click="toConnected"><span>Accueil</span></router-link>
+          <router-link class='link cnt_grid_two' to="/connected" @click="toProfile"><span>Mon profil</span></router-link>
+          <router-link class='link cnt_grid_three' to="/connected" @click="toCreate"><span>Publier</span></router-link>
+          <router-link class='link cnt_grid_four' to="/" @click="deconnection"><span>Deconnecter</span></router-link>
         </div>
         <div v-if="this.$store.state.connectionStatus=='connected' && this.$store.state.token!='' && this.$store.state.authorStatus==2" class='connectedAdminGrid'>
-          <router-link class='link cnt_admin_one' to="/connected" @click="toConnected">Accueil</router-link>
-          <router-link class='link cnt_admin_two' to="/connected" @click="toProfile">Voir mon profil</router-link>
-          <router-link class='link cnt_admin_three' to="/connected" @click="toCreate">Ajouter une publication</router-link>
-          <router-link class='link cnt_admin_four' to="/admin" >Gérer</router-link>
+          <router-link class='link cnt_admin_one' to="/connected" @click="toConnected"><span>Accueil</span></router-link>
+          <router-link class='link cnt_admin_two' to="/connected" @click="toProfile"><span>Mon profil</span></router-link>
+          <router-link class='link cnt_admin_three' to="/connected" @click="toCreate"><span>Publier</span></router-link>
+          <router-link class='link cnt_admin_four' to="/admin" ><span>Gérer</span></router-link>
           <router-link class='link cnt_admin_five' to="/" @click="deconnection">Deconnecter</router-link>
         </div>
       </div>
@@ -130,7 +130,6 @@ html{
   a {
     font-weight: bold;
     color: black;
-
     &.router-link-exact-active {
       color: black;
     }
@@ -178,6 +177,7 @@ h1{
 .link:hover{
   font-size:1.5rem;
   border-radius: 5px;
+  background: pink;
 }
 
 .clearBack{
@@ -309,14 +309,15 @@ h1{
     grid-row: 1 / 2;
   }
 
-
+//nav connectée admin small
   .connectedAdminGrid{
-    height: 150px;
+    margin-top:5px;
+    height: max-content;
     padding:5px 0;
     display: grid;
     grid-template-columns: repeat(2, .9fr);
     grid-gap:5px;
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 30px);
   }
 
   .cnt_admin_one{
@@ -328,8 +329,11 @@ h1{
     grid-column: 1 / 2;
     grid-row: 2 / 4;
     background: red;
-    padding-top:30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
+
 
   .cnt_admin_five{
     grid-column: 2 / 3;
@@ -341,9 +345,6 @@ h1{
     grid-row: 2/3
   }
   
-
-
-
 //
   .link{
     margin-right:.5rem;
@@ -354,37 +355,29 @@ h1{
    .logo{
     width: 1rem;
     height: auto;
-    background: transparent;
+    
   }
 
   .clearBack{
     border-radius: 20px;
   }
-
-
 }
 
-@media screen and (min-width: 681px){
+@media screen and (min-width: 681px) and (max-width: 1023px){
   .body{
     width:100%;
     margin:0;
     padding: 10px 0 0 0;
   }
 
-
 //nav déconnecté 
-  .grid{
-    display: grid;
-    grid-template-columns: repeat(4, .9fr);
-  }
-
   .unc_grid_one{
     grid-column: 1 / 2;
-    grid-row: 1
+    grid-row: 1;
   }
   .unc_grid_two{
     grid-column: 2 / 3;
-    grid-row: 1
+    grid-row: 1;
   }
   .unc_grid_three{
     grid-column: 3 / 4;
@@ -395,17 +388,9 @@ h1{
     grid-row: 1;
   }
 
-//nav connectée
-  .link{
-    padding: 10px 0 0 10px;
-    font-size: 1rem;
-  }
-  .link:hover{
-    font-size: 1.5rem;
-  }
-  
-  
+//nav connectée 
   .connectedGrid{
+    margin: 0 10px;
     height: 120px;
     padding:5px 0;
     display: grid;
@@ -422,27 +407,31 @@ h1{
     grid-column: 2 / 3;
     grid-row: 1 / 2;
   }
+
   .cnt_grid_three{
     grid-column: 2 / 3;
-    grid-row: 2/3
+    grid-row: 2/3;
   }
   .cnt_grid_four{
     grid-column: 1 / 2;
-    grid-row: 2/3 ;
+    grid-row: 2/3;
   }
 
+  .logo{
+    width:25px;
+    height: auto;
+  }
 
-}
-
-
-
-
-@media screen and (min-width: 681px) and (max-width: 1023px){
   .grid{
-    margin: 5px 0;
-    grid-gap:5px;
+    width: 600px;
+    display: grid;
+    grid-template-columns: repeat(4, .9fr);
+    margin: 5px auto;
+    grid-gap:10px;
     grid-template-rows: 50px;
-    padding:.5rem 0.5rem ;
+    //padding:.5rem 0.5rem;
+    justify-content: center;
+    align-items: center;
   }
   
   .link{
@@ -453,12 +442,6 @@ h1{
   .link:hover{
     font-size: 1.7rem;
   }
-
- .logo{
-    width: 1.5rem;
-    height: auto;
-    background: transparent;
-  }
   
   .clearBack{
     background:rgba(0,50,10,.5);
@@ -466,6 +449,7 @@ h1{
   }
 
 .connectedAdminGrid{
+    margin: 0 10px;
     height: 150px;
     padding:5px 0;
     display: grid;
@@ -501,11 +485,16 @@ h1{
     grid-row: 3/4
   }
 
+  .logo{
+    width: 20px;
+    height: auto;
+  }
 
 } 
 
 @media screen and (min-width:1024px){
   .grid{
+    display: grid;
     margin: 5px 0;
     grid-gap:15px;
     grid-template-rows: 80px;
@@ -513,9 +502,12 @@ h1{
   }
   
   .link{
-    height: 60px;
-    padding: 20px 0 0 20px;
+    height: 70px;
     font-size: 1.7rem;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .link:hover{
@@ -525,7 +517,6 @@ h1{
  .logo{
     width: 1.5rem;
     height: auto;
-    background: transparent;
   }
   
   .clearBack{
@@ -535,6 +526,7 @@ h1{
   }
 
   .connectedAdminGrid{
+    margin:0 10px;
     height: 80px;
     padding:5px 0;
     display: grid;
