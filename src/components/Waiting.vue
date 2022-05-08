@@ -1,9 +1,9 @@
 <template>
     <div class='fix'>
-        <div >
-            <p class='anim'>chargement en cours</p>
+        <div>
+            <h2 class='anim'>chargement en cours</h2>
         </div>
-        <span class='rotate'><img src="../assets/icon.svg" alt=""></span>
+        <span class='rotate'><img src="../assets/icon.svg" alt="patienter"></span>
     </div>
 </template>
 
@@ -15,17 +15,27 @@ export default {
 
 <style scope>
 .fix{
+    height: 300px;
+    width: 300px;
     position: relative;
 }
 
+.fix div{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .anim{
+    font-size: 2rem;
+    font-weight: bold;
     position: absolute;
-    top:130px;
-    left:50px;
     z-index: 1;
     display: inline-block;
     width: 170px;
-    height: 20px;
+    height: fit-content;
     border-radius: 50px 10px ;
     animation: keys 5s ;
     animation-iteration-count:infinite;
@@ -53,29 +63,31 @@ export default {
 }
 
 
-
-
 @keyframes keys{
     0%{
         background-color:red;
+        color:black;
     }
     50%{
         background-color:silver;
+        color:black
     }
     75%{
         background-color: green;
+        color:black;
     }
     100%{
-        background-color: yellow;    
+        background-color: yellow;   
+        color:black; 
     }
 }
 
 @keyframes rotation{
     from {
-        rotate: 10deg;
+        transform:rotate(10deg);
     }
     to{
-        rotate:350deg;
+        transform:rotate(350deg)
     }
 }
 </style>

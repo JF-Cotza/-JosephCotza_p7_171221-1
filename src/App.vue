@@ -1,16 +1,17 @@
 <template>
   <div class='body'>
-    <div class="container">
+    <header class="container">
+    
       <p class='toplogo'>
         <img src="./assets/icon-left-font-monochrome-black.svg" alt="tog logo groupomania" >
       </p>
       
       <div id="nav" class='nav'>
         <div v-if="this.$store.state.connectionStatus=='unconnected' || this.$store.state.token==''" class='grid'>
-          <router-link class='link unc_grid_one' to="/" @click="toIndex"><img src="../src/assets/icon.svg" alt="logo groupomania" class='logo'><span>Accueil</span></router-link >          
-          <router-link class='link unc_grid_two' to="/" @click="toConnect">Connect</router-link>
-          <router-link class='link unc_grid_three' to="/" @click="toSigning">Signing</router-link>
-          <router-link class='link unc_grid_four' to="/" @click="toAbout">About</router-link>
+          <router-link class='link unc_grid_one' to="/" @click="toIndex" title="aller à l'index" aria-label="aller à l'index"><img src="../src/assets/icon.svg" alt="logo groupomania" class='logo'><span>Accueil</span></router-link >          
+          <router-link class='link unc_grid_two' to="/" @click="toConnect" title="sec onnecter" aria-label="se connecter">Connexion</router-link>
+          <router-link class='link unc_grid_three' to="/" @click="toSigning" title="s'enregistrer" aria-label="s'enregistrer">S'enregistrer</router-link>
+          <router-link class='link unc_grid_four' to="/" @click="toAbout" title="vers à propos" aria-label="vers à propos">A propos</router-link>
         </div>
         <div v-if="this.$store.state.connectionStatus=='connected' && this.$store.state.token!='' && this.$store.state.authorStatus==1" class='connectedGrid'>
           <router-link class='link cnt_grid_one' to="/connected" @click="toConnected"><span>Accueil</span></router-link>
@@ -26,14 +27,17 @@
           <router-link class='link cnt_admin_five' to="/" @click="deconnection">Deconnecter</router-link>
         </div>
       </div>
-    </div>
-    <div v-if="this.$store.state.wait==true" class='clearBack'>
-      <Waiting />
-    </div>
-    <p> {{ this.$store.state.message }} </p>
-    <router-view/>
+
+    </header>
     
-  </div>
+    <main>
+      <p> {{ this.$store.state.message }} </p>
+      <router-view/> <!-- contient les éléments changeants de la vue -->
+      <div v-if="this.$store.state.wait==true" class='clearBack'>
+        <Waiting />
+      </div>
+    </main>
+  </div><!-- fin .body -->
 </template>
 
 <script>
@@ -271,7 +275,7 @@ h1{
   }
   .unc_grid_two{
     grid-column: 2 / 3;
-    grid-row: 1 2;
+    grid-row: 1 / 2;
   }
   .unc_grid_three{
     grid-column: 1 / 2;
@@ -355,7 +359,6 @@ h1{
    .logo{
     width: 1rem;
     height: auto;
-    
   }
 
   .clearBack{
@@ -498,6 +501,7 @@ h1{
     margin: 5px 0;
     grid-gap:15px;
     grid-template-rows: 80px;
+    grid-template-columns: repeat(4, 1fr);
     padding:1rem 1rem ;
   }
   
@@ -532,7 +536,7 @@ h1{
     display: grid;
     grid-template-columns: repeat(5, .9fr);
     grid-gap:5px;
-    grid-template-rows: 1;
+    grid-template-rows: 60px;
   }
 
   .cnt_admin_one{

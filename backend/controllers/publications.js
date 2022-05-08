@@ -207,9 +207,9 @@ exports.updatePublication=async function(req, res, next){
       let name='';
       let date=Date.now();
       
-      if(req.files){
+      if(req.files){ //U-UP+req.files
         image=req.files.image;
-        console.log('U-UP update if, il y a un nouveau fichier',image)  
+        console.log("U-UP update if, il y a un nouveau fichier => on change l'image, ou on remplace le fichier existant",image)  
         const extension=MIMES_TYPES[image.mimetype];
         
         if(!extension){console.log('format non reconnu')};
@@ -235,8 +235,8 @@ exports.updatePublication=async function(req, res, next){
           }
         })
       }
-      else{
-        console.log('U-UP update else, pas de fichier')
+      else{U-UP+!req.files
+        console.log("U-UP update else, changement d'image mais il n'y a pas de fichier=> on supprime l'ancienne image")
         name=''
       }
 
@@ -251,20 +251,17 @@ exports.updatePublication=async function(req, res, next){
 
 
   //suppression de l'ancienne image
-  /*
-  
-  if(oldFile){ //il y avait déjà une image dans la publication
-    console.log('image: stockée', oldFile,'importée: ',image) 
-    fileSystem.unlink(`./images/${oldFile}`, ()=>console.log('fichier supprimé'))
-     sql = 
-    `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${name}' WHERE publications_id=${publication.publicationId}`;
-  }
-  else if(!oldFile && name) { // il n'y en avait pas
-    console.log('pas d image stockée / importée',image )
-      
+    if(oldFile){ //il y avait déjà une image dans la publication => on supprime l'ancienne
+      console.log('image: stockée', oldFile,'importée: ',image) 
+      fileSystem.unlink(`./images/${oldFile}`, ()=>console.log('fichier supprimé'))
+    }
+    else{ // il n'y en avait pas
+      console.log('pas d image stockée / importée',image )
   }
   
   //mise à jour
+  sql = await query( 
+      `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${name}' WHERE publications_id=${publication.publicationId}`);
 
   const updating = helper.emptyOrRows(sql);
 
@@ -276,6 +273,7 @@ exports.updatePublication=async function(req, res, next){
 
   const verified = helper.emptyOrRows(verify);
   console.log(verified)
+  /*
   res.status(200).json({message:'publication mise à jour'})
 */
 }  

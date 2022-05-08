@@ -3,16 +3,22 @@
         {{ message }}
         <form :action="defaultUrl+cible" method="POST" enctype="multipart/form-data" class='flex column'>
         <!-- nom et prénom visible lors de la création et lorsque l'on est connecté sur le profile -->
+            <label for="name" v-if="this.$store.state.page=='sign'" aria-label='saisissez votre nom de famille'>Votre Nom :</label>
             <label for="name" v-if="this.$store.state.page=='profile'">Votre Nom :</label>
-                <input type="text" name="name" id="name" v-model='nom' :class='isMasked' placeholder="Votre nom" :required='isRequired_A' :disabled='disabledChange'>
+                <input v-if="this.$store.state.page=='profile' || this.$store.state.page=='sign'" type="text" name="name" id="name" v-model='nom' placeholder="Votre nom" :required='isRequired_A' :disabled='disabledChange'>
+            <label for="firstname" v-if="this.$store.state.page=='sign'" aria-label='saisissez votre prénom'>Votre Prénom</label>
             <label for="firstname" v-if="this.$store.state.page=='profile'">Votre Prénom :</label>
-                <input type="text" name="firstname" id="firstname" v-model='prenom' :class='isMasked' placeholder="Votre prénom" :required='isRequired_A' :disabled='disabledChange'>
+                <input v-if="this.$store.state.page=='sign' || this.$store.state.page=='profile'" type="text" name="firstname" id="firstname" v-model='prenom' :class='isMasked' placeholder="Votre prénom" :required='isRequired_A' :disabled='disabledChange'>
         <!-- email toujours visible et requis -->
-            <label for="email" v-if="this.$store.state.page=='profile'">Votre mail :</label>
+            <label for="email" v-if="this.$store.state.page=='profile'" aria-label='votre adresse mail'>Votre mail :</label>
+            <label for="email" v-if="this.$store.state.page=='connect'" aria-label='saisissez votre adresse mail'>Votre mail :</label>
+            <label for="email" v-if="this.$store.state.page=='sign'" aria-label='saisissez une adresse mail qui servira a vous identifier'>Votre mail :</label>
                 <input type="email" name="email" id="email" v-model='mail' placeholder="Votre mail" title='Votre mail servira à vous identifier' :rules='validMail' required :disabled='disabledChange'>
-        <!-- mot de passe maské sur l'affichage du profil mais non modification -->
+        <!-- mot de passe masqué sur l'affichage du profil mais non modification -->
             <div :class='maskPassword'>
                 <label for="password" v-if="this.$store.state.page=='profile'" >Votre nouveau mot de passe </label>
+                <label for="password" v-if="this.$store.state.page=='connect'" aria-label='saisissez votre mot de passe'>Le mot de passe</label>
+                <label for="password" v-if="this.$store.state.page=='sign'" aria-label='créer un mot de passe'>Le mot de passe</label>
                     <input  v-on:keyup='placeholding' :type="psw" name="password" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[é è_çà=$ù!:;,?./§%µ£°@+]).{8,}" v-model='password' :title=pswForm placeholder='le mot de passe'>
                     <span :class='placeholder'>{{ pswForm }}</span>
                     <button @click='switching'>{{see}}</button>
@@ -388,7 +394,7 @@ form{
 }
 
 .align{
-    text-align: justify;
+    text-align: left;
 }
 
 </style>
