@@ -85,12 +85,12 @@
             </div>
         </div>
 <!-- page d'accueil -->
-        <div v-if='this.$store.state.page=="connected"'>
+        <div v-if='this.$store.state.page=="connected"' class='publicationList'>
+            <h1>Les publications</h1>
             <ul class='flex'>
                 <li v-for="onePublication in this.$store.state.publicationListe" :key="onePublication.publications_id" >
-                    <div v-if='onePublication.users_status==0' >
-                        <p class='userSuspend'>Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
-                    </div>
+                    <p class='userSuspend' v-if='onePublication.users_status==0'>Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
+                    
                     <div v-if='onePublication.publications_status==0' class='relative'>
                         <button v-if='this.$store.state.authorStatus==2' class='moderate' act='reveal' :value="onePublication.publications_id" ><img src="../assets/modere_valid.png" alt="demasquer une publication" @click='forActing'></button>
                         <p class='publicationModerated'>Cet publication a été modérée et n'est donc plus visible</p>
@@ -108,15 +108,16 @@
                             :publicationAuthorId=onePublication.publications_author
                         />
                     </div>
-                     <p v-if="onePublication.counted"> Nombre de commentaires : {{ onePublication.counted }} </p>
-                     <p v-else>Pas de commentaires</p>  
-                
+                    <p v-if="onePublication.counted" class='commentaires'> Nombre de commentaires : {{ onePublication.counted }} </p>
+                    <p v-else class='commentaires'>Pas de commentaires</p>  
                 </li>
             </ul>
         </div>
         <div id='page' v-if="this.$store.state.page=='connected'">
             <p v-if="this.$store.state.nombrePage==0">Il n'y a pas de publications, soyez le premier à publier</p>
-            <input v-else type="range" min=1 :max='this.$store.state.nombrePage' :value='page' id='listeDesPAges' @change='choixPage' step=1> {{ page }} / {{ this.$store.state.nombrePage }}
+            <label for="listeDesPages" v-else>Changer de page
+                <input  type="range" min=1 :max='this.$store.state.nombrePage' :value='page' id='listeDesPages' name='listeDesPages' @change='choixPage' step=1 > {{ page }} / {{ this.$store.state.nombrePage }}
+            </label>
         </div>
     </div>
 </template>
@@ -293,7 +294,7 @@ ul{
 li{
     margin:0;
     list-style: none;
-    text-align: justify ;
+    text-align: left ;
 }
 
 li div{   
@@ -335,7 +336,7 @@ span{
 }
 
 .justify{
-    text-align: justify;
+    text-align: left;
 }
 .title{
     background: aqua;
@@ -347,6 +348,7 @@ span{
 
 .userSuspend,.publicationModerated{
     opacity: 75%;
+    width: 300px;
     border-radius:20px;
     padding:10px 0;
 }
@@ -378,4 +380,14 @@ span{
     width: auto;
 }
 
+.publicationList li{
+    margin:5px;
+}
+
+.commentaires{
+    width: 300px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    padding:5px;
+}
 </style>

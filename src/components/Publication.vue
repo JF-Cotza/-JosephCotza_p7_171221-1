@@ -1,20 +1,26 @@
 <template>
     <div @click='consoling' class='containing'>
         <!-- /{{ message }}-->   <!--/ disabling {{ disabling }} /--> 
-        <h1> {{ propMessage }} </h1>
+        <p> {{ propMessage }} </p>
         <form action="" method="post" enctype="multipart/form-data" class='flex column' disabled='disabling'>
             <!-- masqué -->
+            <label for="publicationId" class='masked'>publication Id</label>
             <input type="text" name='publicationId' :value=publicationId class='masked'>
             
             <!-- pas visible lors de la création -->
-            <p v-if='this.$store.state.page!="create"'>Auteur {{ publicationAuthorName }} {{ publicationAuthorFirstname }}</p>
+            <p v-if='this.$store.state.page!="create"' class='justify'>Auteur : {{ publicationAuthorName }} {{ publicationAuthorFirstname }}</p>
             
             <!-- les textes de la publications -->
-            <input type="text" id='title'    name='title'    v-model="title"    :placeholder=propsTitle :disabled='disabling' maxlength="255">
+            <!-- le titre -->
+            <h2 v-if='this.$store.state.page="connected"'>{{ propsTitle }}</h2>
+            <label for="title" class='masked'>Titre</label>
+            <input v-if='this.$store.state.page!="connected"' type="text" id='title'    name='title'    v-model="title"    :placeholder=propsTitle :disabled='disabling' maxlength="255">
+            <!-- le texte -->
+            <label for="texte" class='masked'>Texte</label>
             <input type="text" id='texte'    name='texte'    v-model='texte'    :placeholder=propsTexte :disabled='disabling' maxlength="255">
             
             <!-- l'image -->
-            
+            <label for="image" v-if='this.$store.state.page=="create"' class='masked'>ajouter une image</label>
             <input v-if='this.$store.state.page=="create"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
 
             <div v-if='this.$store.state.page=="modifier"' >
@@ -286,11 +292,29 @@ export default {
     background: -webkit-linear-gradient(top,  #028ef9 0%,#ffffff 100%);
     background: linear-gradient(to bottom,  #028ef9 0%,#ffffff 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#028ef9', endColorstr='#ffffff',GradientType=0 );
+    border:1px solid black;
 }
 
 form input, form img {
     width: 95%;
     margin: auto;
+    padding: 0 5px;
+}
+
+form img{
+    margin:5px 0;
+    width:95%;
+    box-sizing: border-box;
+    border-radius:0 0 20px 20px
+}
+
+form h2{
+    padding: 0 5px;
+    margin:0;
+}
+
+form div{
+    text-align: center;
 }
 
 form input:disabled{
@@ -301,7 +325,7 @@ form input:disabled{
 
 .flex{
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .column{
@@ -321,4 +345,13 @@ form input:disabled{
     width: auto;
 }
 
+.masked{
+    display: none;
+}
+
+.justify{
+    text-align: left;
+    padding: 0 5px;
+    margin:0;
+}
 </style>

@@ -3,7 +3,7 @@
     <header class="container">
     
       <p class='toplogo'>
-        <img src="./assets/icon-left-font-monochrome-black.svg" alt="tog logo groupomania" >
+        <img src="./assets/icon-left-font-monochrome-black.svg" alt="top logo groupomania" >
       </p>
       
       <div id="nav" class='nav'>

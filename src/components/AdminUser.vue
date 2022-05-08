@@ -1,21 +1,22 @@
 <template>
     <form v-if='this.$store.state.page=="user"' class='user'>
 <!-- les options de recherche -->
-        <div class='userButton'>
-            <span>
-                <input type="radio" name="userSearching" id="alpha" @click='toAlpha'>Rechercher dans le nom, prénom ou mail
-            </span>
-            <span>
-                <input type="radio" name="userSearching" id="toId" @click='toId'>Rechercher par son id
-            </span>
-            <span>
-                <input type="radio" name="userSearching" id="status" @click='toStatus'>rechercher par status
-            </span>
-        </div>
+    <fieldset class='userButton'> Comment voulez vous chercher
+        <label for="alpha">
+            <input type="radio" name="userSearching" id="alpha" @click='toAlpha'>Rechercher dans le nom, prénom ou mail
+        </label>
+        <label for="toId">
+            <input type="radio" name="userSearching" id="toId" @click='toId'>Rechercher par son id
+        </label>
+        <label for="status">
+            <input type="radio" name="userSearching" id="status" @click='toStatus'>Rechercher par status
+        </label>
+    </fieldset>
+        
 <!-- zone de recherche -->
-        <span>Votre recherche
+        <label for="search"> Votre recherche
             <input name="search" id="search" v-model="search">
-        </span>
+        </label>
 <!-- les résultats -->
         <ul class='searchSmall'>
             <li v-for="user in resultSearch()" :key='user.users_id' class='userGrid'>
@@ -58,13 +59,15 @@
                     <td class='blockUser' :title=user.users_mail> {{ user.users_mail}}</td>
                     <td class='blockUser' :title=user.users_id> {{ user.users_id}}</td>
                     <td class='blockUser' > {{ stat(user.users_status) }}</td>
-                    <td class='largeBlockUser'>                        
-                        <select :name="user.users_id" key="newStatus">
-                            <option value="" selected disabled>Sélectionner</option>
-                            <option value="0" >Suspendre</option>
-                            <option value="1" >Normal</option>
-                            <option value="2" >Admin</option>
-                        </select>
+                    <td class='largeBlockUser'>
+                        <label for="newStaus">Quel nouveau status ?                       
+                            <select :name="user.users_id" key="newStatus" id='newStatus'>
+                                <option value="" selected disabled>Sélectionner</option>
+                                <option value="0" >Suspendre</option>
+                                <option value="1" >Normal</option>
+                                <option value="2" >Admin</option>
+                            </select>
+                        </label>
                     </td>
                 </tr>
             </tbody>
@@ -184,14 +187,24 @@ export default {
 </script>
 
 <style>
+th{
+    background: #9C9C9C;
+    color:black;
+}
+
+.masked{
+    display: none;
+}
+
 .userButton{
     display: flex;
     margin:auto;
     flex-direction: column;
-    justify-content: center
+    justify-content: center;
+    border-radius:20px.
 }
 
-.userButton span{
+.userButton label{
     width:100%;
     background: white;
     text-align: left;
@@ -234,8 +247,9 @@ export default {
     }
 
     .userOneOne, .userTwoOne, .userThreeOne, .userFourOne, .userFiveOne, .userSixOne{
-        background: grey;
+        background: #9C9C9C;
         margin-left:5px;
+        color:black;
     }
 
     .userOneTwo, .userTwoTwo, .userThreeTwo, .userFourTwo, .userFiveTwo, .userSixTwo{
