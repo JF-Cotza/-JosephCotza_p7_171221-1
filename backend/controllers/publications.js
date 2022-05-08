@@ -194,11 +194,11 @@ exports.updatePublication=async function(req, res, next){
   let publication=req.body
   let sql;
     if(publication.imageChanged=='false'){ //l'image n'a pas été changée, ni supprimée
-      console.log("l'image n'a pas été changée, ni supprimée")
+      console.log("U-UP, console 1, l'image n'a pas été changée, ni supprimée")
       sql =await query(`UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}' WHERE publications_id=${publication.publicationId}`);
     }
     else{//l'image a été changée ou supprimée
-      console.log("l'image a été changée ou supprimée")
+      console.log("U-UP, console 2, l'image a été changée ou supprimée")
     
       //import et renommage de la nouvelle image
       let image;
@@ -209,10 +209,10 @@ exports.updatePublication=async function(req, res, next){
       
       if(req.files){ //U-UP+req.files
         image=req.files.image;
-        console.log("U-UP update if, il y a un nouveau fichier => on change l'image, ou on remplace le fichier existant",image)  
+        console.log("U-UP update if,console 3, il y a un nouveau fichier => on change l'image, ou on remplace le fichier existant",image)  
         const extension=MIMES_TYPES[image.mimetype];
         
-        if(!extension){console.log('format non reconnu')};
+        if(!extension){console.log('U-UP,console 4,format non reconnu')};
         
         if (!req.files || Object.keys(req.files).length === 0 || !extension) {
         return res.status(400).send('No files were uploaded.');
@@ -224,19 +224,19 @@ exports.updatePublication=async function(req, res, next){
         
         //récupération de l'image et import dans le repertoire /backend/images
         let imageUrl=`${req.protocol}://${req.get('host')}/images/${imageFile}`;
-        console.log('create imageUrl',imageUrl)
+        console.log('U-UP,console 5,create imageUrl',imageUrl)
 
         imageFile.mv(uploadPath, function(err) {  
           if (err){
             return res.status(500).send(err);
           }
           else{
-            console.log('image importé dans /backend/images')
+            console.log('U-UP,console 6,image importé dans /backend/images')
           }
         })
       }
-      else{U-UP+!req.files
-        console.log("U-UP update else, changement d'image mais il n'y a pas de fichier=> on supprime l'ancienne image")
+      else{//U-UP+!req.files
+        console.log("U-UP update else, console 7,changement d'image mais il n'y a pas de fichier=> on supprime l'ancienne image")
         name=''
       }
 
@@ -247,34 +247,33 @@ exports.updatePublication=async function(req, res, next){
 
       const selected = helper.emptyOrRows(select);
       let oldFile=selected[0].publications_image
-      console.log('selected',selected,'oldfile: ',oldFile);
+      console.log('U-UP, console 8, selected',selected,'oldfile: ',oldFile);
 
 
   //suppression de l'ancienne image
     if(oldFile){ //il y avait déjà une image dans la publication => on supprime l'ancienne
-      console.log('image: stockée', oldFile,'importée: ',image) 
-      fileSystem.unlink(`./images/${oldFile}`, ()=>console.log('fichier supprimé'))
+      console.log('U-UP,console 9,image: stockée', oldFile,'importée: ',image) 
+      fileSystem.unlink(`./images/${oldFile}`, ()=>console.log('U-UP,console 10,fichier supprimé'))
     }
     else{ // il n'y en avait pas
-      console.log('pas d image stockée / importée',image )
+      console.log('U-UP,console 11,pas d image stockée / importée',image )
   }
   
   //mise à jour
   sql = await query( 
       `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${name}' WHERE publications_id=${publication.publicationId}`);
+  }
 
+  //mise à jour quel que soit le cas + vérification
   const updating = helper.emptyOrRows(sql);
 
-  console.log(updating)
+  console.log('U-UP,console 12',updating)
   
   const verify = await query(
     `SELECT * from publications WHERE publications_id=${publication.publicationId}`
   );
 
   const verified = helper.emptyOrRows(verify);
-  console.log(verified)
-  /*
+  console.log('u-UP,console 13, vérification de la modification',verified)
   res.status(200).json({message:'publication mise à jour'})
-*/
-}  
 }
