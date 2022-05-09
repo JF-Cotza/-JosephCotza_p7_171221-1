@@ -25,7 +25,7 @@
         </div>
 <!-- voir la publication -->
         <div v-if='this.$store.state.page=="view"'>
-            <div> 
+            <div>
                 <div v-if='this.$store.state.selectedPublication.publications_author==this.$store.state.author'>
                     <p>Voulez vous la <button @click='toModifier'>Modifier</button> ? </p>
                     <p>Voulez vous la <button @click='supprimer' class='danger' :value=this.$store.state.selectedPublication.publications_id>Supprimer</button> ? </p>
@@ -178,11 +178,11 @@ export default {
 
             let publicationId=e.target.value;
             let authorId=this.$store.state.author;
-            console.log('supprimer la publication',this.onePublication, publicationId)
+            console.log('supprimer la publication',this.onePublication, publicationId, this.tokenValue)
             let data={id:publicationId,author:authorId}
             let $this=this;
 
-            instance.delete('/publications/suppressOne',{params:data},{headers:{'Authorization': 'Bearer '+this.tokenValue}})
+            instance.delete('/publications/suppressOne', {params:data}, {headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 $this.message=res.data.message;
                 $this.$store.state.page='connected'
@@ -366,6 +366,8 @@ span{
 
 .relative{
   position: relative;
+  width:300px;
+  box-sizing: border-box;
 }
 
 .moderate{

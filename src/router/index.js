@@ -8,8 +8,39 @@ const routes = [
     component: Home
   },
   {
+    path: '/about',
+    name: 'About',
+    component: Home
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Home
+  },
+  {
+    path: '/signin',
+    name: 'Signin',
+    component: Home
+  },
+  {
     path: '/connected',
     name: 'Connected',
+    // route level code-splitting
+    // this generates a separate chunk (connected   .[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "connected" */ '../views/Connected.vue')
+  },
+  {
+    path: '/creating',
+    name: 'Create',
+    // route level code-splitting
+    // this generates a separate chunk (connected   .[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "connected" */ '../views/Connected.vue')
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
     // route level code-splitting
     // this generates a separate chunk (connected   .[hash].js) for this route
     // which is lazy-loaded when the route is visited.

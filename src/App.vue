@@ -9,20 +9,20 @@
       <div id="nav" class='nav'>
         <div v-if="this.$store.state.connectionStatus=='unconnected' || this.$store.state.token==''" class='grid'>
           <router-link class='link unc_grid_one' to="/" @click="toIndex" title="aller à l'index" aria-label="aller à l'index"><img src="../src/assets/icon.svg" alt="logo groupomania" class='logo'><span>Accueil</span></router-link >          
-          <router-link class='link unc_grid_two' to="/" @click="toConnect" title="sec onnecter" aria-label="se connecter">Connexion</router-link>
-          <router-link class='link unc_grid_three' to="/" @click="toSigning" title="s'enregistrer" aria-label="s'enregistrer">S'enregistrer</router-link>
-          <router-link class='link unc_grid_four' to="/" @click="toAbout" title="vers à propos" aria-label="vers à propos">A propos</router-link>
+          <router-link class='link unc_grid_two' to="/login" @click="toConnect" title="se connecter" aria-label="se connecter">Connexion</router-link>
+          <router-link class='link unc_grid_three' to="/signin" @click="toSigning" title="s'enregistrer" aria-label="s'enregistrer">S'enregistrer</router-link>
+          <router-link class='link unc_grid_four' to="/about" @click="toAbout" title="vers à propos" aria-label="vers à propos">A propos</router-link>
         </div>
         <div v-if="this.$store.state.connectionStatus=='connected' && this.$store.state.token!='' && this.$store.state.authorStatus==1" class='connectedGrid'>
           <router-link class='link cnt_grid_one' to="/connected" @click="toConnected"><span>Accueil</span></router-link>
-          <router-link class='link cnt_grid_two' to="/connected" @click="toProfile"><span>Mon profil</span></router-link>
-          <router-link class='link cnt_grid_three' to="/connected" @click="toCreate"><span>Publier</span></router-link>
+          <router-link class='link cnt_grid_two' to="/profile" @click="toProfile"><span>Mon profil</span></router-link>
+          <router-link class='link cnt_grid_three' to="/creating" @click="toCreate"><span>Publier</span></router-link>
           <router-link class='link cnt_grid_four' to="/" @click="deconnection"><span>Deconnecter</span></router-link>
         </div>
         <div v-if="this.$store.state.connectionStatus=='connected' && this.$store.state.token!='' && this.$store.state.authorStatus==2" class='connectedAdminGrid'>
           <router-link class='link cnt_admin_one' to="/connected" @click="toConnected"><span>Accueil</span></router-link>
-          <router-link class='link cnt_admin_two' to="/connected" @click="toProfile"><span>Mon profil</span></router-link>
-          <router-link class='link cnt_admin_three' to="/connected" @click="toCreate"><span>Publier</span></router-link>
+          <router-link class='link cnt_admin_two' to="/profile" @click="toProfile"><span>Mon profil</span></router-link>
+          <router-link class='link cnt_admin_three' to="/creating" @click="toCreate"><span>Publier</span></router-link>
           <router-link class='link cnt_admin_four' to="/admin" ><span>Gérer</span></router-link>
           <router-link class='link cnt_admin_five' to="/" @click="deconnection">Deconnecter</router-link>
         </div>
@@ -126,8 +126,7 @@ html{
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  color: black;
 }
 
 #nav {
@@ -164,6 +163,7 @@ h1{
 .body{
   background: silver;
   padding-bottom: 10px;
+  text-align: center;
 }
 
 .nav{
@@ -506,7 +506,7 @@ h1{
   }
   
   .link{
-    height: 70px;
+    height: 60px;
     font-size: 1.7rem;
     padding-bottom: 10px;
     display: flex;
@@ -527,6 +527,16 @@ h1{
     background:rgba(50,10,10,.5);
     border-radius:30% 50%;
 
+  }
+
+  .connectedGrid {
+    margin:0 10px;
+    padding-top: 10px;
+    height: 80px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 5px;
+    grid-template-rows: 80px;
   }
 
   .connectedAdminGrid{

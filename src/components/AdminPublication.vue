@@ -1,26 +1,32 @@
 <template>
     <form>
          <!-- paramètres de recherche -->
-        <ul class='searchMode'>
-            <li>
+        <fieldset class='searchMode'>
+            <legend>Comment voulez vous chercher ?</legend>
+            <label for="alpha">            
                 <input type="radio" name="publiSearching" id="alpha" @click='toAlpha'>Rechercher dans le titre, le texte, le nom d'image
-            </li>
-            <li>
+            </label>
+            <label for="author">
                 <input type="radio" name="publiSearching" id="author" @click='toAuthor'>rechercher par user id
-            </li>
-            <li>
+            </label>
+            <label for="status">
                 <input type="radio" name="publiSearching" id="status" @click='toStatus'>rechercher par status
-            </li>
-        </ul>
+            </label>
+        </fieldset>
 
-        <input v-if="searchMethod=='alpha'" name="publiSearch" id="alphaPub" v-model="alphaSearch">    
-        <input v-if="searchMethod=='author'" name="publiSearch" id="authorPub" v-model="authorSearch"> 
-        <select v-if="searchMethod=='status'" v-model="statusSearch">
-            <option value="" selected disabled>Sélectionner</option>
-            <option value="0" >Modérée</option>
-            <option value="1" >Normal</option>
-            <!--<option value="2" >Epinglée</option>-->
-        </select>
+        <label for="searchArea" v-if="searchMethod!='status' && searchMethod!=''">Recherche
+            <input v-if="searchMethod=='alpha'" name="publiSearch" id="searchArea" v-model="alphaSearch" aria-label='recherche textuelle'>    
+            <input v-if="searchMethod=='author'" name="publiSearch" id="searchArea" v-model="authorSearch" aria-label="recherche par l'id de l'utilisateur">
+        </label>
+
+        <label for="searchAreaStatus" v-if="searchMethod=='status' && searchMethod!=''" aria-label="recherche par status de publication">Recherche
+            <select  v-model="statusSearch" id='searchAreaStatus' name='publiSearch'>
+                <option value="" selected disabled>Sélectionner</option>
+                <option value="0" >Modérée</option>
+                <option value="1" >Normal</option>
+                <!--<option value="2" >Epinglée</option>-->
+            </select>
+        </label>
 
         <div class='searchSmall publicationGrid' v-for="pub in resultSearch()" :key='pub.publications_id'>
             <div class='oneOne'>Titre : </div>
@@ -34,14 +40,14 @@
             <div class='fiveOne'>Status : </div>
             <div class='fiveTwo'>{{ pub.publications_status }}</div>
             <div class='sixOne'>Changer le status : </div>
-            <div class='sixTwo'>
+            <label :for="pub.publications_id" class='sixTwo'>
                 <select :id="pub.publications_id" key="newStatus">
                     <option value="" selected disabled>Sélectionner</option>
                     <option value="0" >Masquer</option>
                     <option value="1" >Normal</option>
                     <!--<option value="2" >Epingler</option>-->
                 </select>
-            </div>
+            </label>
         </div>
 
 
@@ -52,12 +58,12 @@
             <li>User Id {{ pub.publications_author }}</li>
             <li>Status {{ pub.publications_status }} </li>
             <li>Changer le status
-                <select :id="pub.publications_id" key="newStatus">
-                    <option value="" selected disabled>Sélectionner</option>
-                    <option value="0" >Masquer</option>
-                    <option value="1" >Normal</option>
-                    <!--<option value="2" >Epingler</option>-->
-                </select>
+                    <select :name="pub.publications_id" key="newStatus" id='newStatus'>
+                        <option value="" selected disabled>Sélectionner</option>
+                        <option value="0" >Masquer</option>
+                        <option value="1" >Normal</option>
+                        <!--<option value="2" >Epingler</option>-->
+                    </select>
             </li>
         </ul>
 
@@ -74,18 +80,18 @@
             </thead>
             <tbody>
                 <tr  v-for="pub in resultSearch()" :key='pub.publications_id'>
-                    <td class='blockPub' :title=pub.publications_title> {{ pub.publications_title }}</td>
-                    <td class='blockPub' :title=pub.publications_texte> {{ pub.publications_texte }}</td>
-                    <td class='blockPub' :title=pub.publications_image> {{ pub.publications_image }}</td>
-                    <td class='blockPub' :title=pub.publications_author> {{ pub.publications_author }}</td>
-                    <td class='blockPub' > {{ pub.publications_status}}</td>
+                    <td class='blockPub' :title='"titre : "+pub.publications_title'> {{ pub.publications_title }}</td>
+                    <td class='blockPub' :title='"texte : "+pub.publications_texte'> {{ pub.publications_texte }}</td>
+                    <td class='blockPub' :title='"nom du fichier image : "+pub.publications_image'> {{ pub.publications_image }}</td>
+                    <td class='blockPub' :title='"user id : "+pub.publications_author'> {{ pub.publications_author }}</td>
+                    <td class='blockPub' title="status actuel"> {{ pub.publications_status}}</td>
                     <td class='largeBlockPub'>
-                        <select :id="pub.publications_id" key="newStatus">
-                            <option value="" selected disabled>Sélectionner</option>
-                            <option value="0" >Masquer</option>
-                            <option value="1" >Normal</option>
-                            <!--<option value="2" >Epingler</option>-->
-                        </select>                  
+                            <select :name="pub.publications_id" key="newStatus" id="newStatus">
+                                <option value="" selected disabled>Sélectionner</option>
+                                <option value="0" >Masquer</option>
+                                <option value="1" >Normal</option>
+                                <!--<option value="2" >Epingler</option>-->
+                            </select>
                     </td>
                 </tr>
             </tbody>
@@ -185,7 +191,7 @@ export default {
             for(let i=0;i<list.length;i++){
                 let opt={};    
                 
-                opt.id=list[i].id;
+                opt.id=list[i].name;
                 opt.value=list[i].value
                 listed.push(opt)
                 console.log('longueur: ',list.length,' indice: ',i,' nom: ',list[i].name, ' valeur: ',list[i].value,' objet: ',opt,'liste agrégée :',listed)
@@ -206,11 +212,25 @@ export default {
 </script>
 
 <style>
-.searchMode {
-    padding: 0;
+fieldset{
+    text-align:left;
 }
 
-.searchMode li:hover {
+.searchMode {
+    padding: 0;
+    border-radius:20px;
+    display:flex;
+    flex-direction: column;
+    align-content: flex-start;
+    padding:5px 5px 5px 0;
+}
+
+.searchModelabel{
+    width: 100%;
+}
+
+.searchMode label:hover {
+    width: 100%;
     background: rgba(0,0,0,.5);
     color:white;
 }

@@ -1,7 +1,8 @@
 <template>
     <form v-if='this.$store.state.page=="user"' class='user'>
 <!-- les options de recherche -->
-    <fieldset class='userButton'> Comment voulez vous chercher
+    <fieldset class='userButton'> 
+        <legend>Comment voulez vous chercher ?</legend>
         <label for="alpha">
             <input type="radio" name="userSearching" id="alpha" @click='toAlpha'>Rechercher dans le nom, prénom ou mail
         </label>
@@ -31,14 +32,15 @@
                 <div class='userFiveOne'>   <span>Status :                      </span></div>
                 <div class='userFiveTwo'>   <span>{{ stat(user.users_status) }} </span></div>
                 <div class='userSixOne'>    <span>Changer le statut en :        </span></div>
-                <div class='userSixTwo'>
-                    <select :name="user.users_id" key="newStatus" class='maskedIfBig'>
+                <div class='userSixTwo'>le nouveau status
+                    <select :name="user.users_id" id="smallNewStatus" >
                         <option value="" selected disabled>Sélectionner</option>
                         <option value="0" >Suspendre</option>
                         <option value="1" >Normal</option>
                         <option value="2" >Admin</option>
                     </select>
                 </div>
+            
             </li>
         </ul>
         <table class='searchMedium'>
@@ -54,20 +56,18 @@
             </thead>
             <tbody>
                 <tr  v-for="user in resultSearch()" :key='user.users_id'>
-                    <td class='blockUser' :title=user.users_name> {{ user.users_name}}</td>
-                    <td class='blockUser' :title=user.users_firstname> {{ user.users_firstname}}</td>
-                    <td class='blockUser' :title=user.users_mail> {{ user.users_mail}}</td>
-                    <td class='blockUser' :title=user.users_id> {{ user.users_id}}</td>
+                    <td class='blockUser' :title='"son nom : "+user.users_name'> {{ user.users_name}}</td>
+                    <td class='blockUser' :title='"son prénom : "+user.users_firstname'> {{ user.users_firstname}}</td>
+                    <td class='blockUser' :title='"son email :"+user.users_mail'> {{ user.users_mail}}</td>
+                    <td class='blockUser' :title='"son id : "+user.users_id'> {{ user.users_id}}</td>
                     <td class='blockUser' > {{ stat(user.users_status) }}</td>
-                    <td class='largeBlockUser'>
-                        <label for="newStaus">Quel nouveau status ?                       
-                            <select :name="user.users_id" key="newStatus" id='newStatus'>
-                                <option value="" selected disabled>Sélectionner</option>
-                                <option value="0" >Suspendre</option>
-                                <option value="1" >Normal</option>
-                                <option value="2" >Admin</option>
-                            </select>
-                        </label>
+                    <td class='largeBlockUser' title="Quel nouveau status ?">                    
+                        <select :name="user.users_id" key="newStatus" id='newStatus'>
+                            <option value="" selected disabled>Sélectionner</option>
+                            <option value="0" >Suspendre</option>
+                            <option value="1" >Normal</option>
+                            <option value="2" >Admin</option>
+                        </select>
                     </td>
                 </tr>
             </tbody>
@@ -201,11 +201,11 @@ th{
     margin:auto;
     flex-direction: column;
     justify-content: center;
-    border-radius:20px.
+    border-radius:20px;
 }
 
 .userButton label{
-    width:100%;
+    width:90%;
     background: white;
     text-align: left;
     border-radius:10px;
@@ -215,7 +215,7 @@ th{
 }
 
 .userButton span:hover{
-    width:100%;
+    width:90%;
     background: lightblue;       
 }
 
@@ -223,8 +223,6 @@ th{
     .userButton{
         width: 300px;
     }
-
-    
 
     .searchSmall{
         width: 300px;
@@ -335,11 +333,16 @@ th{
 @media screen and (min-width: 681px) {
     .userButton{
         width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     
-    .searchSmall{
+    .searchSmall, .searchSmall *{
         display: none;        
     }
+
+    
 
     .searchMedium{
         width: 600px;

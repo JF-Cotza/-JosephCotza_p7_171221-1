@@ -1,33 +1,38 @@
 <template>
     <form>
         <!-- paramètres de recherche -->
-        <ul>
-            <li>
+        <fieldset>
+            <legend>Comment voulez vous chercher ?</legend>
+            <label for="alpha">            
                 <input type="radio" name="commentSearching" id="alpha" @click='toAlpha'>Rechercher dans le texte, le nom, le prénom l'utilisateur
-            </li>
-            <li>
-                <input type="radio" name="commentSearching" id="idSearch" @click='toId'>rechercher par comment id
-            </li>
-            <li>
-                <input type="radio" name="commentSearching" id="author" @click='toAuthor'>rechercher par user id
-            </li>
-            <li>
-                <input type="radio" name="commentSearching" id="publication" @click='toPublication'>rechercher par publication id
-            </li>
-            <li>
-                <input type="radio" name="commentSearching" id="status" @click='toStatus'>rechercher par status
-            </li> 
-        </ul>
+            </label>
+            <label for="idSearch">     
+                <input type="radio" name="commentSearching" id="idSearch" @click='toId'>Rechercher par comment id
+            </label>
+            <label for="author">     
+                <input type="radio" name="commentSearching" id="author" @click='toAuthor'>Rechercher par user id
+            </label>
+            <label for="publication">     
+                <input type="radio" name="commentSearching" id="publication" @click='toPublication'>Rechercher par publication id
+            </label>
+            <label for="status">     
+                <input type="radio" name="commentSearching" id="status" @click='toStatus'>Rechercher par status
+            </label>
+        </fieldset>
           
-        <input v-if="searchMethod=='alpha'" name="commentSearch" id="alphaComments" v-model="alphaSearch">
-        <input v-if="searchMethod=='author' || searchMethod=='publication' || searchMethod=='id'" name="commentSearch" id="authorComments" v-model="authorSearch">
+        <label for="alphaComments" v-if="searchMethod!='status'">Recherche
+            <input v-if="searchMethod=='alpha'" name="commentSearch" id="alphaComments" v-model="alphaSearch" aria-label='recherche de texte'>
+            <input v-if="searchMethod=='author' || searchMethod=='publication' || searchMethod=='id'" name="commentSearch" id="authorComments" v-model="authorSearch" :aria-label=aria>
+        </label>
 
-        <select v-if="searchMethod=='status'" v-model="statusSearch">
-            <option value="" selected disabled>Sélectionner</option>
-            <option value="0" >Modérée</option>
-            <option value="1" >Normal</option>
-            <!--<option value="2" >Epinglée</option>-->
-        </select>
+        <label for="statusSearch">Recherche par status
+            <select v-if="searchMethod=='status'" v-model="statusSearch" id='statusSearch'>
+                <option value="" selected disabled>Sélectionner</option>
+                <option value="0" >Modérée</option>
+                <option value="1" >Normal</option>
+                <!--<option value="2" >Epinglée</option>-->
+            </select>
+        </label>
     <!-- résultat -->
     
         <div class='searchSmall'>
@@ -45,7 +50,7 @@
                     <div class='statusOneOne'>Status actuel</div>
                     <div class='statusOneTwo'>Changer le statut</div>
                     <div class='statusTwoOne'>{{ com.comments_status}}</div>
-                    <div class='statusTwoTwo'>
+                    <div class='statusTwoTwo' title='Quel nouveau status ?'>
                         <select :id="com.comments_id" key="newStatus">
                             <option value="" selected disabled>Sélectionner</option>
                             <option value="0" >Masquer</option>
@@ -71,19 +76,19 @@
             </thead>
             <tbody>
                 <tr  v-for="com in resultSearch()" :key='com.comments_id'>
-                    <td class='commentBlock' :title=com.comments_id> {{ com.comments_id }}</td>
-                    <td class='commentBlock' :title=com.comments_texte> {{ com.comments_texte }}</td>
-                    <td class='commentBlock' :title=com.comments_publication> {{ com.comments_publication }}</td>
-                    <td class='commentBlock' :title="com.users_name+' '+com.users_firstname"> {{ com.users_name+' '+com.users_firstname }}</td>
-                    <td class='commentBlock' :title=com.comments_author> {{ com.comments_author }}</td>
-                    <td class='commentBlock' > {{ com.comments_status }}</td>
-                    <td class='largeCommentBlock'>
-                        <select :id="com.comments_id" key="newStatus">
+                    <td class='commentBlock' :title='"id du commentaire : "+com.comments_id'> {{ com.comments_id }}</td>
+                    <td class='commentBlock' :title='"texte:"+com.comments_texte'> {{ com.comments_texte }}</td>
+                    <td class='commentBlock' :title='"id de la publication : "+com.comments_publication'> {{ com.comments_publication }}</td>
+                    <td class='commentBlock' :title="'auteur : '+com.users_name+' '+com.users_firstname"> {{ com.users_name+' '+com.users_firstname }}</td>
+                    <td class='commentBlock' :title='"auteur id : "+com.comments_author'> {{ com.comments_author }}</td>
+                    <td class='commentBlock' :title='"status actuel : "+com.comments_status'> {{ com.comments_status }}</td>
+                    <td class='largeCommentBlock' title='Quel nouveau status ?'>
+                        <select :id="com.comments_id" key="newStatus" >
                             <option value="" selected disabled>Sélectionner</option>
                             <option value="0" >Masquer</option>
                             <option value="1" >Normal</option>
                             <!--<option value="2" >Epingler</option>-->
-                        </select>                  
+                        </select>
                     </td>
                 </tr>
             </tbody>
@@ -115,6 +120,18 @@ export default ({
         this.listed=this.$store.state.administredList
     },
     computed:{
+        aria(){
+            switch(this.searchMethod){
+                case 'author':
+                    return "recherche par user id";
+                case 'publication':
+                    return "recherche par publication id";
+                case 'id':
+                    return "recherche par coment id";
+                default:
+                    return "";
+            }
+        },
         //commentaires
         searchingCommentsByAlpha(){
             console.log('scBAl',this.searchMethod,this.alphaSearch)
@@ -240,26 +257,25 @@ export default ({
 </script>
 
 <style>
-    ul{
-        padding: 0;
+    fieldset{
+        border-radius:20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
     }
 
-    li{
-        width: 90%;
-        margin:2px auto;
-        list-style: none;
-        text-align: justify;
-        border: 1px solid black;
-        border-radius:5px;
-        color:black;
-        padding:0 5px;
+    fieldset label{
+        width: 95%;
+        box-sizing: border-box;
     }
 
-    li:hover{
-        background: rgba(0,0,0,.5);
+    fieldset label:hover{
+        width: 95%;
+        background: black;
         color:white;
+        font-size:1.3rem;
     }
-
+    
     .IdCellOneOne, .IdCellOneTwo,.IdCellOneThree, .statusOneOne,.statusOneTwo, th {
         background: grey;
     }

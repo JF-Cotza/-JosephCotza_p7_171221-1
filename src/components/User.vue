@@ -219,7 +219,7 @@ export default {
                     if(res.data.authorStatus.users_status!=0){
                         $this.$store.state.token=res.data.id;
                         $this.$store.state.author=res.data.author;
-                        sessionStorage.setItem('token',JSON.stringify({id:res.data.id,authorStatus:res.data.authorStatus.users_status}))
+                        sessionStorage.setItem('token',JSON.stringify({id:res.data.id,authorStatus:res.data.authorStatus.users_status, author:res.data.author}))
                         $this.$store.state.authorStatus=res.data.authorStatus.users_status;
                         console.log('connectuser ',res.data)
                         console.log($this.$store.state.token,' ',res.data.message)

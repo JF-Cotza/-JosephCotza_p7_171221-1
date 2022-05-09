@@ -81,8 +81,10 @@ export default createStore({
     setUser(state,user){
       state.token=user.id
       state.authorStatus=user.authorStatus;
+      state.author=user.author;
       console.log('commit set user',user, state.token, state.authorStatus);
-      state.page='connected';
+      //state.page='connected';
+      state.connectionStatus='connected';
     }
   },
   actions: {

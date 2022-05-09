@@ -1,30 +1,27 @@
 <template>
     <div @click='consoling' class='containing'>
-        <!-- /{{ message }}-->   <!--/ disabling {{ disabling }} /--> 
         <p> {{ propMessage }} </p>
         <form action="" method="post" enctype="multipart/form-data" class='flex column' disabled='disabling'>
-            <!-- masqué -->
-            <label for="publicationId" class='masked'>publication Id</label>
-            <input type="text" name='publicationId' :value=publicationId class='masked'>
-            
-            <!-- pas visible lors de la création -->
-            <p v-if='this.$store.state.page!="create"' class='justify'>Auteur : {{ publicationAuthorName }} {{ publicationAuthorFirstname }}</p>
+            <!-- masqué en permanence : la publication id -->
+            <label for="publicationId" class='masked' v-if="this.$store.state.page!='create'">publication Id
+                <input type="text" name='publicationId' :value=publicationId>
+            </label>
             
             <!-- les textes de la publications -->
             <!-- le titre -->
-            <h2 v-if='this.$store.state.page="connected"'>{{ propsTitle }}</h2>
+            
+            <h2 v-if='this.$store.state.page=="connected"'>{{ propsTitle }}</h2>
             <label for="title" class='masked'>Titre</label>
             <input v-if='this.$store.state.page!="connected"' type="text" id='title'    name='title'    v-model="title"    :placeholder=propsTitle :disabled='disabling' maxlength="255">
             <!-- le texte -->
             <label for="texte" class='masked'>Texte</label>
             <input type="text" id='texte'    name='texte'    v-model='texte'    :placeholder=propsTexte :disabled='disabling' maxlength="255">
-            
+
             <!-- l'image -->
             <label for="image" v-if='this.$store.state.page=="create"' class='masked'>ajouter une image</label>
             <input v-if='this.$store.state.page=="create"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
-
             <div v-if='this.$store.state.page=="modifier"' >
-                <!-- l'ancienne -->
+            <!-- l'ancienne -->
                 <div v-if='propsImage!="" && changed==false'>
                     <p>Image originale</p>
                     <img :src="'http://localhost:3000/images/'+propsImage" alt="image importée" class='original' id='oldImage'>
@@ -38,10 +35,10 @@
                     <p>ajouter une image</p>
                 </div>
             </div>
-            
+        
             <input v-if='this.$store.state.page=="modifier"' type="file" id='modImage'    name='image'    title="ajouter une image" @change='image' :disabled='disabling'>
-
-            <div v-if='fileToUpdate.size>0 && imageUrl!="http://localhost:3000/images" ' class='flex column'>
+        
+            <div v-if='fileToUpdate.size>0 && imageUrl!="http://localhost:3000/images" && this.$store.state.page!="create"' class='flex column'>
                 <img :src="imageUrl" alt="image importé" >
                 <button @click='resetImage'>supprimer l'image</button>
             </div>
@@ -49,8 +46,10 @@
             <div v-if='this.$store.state.page!="modifier" && this.$store.state.page!="create"'> 
                 <img v-if='propsImage!=""' :src="'http://localhost:3000/images/'+propsImage" alt="image importée">
             </div>
-            
-            
+    
+            <!-- pas visible lors de la création -->
+            <p v-if='this.$store.state.page!="create"' class='justify'>Créé par: {{ publicationAuthorName }} {{ publicationAuthorFirstname }}</p>
+
     <!-- bouton page create -->            
             <div class='flex row' v-if="this.$store.state.page=='create'">
                 <button type="reset" @click='voidImage'>Annuler</button>
@@ -286,6 +285,7 @@ export default {
 
 <style scoped>
 .containing{
+    box-sizing: border-box;
     width:300px;
     background: #028ef9;
     background: -moz-linear-gradient(top,  #028ef9 0%, #ffffff 100%);
@@ -304,8 +304,10 @@ form input, form img {
 form img{
     margin:5px 0;
     width:95%;
+    padding:0;
     box-sizing: border-box;
-    border-radius:0 0 20px 20px
+    border-radius:0 0 20px 20px;
+    box-shadow: -5px -5px 10px aqua, 5px 5px 10px red, -5px 5px 10px yellow, 5px -5px 10px purple; /* droite bas étalement couleur*/ 
 }
 
 form h2{
@@ -354,4 +356,5 @@ form input:disabled{
     padding: 0 5px;
     margin:0;
 }
+
 </style>

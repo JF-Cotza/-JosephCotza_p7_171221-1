@@ -1,11 +1,14 @@
 <template>
     <div class='admin'>
         <h1>Gestion</h1>
-        
+        <h2>{{ what }}</h2>        
 <!-- ce que l'on va chercher -->
-        <button @click='allUsers'>Chercher un utilisateur</button>
-        <button @click='allPub'>Chercher une publication</button>
-        <button @click='allComments'>Chercher un commentaire</button>
+        <fieldset id='lookingFor'>
+            <legend >Elements recherchés</legend>
+                <button @click='allUsers' class=''    searchKey='users'>Chercher un utilisateur</button>
+                <button @click='allPub' class=''      searchKey='publications'>Chercher une publication</button>
+                <button @click='allComments' class='' searchKey='comments'>Chercher un commentaire</button>
+        </fieldset>
 <!-- la recheche d'utilisateur -->
     <div v-if='this.$store.state.page=="user"' >
         <AdminUser />
@@ -45,7 +48,6 @@ export default {
 
             recherche:'',
             listed:{},
-            
         }
         
     },
@@ -57,11 +59,43 @@ export default {
     created:function(){  
         console.log(this.listed)
     },
+    computed:{
+        what(){
+            switch (this.$store.state.page){
+                case "user":
+                    return "D'utilisateurs";
+                case "publication":
+                    return "De publications";
+                case "comments" :
+                    return "De commentaires";
+                default:
+                    return "Choisir l'élément recherché";
+                }
+        }
+    },
     methods:{
-    
+        selectingClass(){
+            
+            let buttons=document.querySelectorAll('#lookingFor button');
+            console.log('SC',buttons)
+            for(let i=0; i<buttons.length;i++){
+                buttons[i].classList.remove('selected')
+                console.log('SC',buttons[i].getAttribute('searchKey'));
+                if(buttons[i].getAttribute('searchKey')==this.searched){
+                    console.log(this.searched)
+                    buttons[i].classList.add('selected')
+                }
+                else{
+                    console.log('SC Toto')
+                }
+            }
+            
+        },
+
     //récupération des users
         allUsers(){
             this.searched='users';
+            this.selectingClass();
             let $this=this
             this.$store.dispatch('getAllUsers')
             .then(()=>{
@@ -74,6 +108,7 @@ export default {
     //récupération des publications
         allPub(){
             this.searched='publications';
+            this.selectingClass();
             let $this=this;
 
             this.$store.dispatch('getAllPubs')
@@ -86,6 +121,7 @@ export default {
         //récupération des commentaires
         allComments(){
             this.searched='comments';
+            this.selectingClass();
             let $this=this;
 
             this.$store.dispatch('getAllComments')
@@ -100,6 +136,11 @@ export default {
 </script>
 
 <style scoped>
+#lookingFor .selected{
+    color:white;
+    background: black;
+    font-weight: bold;
+}
 @media screen and (max-width: 680px) {
     .admin{
         width:300px;
