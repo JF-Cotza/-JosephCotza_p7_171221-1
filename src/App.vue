@@ -100,10 +100,10 @@ export default {
     getUser(){      
       console.log('userVue getUser')
       let $this=this;
-     
+      this.$store.state.wait=true;
       instance.get('/auth/getMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
       .then(res=>{
-        
+        $this.$store.state.wait=false;
         let user=res.data.data[0];
         console.log(user);
         localStorage.setItem('user',JSON.stringify(user));

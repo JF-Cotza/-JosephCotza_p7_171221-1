@@ -30,9 +30,6 @@ import AdminComment from '../components/AdminComment.vue';
 import AdminPublication from '../components/AdminPublication.vue';
 import AdminUser from '../components/AdminUser.vue';
 
-//const defaultUrl='http://localhost:3000/api/admin';
-//const axios=require('axios');
-//const instance =axios.create({ baseURL:defaultUrl});
 export default {
   
     name:'Admin',

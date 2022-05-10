@@ -181,10 +181,11 @@ export default {
             console.log('supprimer la publication',this.onePublication, publicationId, this.tokenValue)
             let data={id:publicationId,author:authorId}
             let $this=this;
-
+            this.$store.state.wait=true;
             instance.delete('/publications/suppressOne', {params:data}, {headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 $this.message=res.data.message;
+                this.$store.state.wait=false;
                 $this.$store.state.page='connected'
                 $this.$router.push('Connected')
                 $this.$store.dispatch('getPublications')
@@ -226,11 +227,11 @@ export default {
             
             console.log('to show',cible.value,cible.getAttribute('act'))
             let toDo={id:cible.value,action:cible.getAttribute('act')}
-
+            this.$store.state.wait=true;
             instance.put('/admin/publicationUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 console.log(res)
-                
+                this.$store.state.wait=false;
                 
                 console.log('go')
                 $this.$router.go() //déconnecte
@@ -249,11 +250,11 @@ export default {
             
 
             let toDo={id:cible.value,action:action}
-
+            this.$store.state.wait=true;
             instance.put('/admin/commentsUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 console.log(res)
-                
+                this.$store.state.wait=false;
                 
                 console.log('go')
                 $this.$router.go() //déconnecte
