@@ -51,8 +51,10 @@ export default {
             form.append('publication',this.pubId.id);
 
             //axios.defaults.headers.common = {'Authorization': `bearer ${this.$store.state.token}`}
+            this.$store.state.wait=true;
             instance.post('/addComment', form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
+                    this.$store.state.wait=false;
                     $this.$store.state.message=res.data.message
                     console.log('adcomment',res)
                     $this.$store.dispatch('getPublications')

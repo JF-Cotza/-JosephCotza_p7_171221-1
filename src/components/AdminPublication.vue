@@ -196,9 +196,11 @@ export default {
                 listed.push(opt)
                 console.log('longueur: ',list.length,' indice: ',i,' nom: ',list[i].name, ' valeur: ',list[i].value,' objet: ',opt,'liste agrégée :',listed)
             }
-    
+
+            this.$store.state.wait=true;
             instance.put('/publicationUpdate',{publications:listed},{headers:{'Authorization': `bearer ${this.$store.state.token}`}})
             .then(res=>{
+                this.$store.state.wait=false;
                 console.log(res)
                 $this.$store.state.page='connected';
                 $this.$router.push('Connected');

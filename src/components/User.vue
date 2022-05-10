@@ -182,8 +182,10 @@ export default {
             form.append('email',this.mail);
             form.append('password',this.password);
             
+            this.$store.state.wait=true;
             instance.post('/auth/addUser', form)
                 .then(function(res){
+                    this.$store.state.wait=false;
                     console.log('add res then',res) 
                     $this.message+='ajouté'
                     $this.connectUser();
@@ -212,8 +214,10 @@ export default {
             form.append('email',this.mail);
             form.append('password',this.password);
             
+            this.$store.state.wait=true;
             instance.post('/auth/connectUser', form)
                 .then(function(res){
+                    this.$store.state.wait=false;
                     console.log('status',res.data.authorStatus.users_status)
                     $this.$store.state.authorStatus=res.data.authorStatus.users_status;
                     if(res.data.authorStatus.users_status!=0){
@@ -271,9 +275,11 @@ export default {
             console.log('userVue suppressProfile')
             let $this=this;
             
+            this.$store.state.wait=true;
             instance.delete('/auth/suppressMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
             .then(res=>{
                 console.log(res)
+                this.$store.state.wait=false;
                 $this.message='suppress then'
                 this.$store.dispatch('deconnection');
                 this.$router.push({name:'Home'});
@@ -317,8 +323,11 @@ export default {
             else{                           //le mot de passe est nul et ne doit ponc pas être changé
                 form.append('psw','')       //on vérifiera la valeur dans le backend.
             }
+
+            this.$store.state.wait=true;
             instance.put('/auth/updateUser', form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
             .then(res=>{
+                this.$store.state.wait=false;
                 $this.$store.dispatch('deconnection');
                 console.log(res)
             })    
