@@ -115,8 +115,10 @@ export default createStore({
       console.log('index admin get all users')
       return new Promise((resolve, reject)=>{
         //console.log(commit)
+        commit('waiting',true)
         instance.get('/admin/getAllusers', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
+            commit('waiting',false)
             commit('users',res.data)
             commit('page','admin')
             console.log('get all users then',res.data);
@@ -133,8 +135,10 @@ export default createStore({
       console.log('index admin get all pubs')
       return new Promise((resolve, reject)=>{
         //console.log(commit)
+        commit('waiting',true);
         instance.get('/admin/getAllPubs', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
+            commit('waiting',false)
             commit('pubs',res.data)
             commit('page','admin')
             console.log('get all pub then',res.data);
@@ -151,8 +155,10 @@ export default createStore({
       console.log('index admin get all comments')
       return new Promise((resolve, reject)=>{
         //console.log(commit)
+        commit('waiting',true)
         instance.get('/admin/getAllComments', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
+            commit('waiting',false)
             commit('comments',res.data)
             commit('page','admin')
             console.log('get all comments then',res.data);
@@ -177,19 +183,7 @@ export default createStore({
       if(sessionStorage.getItem('token')){
         let user=JSON.parse(sessionStorage.getItem('token'))
         commit('setUser',user)
-      //this.$router.push('Connected')
-      //console.log('state connected',this.$store.state)
       }
-    /*
-    if(this.$store.state.token==''){
-      console.log('non connecté')
-      this.$router.push('/')
-    }
-    else{
-      console.log('ok')
-      this.$router.push('Connected')
-      console.log('state connected',this.$store.state)
-    }*/
     }
   },
   modules: { 
