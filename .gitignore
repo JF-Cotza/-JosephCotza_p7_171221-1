@@ -4,7 +4,7 @@ node_modules
 /backend/images
 /backend/node_modules
 
-/retires
+/public/retires
 
 /backend/middleware/routeTesting.js
 /src/assets/modere_valid1.png
