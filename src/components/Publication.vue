@@ -185,7 +185,7 @@ export default {
             this.$store.state.wait=true;
             instance.post('/addPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
-                    this.$store.state.wait=false;
+                    $this.$store.state.wait=false;
                     $this.$store.state.message=res.data.message
                     console.log('adpub',res)
                     $this.$store.dispatch('getPublications')
@@ -239,7 +239,7 @@ export default {
             this.$store.state.wait=true;
             instance.put('/modifyPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
-                    this.$store.state.wait=false;
+                    $this.$store.state.wait=false;
                     $this.$store.state.message=res.data.message
                     $this.$store.dispatch('getPublications')
                     $this.$store.state.page='connected'
@@ -267,7 +267,7 @@ export default {
             instance.defaults.headers.common ={'Authorization':'Bearer '+ this.$store.state.token}
             instance.get('/getOnePublication', {params:{'id':publicationId}})
             .then(function(res){
-                this.$store.state.wait=false;
+                $this.$store.state.wait=false;
                 let returned=res.data.publication[0];
                 console.log('1pub then data',res.data)
                 $this.$store.state.selectedPublication=returned

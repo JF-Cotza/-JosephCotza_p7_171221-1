@@ -175,7 +175,7 @@ export default {
             this.$store.state.wait=true;
             instance.put('/userUpdate',{users:listed},{headers:{'Authorization': `bearer ${this.$store.state.token}`}})
             .then(res=>{
-                this.$store.state.wait=false;
+                $this.$store.state.wait=false;
                 console.log(res)
                 $this.$store.state.page='connected';
                 $this.$router.push('Connected');

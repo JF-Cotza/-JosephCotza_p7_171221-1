@@ -89,8 +89,8 @@
             <h1>Les publications</h1>
             <ul class='flex'>
                 <li v-for="onePublication in this.$store.state.publicationListe" :key="onePublication.publications_id" >
-                    <p class='userSuspend' v-if='onePublication.users_status==0' @mouseover='pop=true' @mouseleave="pop=false">Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
-                    <div class='popup' v-if='pop'>
+                    <p class='userSuspend' v-if='onePublication.users_status==0 ' @mouseover='pop=true' @mouseleave="pop=false">Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
+                    <div class='popup' v-if='pop && this.$store.state.authorStatus==2 && onePublication.users_status==0'>
                         <p>l'utilisateur :{{ onePublication.users_name }} {{ onePublication.users_firstname }} </p>
                         <p> son id : {{ onePublication.users_id }}</p>
                     </div>
@@ -193,7 +193,7 @@ export default {
             instance.delete('/publications/suppressOne', {params:data}, {headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 $this.message=res.data.message;
-                this.$store.state.wait=false;
+                $this.$store.state.wait=false;
                 $this.$store.state.page='connected'
                 $this.$router.push('Connected')
                 $this.$store.dispatch('getPublications')
@@ -239,7 +239,7 @@ export default {
             instance.put('/admin/publicationUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 console.log(res)
-                this.$store.state.wait=false;
+                $this.$store.state.wait=false;
                 
                 console.log('go')
                 $this.$router.go() //déconnecte
@@ -262,7 +262,7 @@ export default {
             instance.put('/admin/commentsUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 console.log(res)
-                this.$store.state.wait=false;
+                $this.$store.state.wait=false;
                 
                 console.log('go')
                 $this.$router.go() //déconnecte
@@ -321,10 +321,12 @@ div p{
     background: red;
     padding-left: 10px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .popup p{
     border:none;
+    box-sizing: border-box;
 }
 
 .addingComment{
@@ -370,6 +372,7 @@ span{
     width: 300px;
     border-radius:20px;
     padding:10px 0;
+    box-sizing: border-box;
 }
 
 .userSuspend{
