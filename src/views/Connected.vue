@@ -89,11 +89,16 @@
             <h1>Les publications</h1>
             <ul class='flex'>
                 <li v-for="onePublication in this.$store.state.publicationListe" :key="onePublication.publications_id" >
-                    <p class='userSuspend' v-if='onePublication.users_status==0'>Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
+                    <p class='userSuspend' v-if='onePublication.users_status==0' @mouseover='pop=true' @mouseleave="pop=false">Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
+                    <div class='popup' v-if='pop'>
+                        <p>l'utilisateur :{{ onePublication.users_name }} {{ onePublication.users_firstname }} </p>
+                        <p> son id : {{ onePublication.users_id }}</p>
+                    </div>
                     
-                    <div v-if='onePublication.publications_status==0' class='relative'>
-                        <button v-if='this.$store.state.authorStatus==2' class='moderate' act='reveal' :value="onePublication.publications_id" ><img src="../assets/modere_valid.png" alt="demasquer une publication" @click='forActing'></button>
+                    <div v-if='onePublication.publications_status==0 && onePublication.users_status!=0' class='relative'>
+                        <button v-if='this.$store.state.authorStatus==2' class='moderate' act='reveal' :value="onePublication.publications_id" ><img src="../assets/modere_valid.png" alt="demasquer une publication" @click='forActing' @mouseover="hover=true" @mouseleave="hover=false"></button>
                         <p class='publicationModerated'>Cet publication a été modérée et n'est donc plus visible</p>
+                        <p v-if="hover" class='popup'>Le texte modéré : {{ onePublication.publications_texte }}</p>
                     </div>
                     <div v-if='onePublication.publications_status!=0 && onePublication.users_status!=0' class='relative'>
                         <button v-if='this.$store.state.authorStatus==2' class='moderate' act='block' :value="onePublication.publications_id" @click='forActing'><img src="../assets/modere_refus.png" alt="masquer une publication"></button>
@@ -147,6 +152,9 @@ export default {
             masked:'masked',
             toDisabled:'disabled',
             not:'',
+
+            hover:false,
+            pop:false,
         }
     },
     components:{
@@ -293,13 +301,13 @@ ul{
 }
 
 li{
+    width:100%;
     margin:0;
     list-style: none;
     text-align: left ;
 }
 
 li div{   
-    background: green;
     border:1px solid white;
     border-radius:20px;
 }
@@ -307,6 +315,16 @@ li div{
 div p{
     margin:0;
     border:1px solid black;
+}
+
+.popup{
+    background: red;
+    padding-left: 10px;
+    width: 100%;
+}
+
+.popup p{
+    border:none;
 }
 
 .addingComment{
@@ -357,17 +375,19 @@ span{
 .userSuspend{
     background: black;
     color:red;
+    padding-left:10px;
 }
 
 .publicationModerated{
     background: black;
+    box-sizing: border-box;
     color:white;
 }
 
 
 .relative{
   position: relative;
-  width:300px;
+  width:100%;
   box-sizing: border-box;
 }
 
