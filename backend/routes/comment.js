@@ -4,15 +4,8 @@ const authorization=require('../middleware/auth')
 const router = express.Router();
 const commentFunction=require('../controllers/comment')
 
-//pour les test
-const rt=require('../middleware/routeTesting')
-
 //C
-router.post('/addComment', rt.rc1, rt.consoleHeader, authorization, rt.consoleDetails, commentFunction.addComment)
-
-//R-G-CC:comptage des comentaires
-//router.post('/countingComments',rt.rcCount, rt.consoleHeader, authorization,rt.consoleDetails, commentFunction.counting)
-
+router.post('/addComment', authorization, commentFunction.addComment)
 
 module.exports = router; //si on l'oublie, il y a une erreur qui apparait 
 /*

@@ -5,32 +5,30 @@ const adminFunction=require('../controllers/admin')
 
 
 //pour les test
-const rt=require('../middleware/routeTesting')
 
 //G-AU: récupérer tous les utilisateurs
-router.get('/getAllUsers', rt.consoleAdminHeader, authorization, adminFunction.getAllProfile);
+router.get('/getAllUsers', authorization, adminFunction.getAllProfile);
 
 //G-AP: récupérer toutes les publications
-router.get('/getAllPubs', rt.consoleAdminHeader, authorization, adminFunction.getAllPublications);
+router.get('/getAllPubs', authorization, adminFunction.getAllPublications);
 
 //G-AC: récupérer tous les commentaires
-router.get('/getAllComments', rt.consoleAdminHeader, authorization, rt.raGC,adminFunction.getAllComments);
+router.get('/getAllComments', authorization, adminFunction.getAllComments);
 
 
 //P-UU
-router.put('/userUpdate',rt.raUU,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.updateUser)
+router.put('/userUpdate', authorization, adminFunction.updateUser)
 
 //P-UP
-router.put('/publicationUpdate',rt.raUP,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.updatePublication)
+router.put('/publicationUpdate', authorization, adminFunction.updatePublication)
 
 //P-UOP
-router.put('/publicationUpdateOne',rt.raUP,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.publicationUpdateOne)
+router.put('/publicationUpdateOne', authorization, adminFunction.publicationUpdateOne)
 
 //P-UC
-router.put('/commentsUpdate',rt.raUC,rt.consoleHeader, authorization, rt.consoleDetails,adminFunction.updateComments)
+router.put('/commentsUpdate', authorization, adminFunction.updateComments)
 
 //P-UOC
-router.put('/commentsUpdateOne',rt.raUP,rt.consoleHeader, authorization, rt.consoleDetails, adminFunction.commentsUpdateOne)
-
+router.put('/commentsUpdateOne', authorization, adminFunction.commentsUpdateOne)
 
 module.exports = router;
