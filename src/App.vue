@@ -30,12 +30,14 @@
 
     </header>
     
-    <main>
+    <main class='main_relative'>
       <p> {{ this.$store.state.message }} </p>
       <router-view/> <!-- contient les éléments changeants de la vue -->
-      <div v-if="this.$store.state.wait==true" class='clearBack'>
-        <Waiting />
-      </div>
+    <div class='forWaiting' v-if="this.$store.state.wait==true">
+        <div v-if="this.$store.state.wait==true" class='clearBack'>
+          <Waiting />
+        </div>
+    </div>  
     </main>
   </div><!-- fin .body -->
 </template>
@@ -43,8 +45,6 @@
 <script>
 import axios from 'axios';
 import Waiting from './components/Waiting.vue';
-const defaultUrl='http://localhost:3000/api';
-const instance =axios.create({ baseURL:defaultUrl});
 
 export default {
   data(){
@@ -59,8 +59,8 @@ export default {
     console.log('created', this.$store.state.token)
     console.log('state',this.$store.state)
     this.$store.dispatch('tokenChecking','App')
-    
   },
+  
   methods:{
   //unconnected
     toIndex(){
@@ -101,6 +101,8 @@ export default {
       console.log('userVue getUser')
       let $this=this;
       this.$store.state.wait=true;
+      setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
+      let instance= axios.create({ baseURL:this.$store.state.url});
       instance.get('/auth/getMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
       .then(res=>{
         $this.$store.state.wait=false;
@@ -143,6 +145,30 @@ h1{
   font-size: 2rem;
 }
 
+.forWaiting{
+  width:100%;
+  height: 100%;
+  position: fixed;
+  top:0;
+  left:0;
+  background: white;
+  animation-name: disappear;
+  animation-duration: 1500ms;
+  animation-delay: 2500ms;
+  animation-timing-function: ease-out;
+  animation-iteration-count: 1;
+}
+
+@keyframes disappear{
+  from{
+    top:0px;
+    left:0px;
+  }
+  to{
+    top:10000px;
+    left:-10000px
+  }
+}
 
 .masked{
   display:none
@@ -182,6 +208,10 @@ h1{
   font-size:1.5rem;
   border-radius: 5px;
   background: pink;
+}
+
+.main_relative{
+  position: relative;
 }
 
 .clearBack{

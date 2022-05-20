@@ -20,6 +20,8 @@
                 :propsTexte=this.$store.state.selectedPublication.publications_texte
                 :publicationId=this.$store.state.selectedPublication.publications_id
                 :propsImage=this.$store.state.selectedPublication.publications_image
+                :publicationAuthorName=this.$store.state.selectedPublication.users_name 
+                :publicationAuthorFirstname=this.$store.state.selectedPublication.users_firstname
                 propMessage=' Modifier votre publication '             
             />
         </div>
@@ -89,16 +91,20 @@
             <h1>Les publications</h1>
             <ul class='flex'>
                 <li v-for="onePublication in this.$store.state.publicationListe" :key="onePublication.publications_id" >
-                    <p class='userSuspend' v-if='onePublication.users_status==0 ' @mouseover='pop=true' @mouseleave="pop=false">Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
-                    <div class='popup' v-if='pop && this.$store.state.authorStatus==2 && onePublication.users_status==0'>
-                        <p>l'utilisateur :{{ onePublication.users_name }} {{ onePublication.users_firstname }} </p>
+                    <p class='userSuspend' v-if='onePublication.users_status==0' @mouseover='popAuthor' @mouseleave="pop=false" :author='onePublication.users_id'>Cet utilisateur a été suspendu et ses publications ne sont plus visibles</p>
+                    <div class='popup' v-if="this.$store.state.authorStatus==2 && onePublication.users_status==0 && pop && toPop==onePublication.users_id" >
+                        <p>l'utilisateur : {{ onePublication.users_name }} {{ onePublication.users_firstname }} </p>
                         <p> son id : {{ onePublication.users_id }}</p>
                     </div>
                     
                     <div v-if='onePublication.publications_status==0 && onePublication.users_status!=0' class='relative'>
-                        <button v-if='this.$store.state.authorStatus==2' class='moderate' act='reveal' :value="onePublication.publications_id" ><img src="../assets/modere_valid.png" alt="demasquer une publication" @click='forActing' @mouseover="hover=true" @mouseleave="hover=false"></button>
+                        <button v-if='this.$store.state.authorStatus==2' class='moderate' act='reveal' :value="onePublication.publications_id" @mouseover="poping" @mouseleave="hover=false"><img src="../assets/modere_valid.png" alt="demasquer une publication" @click='forActing' ></button>
                         <p class='publicationModerated'>Cet publication a été modérée et n'est donc plus visible</p>
-                        <p v-if="hover" class='popup'>Le texte modéré : {{ onePublication.publications_texte }}</p>
+                        <div v-if='hover && toPop==onePublication.publications_id' class='popup position'>
+                            <p>Le texte modéré : {{ onePublication.publications_texte }}</p>
+                            <p v-if="onePublication.publications_image!=''"> le nom de l'image : {{ onePublication.publications_image }}</p>
+                            <img v-if="onePublication.publications_image!=''" :src="imageBasisUrl+onePublication.publications_image" alt="" class='smallImage'>
+                        </div>
                     </div>
                     <div v-if='onePublication.publications_status!=0 && onePublication.users_status!=0' class='relative'>
                         <button v-if='this.$store.state.authorStatus==2' class='moderate' act='block' :value="onePublication.publications_id" @click='forActing'><img src="../assets/modere_refus.png" alt="masquer une publication"></button>
@@ -131,17 +137,13 @@
 import User from '../components/User.vue'
 import Publication from '../components/Publication.vue'
 import Comment from '../components/Comment.vue'
-import axios from 'axios'
-;
-const defaultLink='http://localhost:3000';
-const defaultUrl=defaultLink+'/api';
-const instance =axios.create({ baseURL:defaultUrl});
+import axios from 'axios';
 
 export default {
     name:'Connected',
     data(){
         return{
-            imageBasisUrl:'http://localhost:3000/images/',
+            imageBasisUrl:this.$store.state.url+'/images/',
             message:'', 
             page:1,
             nombrePage:1,
@@ -154,6 +156,7 @@ export default {
             not:'',
 
             hover:false,
+            toPop:'',
             pop:false,
         }
     },
@@ -190,7 +193,10 @@ export default {
             let data={id:publicationId,author:authorId}
             let $this=this;
             this.$store.state.wait=true;
-            instance.delete('/publications/suppressOne', {params:data}, {headers:{'Authorization': 'Bearer '+this.tokenValue}})
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
+            axios.defaults.headers.common = {'Authorization': 'Bearer '+this.tokenValue}
+            let instance= axios.create({ baseURL:this.$store.state.url});
+            instance.delete('/publications/suppressOne', {params:data})//, {headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 $this.message=res.data.message;
                 $this.$store.state.wait=false;
@@ -236,13 +242,17 @@ export default {
             console.log('to show',cible.value,cible.getAttribute('act'))
             let toDo={id:cible.value,action:cible.getAttribute('act')}
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.put('/admin/publicationUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 console.log(res)
                 $this.$store.state.wait=false;
                 
                 console.log('go')
-                $this.$router.go() //déconnecte
+                $this.$store.state.page='connected'
+                $this.$router.go()
+                
             })
             .catch(err=>console.log(err))
         },
@@ -259,6 +269,8 @@ export default {
 
             let toDo={id:cible.value,action:action}
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.put('/admin/commentsUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 console.log(res)
@@ -270,6 +282,24 @@ export default {
             })
             .catch(err=>console.log(err))
         },
+        poping(e){
+            
+            console.log(e.target)
+            if(e.target.tagName=='BUTTON'){
+                console.log('bouton:',e.target.value)
+                this.toPop=e.target.value
+            }    
+            if(e.target.tagName=='IMG'){
+                console.log('IMG',e.target.parentNode.value)
+                this.toPop=e.target.parentNode.value
+            }
+            this.hover=true;
+        },
+        popAuthor(e){
+            console.log(e.target)
+            this.toPop=e.target.getAttribute('author')
+            this.pop=true;
+        }
     }
 }
 </script>
@@ -318,9 +348,9 @@ div p{
 }
 
 .popup{
-    background: red;
+    background: lightcoral;
     padding-left: 10px;
-    width: 100%;
+    width: 300px;
     box-sizing: border-box;
 }
 
@@ -415,5 +445,18 @@ span{
     box-sizing: border-box;
     border-radius: 20px;
     padding:5px;
+}
+
+.smallImage{
+    margin:auto;
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.popup.position{
+    position: fixed;
+    z-index:1;
+    top:0;
+    left:50%-150px;
 }
 </style>

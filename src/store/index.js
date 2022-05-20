@@ -1,16 +1,20 @@
 import { createStore } from 'vuex'
 import axios from 'axios'
 
-const defaultUrl='http://localhost:3000/api';
-//const frontDefault='http://localhost:8080'
-const instance =axios.create({ baseURL:defaultUrl});
+const port='3000';
+const defaultUrl='http://localhost:'+port;
+const instance =axios.create({ baseURL:defaultUrl+'/api'});
 //
 
 export default createStore({
   state: {
+    urlBasis:defaultUrl,
+    url:defaultUrl+'/api',
     connectionStatus:'unconnected',   //connecté ou non
     page:'/',                         //page correspondant à la route
-    wait:true,
+  //l'animation d'attente
+    wait:false,
+    time:4000,                        //temps en ms
   // utilisateur                             
     token:'',
     author:'',
@@ -83,24 +87,24 @@ export default createStore({
       state.authorStatus=user.authorStatus;
       state.author=user.author;
       console.log('commit set user',user, state.token, state.authorStatus);
-      //state.page='connected';
+      state.page='connected';
       state.connectionStatus='connected';
     }
   },
   actions: {
     getPublications({commit}){
-      console.log('store getpub,' , this.state.token, 'page', this.state.publicationPage)
-      //this.publication='getPublication'
-      //this.message+=' '+this.token;
-      return new Promise((resolve, reject)=>{
-        commit('waiting',true)
+      console.log('store getpub,' , this.state.token, 'page', this.state.publicationPage) 
 
+      return new Promise((resolve, reject)=>{
+        commit('waiting',true);
+        setTimeout(()=>commit('waiting',false),this.state.time)
         instance.defaults.headers.common={'Authorization':'Bearers '+this.state.token}
         instance.get('/publications/getAllPublications', {params:{'page':this.state.publicationPage}}) //attention à l'ordre si l'on met le headers après le params, il n'est pas pris en compte
           .then(function(res){
             console.log('then',res.data);
             console.log(res.data.counted)
             commit('waiting',false);
+            
             commit('listOfPublication',res.data)
             commit('commentsCount',res.data.counted)
             resolve(res);
@@ -115,7 +119,8 @@ export default createStore({
       console.log('index admin get all users')
       return new Promise((resolve, reject)=>{
         //console.log(commit)
-        commit('waiting',true)
+        commit('waiting',true);
+        setTimeout(()=>commit('waiting',false),this.state.time)
         instance.get('/admin/getAllusers', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
             commit('waiting',false)
@@ -136,6 +141,7 @@ export default createStore({
       return new Promise((resolve, reject)=>{
         //console.log(commit)
         commit('waiting',true);
+        setTimeout(()=>commit('waiting',false),this.state.time)
         instance.get('/admin/getAllPubs', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
             commit('waiting',false)
@@ -155,7 +161,8 @@ export default createStore({
       console.log('index admin get all comments')
       return new Promise((resolve, reject)=>{
         //console.log(commit)
-        commit('waiting',true)
+        commit('waiting',true);
+        setTimeout(()=>commit('waiting',false),this.state.time)
         instance.get('/admin/getAllComments', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
             commit('waiting',false)

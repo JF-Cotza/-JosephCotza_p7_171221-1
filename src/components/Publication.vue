@@ -15,16 +15,18 @@
             <input v-if='this.$store.state.page!="connected"' type="text" id='title'    name='title'    v-model="title"    :placeholder=propsTitle :disabled='disabling' maxlength="255">
             <!-- le texte -->
             <label for="texte" class='masked'>Texte</label>
-            <input type="text" id='texte'    name='texte'    v-model='texte'    :placeholder=propsTexte :disabled='disabling' maxlength="255">
-
+            <input type="text" v-if='this.$store.state.page!="connected"' id='texte'    name='texte'    v-model='texte'    :placeholder=propsTexte :disabled='disabling' maxlength="255">
+            <p v-if='this.$store.state.page=="connected"'>{{propsTexte}} </p>
             <!-- l'image -->
             <label for="image" v-if='this.$store.state.page=="create"' class='masked'>ajouter une image</label>
             <input v-if='this.$store.state.page=="create"' type="file" id='image'    name='image'    title="ajouter une image" @change='image' :disabled='disabling' >
+
+            <img :src="this.imageUrl" alt="" v-if='this.$store.state.page=="create"'>
             <div v-if='this.$store.state.page=="modifier"' >
             <!-- l'ancienne -->
                 <div v-if='propsImage!="" && changed==false'>
                     <p>Image originale</p>
-                    <img :src="'http://localhost:3000/images/'+propsImage" alt="image importée" class='original' id='oldImage'>
+                    <img :src="this.$store.state.url+'/images/'+propsImage" alt="image importée" class='original' id='oldImage'>
                 </div>
                 <p>Pour la nouvelle </p>
                 <div v-if='propsImage!="" && changed==false'>
@@ -38,13 +40,13 @@
         
             <input v-if='this.$store.state.page=="modifier"' type="file" id='modImage'    name='image'    title="ajouter une image" @change='image' :disabled='disabling'>
         
-            <div v-if='fileToUpdate.size>0 && imageUrl!="http://localhost:3000/images" && this.$store.state.page!="create"' class='flex column'>
+            <div v-if='fileToUpdate.size>0 && imageUrl!=imageBasisUrl && this.$store.state.page!="create"' class='flex column'>
                 <img :src="imageUrl" alt="image importé" >
                 <button @click='resetImage'>supprimer l'image</button>
             </div>
 
             <div v-if='this.$store.state.page!="modifier" && this.$store.state.page!="create"'> 
-                <img v-if='propsImage!=""' :src="'http://localhost:3000/images/'+propsImage" alt="image importée">
+                <img v-if='propsImage!=""' :src="imageBasisUrl+'/'+propsImage" alt="image importée">
             </div>
     
             <!-- pas visible lors de la création -->
@@ -56,7 +58,7 @@
                 <button type="submit" :disabled='isDisabled' @click='addPublication'>Créer</button>
             </div>
     <!-- bouton page modifier -->
-            <div class='flex row' v-if="this.$store.state.page=='modifier'">
+            <div class='flex row' v-if="this.$store.state.page=='modifier'" >
                 <button  type="submit" :disabled='isDisabled' @click='modifyPublication'>Modifier</button>
                 <button  type="reset" @click='backToHome'>Annuler et revenir à l'accueil</button>
             </div>            
@@ -68,9 +70,7 @@
 import FormData from 'form-data';
 
 //definition de contantes
-const defaultUrl='http://localhost:3000/api/publications';
 const axios=require('axios');
-const instance =axios.create({ baseURL:defaultUrl});
 const MIMES_TYPES ={                
     'image/jpg' : 'jpg',           
     'image/jpeg': 'jpg',
@@ -102,13 +102,22 @@ export default {
             texte:'',
 
             changed:false,
-            //disabling:'',
-            //message:'',
+            
+            imageBasisUrl:this.$store.state.urlBasis+'/images/',
         }
     },
     created:function(){
         this.$store.state.message=this.message
         axios.defaults.headers.common = {'Authorization': `bearer ${this.$store.state.token}`}
+
+        if(this.$store.state.page!='create'){
+            if(this.propsTitle!=''){
+                this.title=this.propsTitle
+            }
+            if(this.propsTexte!=''){
+            this.texte=this.propsTexte
+            }
+        }
     },
     computed:{
         isDisabled(){
@@ -133,7 +142,7 @@ export default {
         },
         defaultImage(){
             if(this.propsImage!=''){
-                return 'http://localhost:3000/images/'+this.propsImage
+                return this.imageBasisUrl+'/'+this.propsImage
             }
             else{
                 return ''
@@ -183,6 +192,8 @@ export default {
             form.append('id',this.$store.state.author)
 
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.post('/addPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
                     $this.$store.state.wait=false;
@@ -237,6 +248,8 @@ export default {
 
             console.log('titre:',this.title, this.propsTitle, ' texte:',this.texte, 'form',form)
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.put('/modifyPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
                     $this.$store.state.wait=false;
@@ -264,6 +277,8 @@ export default {
             let publicationId=this.publicationId
 
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.defaults.headers.common ={'Authorization':'Bearer '+ this.$store.state.token}
             instance.get('/getOnePublication', {params:{'id':publicationId}})
             .then(function(res){
@@ -308,7 +323,7 @@ form input, form img {
 }
 
 form img{
-    margin:5px 0;
+    margin:5px auto;
     width:95%;
     padding:0;
     box-sizing: border-box;
@@ -333,7 +348,6 @@ form input:disabled{
 
 .flex{
     display: flex;
-    align-items: flex-start;
 }
 
 .column{
@@ -342,6 +356,10 @@ form input:disabled{
 
 .row{
     flex-direction: row;
+}
+
+.flex.row{
+    justify-content: space-around;
 }
 
 .row button{

@@ -1,5 +1,6 @@
 const http = require('http');
 const app = require('./app'); //on importe le contenu du fichier app
+const connect =require('./controllers/connect'); //on accéde au fichier connect pour les paramètres 
 
 //fonction pour vérifier le port
 const normalizePort = val => {
@@ -13,7 +14,7 @@ const normalizePort = val => {
     return false;                       // un port ne peut pas être négatif => on renvoit false
 };
 
-const port = normalizePort(process.env.PORT || '3000');     //on écoute le port 3000 s'il n'y a pas un autre défini par le système.app.set('port', port);
+const port = normalizePort(process.env.PORT || connect.port.value);     //on écoute le port 3000 s'il n'y a pas un autre défini par le système.app.set('port', port);
 
 const errorHandler = error => {
     if (error.syscall !== 'listen') {                      //si le système n'arrive pas à écouter
@@ -43,7 +44,7 @@ const server = http.createServer(app);
 server.on('error', errorHandler);
 
 
-//on vérifie que l'écoute se fait bien. si tout se passe bien on doit avoir dans le terminal : listening on port 3000
+//on vérifie que l'écoute se fait bien. si tout se passe bien on doit avoir dans le terminal : listening on port connect.port.value par défaut 3000
 server.on('listening', () => {
     const address = server.address();
     const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;

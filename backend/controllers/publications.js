@@ -159,6 +159,7 @@ exports.addPublication=async function(req,res,next){
 //D-OP
 exports.deleteOnePublication=async function(req, res, next){
   console.log('D-OP',req.query)
+
   let publicationId=req.query.id;
   let authorId=req.query.author;
   //let authorId=90
@@ -183,8 +184,6 @@ exports.deleteOnePublication=async function(req, res, next){
       return res.status(500).json({error})
     }
   })
-
-
 }
 
 //U-UP : Update Publication

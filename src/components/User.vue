@@ -49,9 +49,8 @@
 
 <script>
 import FormData from 'form-data';
-  const defaultUrl='http://localhost:3000/api';
-  const axios=require('axios');
-  const instance =axios.create({ baseURL:defaultUrl});
+const axios=require('axios');
+  
 
 export default {
     name:'User',
@@ -183,9 +182,11 @@ export default {
             form.append('password',this.password);
             
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.post('/auth/addUser', form)
                 .then(function(res){
-                    this.$store.state.wait=false;
+                    $this.$store.state.wait=false;
                     console.log('add res then',res) 
                     $this.message+='ajouté'
                     $this.connectUser();
@@ -215,6 +216,8 @@ export default {
             form.append('password',this.password);
             
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.post('/auth/connectUser', form)
                 .then(function(res){
                     $this.$store.state.wait=false;
@@ -275,6 +278,8 @@ export default {
             let $this=this;
             
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.delete('/auth/suppressMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
             .then(res=>{
                 console.log(res)
@@ -324,6 +329,8 @@ export default {
             }
 
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
+            let instance= axios.create({ baseURL:this.$store.state.url});
             instance.put('/auth/updateUser', form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
             .then(res=>{
                 $this.$store.state.wait=false;

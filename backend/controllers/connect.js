@@ -1,26 +1,7 @@
-/*
-exports.config_4free = {
-  db: {
-     don't expose password or any sensitive info, done only for demo
-    host: "db4free.net",
-    user: "freejackjc",
-    password: "Fr33jack$01-DE",
-    database: "groupomaniadb_jc",
-  },
-  listPerPage: 10,
-};
-*/
+exports.port={
+  value:'3000'
+}
 
-exports.config_local = {
-  db: {
-    /* don't expose password or any sensitive info, done only for demo */
-    host: "localhost",
-    user: "toto",
-    password: "toto",
-    database: "groupomaniadb",
-  },
-  listPerPage: 10,
-};
 
 exports.config_toad = {
   db: {

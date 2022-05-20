@@ -33,12 +33,14 @@ export default {
     font-weight: bold;
     position: absolute;
     z-index: 1;
-    display: inline-block;
+    
     width: 170px;
     height: fit-content;
     border-radius: 50px 10px ;
-    animation: keys 5s ;
-    animation-iteration-count:infinite;
+    animation: keys;
+    animation-duration: 1000;
+    animation-iteration-count:4;
+    display: inline-block;
 }
 
 .rotate img{
@@ -57,10 +59,13 @@ export default {
     width: 290px;
     height: 290px;
     transform-origin: center;
-    animation: rotation 5s;
-    animation-iteration-count:infinite;
+    animation: rotation;
+    animation-duration: 1500ms;
+    animation-iteration-count:3;
     animation-direction:alternate;
+    animation-timing-function: ease-in-out;
 }
+
 
 
 @keyframes keys{

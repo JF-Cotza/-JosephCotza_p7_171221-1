@@ -101,10 +101,8 @@
 </template>
 
 <script>
-
-const defaultUrl='http://localhost:3000/api/admin';
 const axios=require('axios');
-const instance =axios.create({ baseURL:defaultUrl});
+
 
 export default {
     name:'AdminPublication',
@@ -198,6 +196,8 @@ export default {
             }
 
             this.$store.state.wait=true;
+            setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
+            let instance= axios.create({ baseURL:this.$store.state.url+'/api/admin'});
             instance.put('/publicationUpdate',{publications:listed},{headers:{'Authorization': `bearer ${this.$store.state.token}`}})
             .then(res=>{
                 $this.$store.state.wait=false;
