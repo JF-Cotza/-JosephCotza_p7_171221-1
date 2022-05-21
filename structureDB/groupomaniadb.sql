@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 20 mai 2022 à 11:51
+-- Généré le : sam. 21 mai 2022 à 14:35
 -- Version du serveur : 5.7.36
 -- Version de PHP : 7.4.26
 
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `publications` (
   `publications_status` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`publications_id`),
   KEY `publications_author` (`publications_author`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`users_id`, `users_name`, `users_firstname`, `users_mail`, `users_password`, `users_status`) VALUES
-(12, 'default', 'admin', 'defaultAdmin@defaultAdmin.com', '$2b$10$9wea2ZPMz1E0LmppLAYI3uHqL9AaWfcpT36XPKKnMa9IHcShEKt5a', 1);
+(12, 'default', 'admin', 'defaultAdmin@defaultAdmin.com', '$2b$10$9wea2ZPMz1E0LmppLAYI3uHqL9AaWfcpT36XPKKnMa9IHcShEKt5a', 2);
 
 --
 -- Contraintes pour les tables déchargées
