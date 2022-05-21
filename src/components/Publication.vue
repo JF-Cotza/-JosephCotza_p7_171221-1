@@ -193,7 +193,7 @@ export default {
 
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url});
+            let instance= axios.create({ baseURL:this.$store.state.url+'/publications'});
             instance.post('/addPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
                     $this.$store.state.wait=false;
@@ -249,7 +249,7 @@ export default {
             console.log('titre:',this.title, this.propsTitle, ' texte:',this.texte, 'form',form)
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url});
+            let instance= axios.create({ baseURL:this.$store.state.url+'/publications'});
             instance.put('/modifyPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
                     $this.$store.state.wait=false;
@@ -278,7 +278,7 @@ export default {
 
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url});
+            let instance= axios.create({ baseURL:this.$store.state.url+'/publications'});
             instance.defaults.headers.common ={'Authorization':'Bearer '+ this.$store.state.token}
             instance.get('/getOnePublication', {params:{'id':publicationId}})
             .then(function(res){

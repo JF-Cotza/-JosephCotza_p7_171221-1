@@ -48,7 +48,7 @@ export default createStore({
       }
     },
     resetConnexion(state){
-      instance.get('/kill')
+      instance.get('/kill');
       localStorage.clear();
       sessionStorage.clear();
       state.connectionStatus='unconnected';
