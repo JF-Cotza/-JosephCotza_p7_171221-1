@@ -143,7 +143,7 @@ export default {
     name:'Connected',
     data(){
         return{
-            imageBasisUrl:this.$store.state.url+'/images/',
+            imageBasisUrl:this.$store.state.urlBasis+'/images/',
             message:'', 
             page:1,
             nombrePage:1,

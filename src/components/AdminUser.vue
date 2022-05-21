@@ -172,7 +172,7 @@ export default {
     
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
-            let instance= axios.create({ baseURL:this.$store.state.url+'/api/admin'});
+            let instance= axios.create({ baseURL:this.$store.state.url+'/admin'});
             instance.put('/userUpdate',{users:listed},{headers:{'Authorization': `bearer ${this.$store.state.token}`}})
             .then(res=>{
                 $this.$store.state.wait=false;
