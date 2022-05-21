@@ -26,7 +26,7 @@
             <!-- l'ancienne -->
                 <div v-if='propsImage!="" && changed==false'>
                     <p>Image originale</p>
-                    <img :src="this.$store.state.url+'/images/'+propsImage" alt="image importée" class='original' id='oldImage'>
+                    <img :src="this.$store.state.urlBasis+'/images/'+propsImage" alt="image importée" class='original' id='oldImage'>
                 </div>
                 <p>Pour la nouvelle </p>
                 <div v-if='propsImage!="" && changed==false'>
