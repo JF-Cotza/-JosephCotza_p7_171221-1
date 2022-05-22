@@ -237,7 +237,7 @@ fieldset{
     color:white;
 }
 
-    @media screen and (max-width: 680px) {
+@media screen and (max-width: 680px) {
         .searchSmall{
             width: 95%;
             margin: auto;
@@ -334,7 +334,7 @@ fieldset{
         }
     }
 
-    @media screen and (min-width: 681px) {
+@media screen and (min-width: 681px) {
         .searchSmall{
             display: none;
         }

@@ -274,7 +274,6 @@ export default {
         //D: supprimer le profil
         suppressProfile(e){
             e.preventDefault();
-            console.log('userVue suppressProfile')
             let $this=this;
             
             this.$store.state.wait=true;
@@ -349,8 +348,6 @@ export default {
         }
     }
 }
-
-
 </script>
 
 <style scoped>
@@ -411,5 +408,4 @@ form{
 .align{
     text-align: left;
 }
-
 </style>

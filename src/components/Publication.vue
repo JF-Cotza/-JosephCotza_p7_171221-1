@@ -140,6 +140,7 @@ export default {
                 return false
             }
         },
+        /*
         defaultImage(){
             if(this.propsImage!=''){
                 return this.imageBasisUrl+'/'+this.propsImage
@@ -147,7 +148,7 @@ export default {
             else{
                 return ''
             }
-        }   
+        }*/  
     },    
     methods:{
         image(e){
@@ -233,7 +234,6 @@ export default {
             
             form.append('imageChanged',this.changed)
             
-
             let image
             if(!this.fileToUpdate){
                 image=this.propsImage

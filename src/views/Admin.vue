@@ -71,8 +71,7 @@ export default {
         }
     },
     methods:{
-        selectingClass(){
-            
+        selectingClass(){ 
             let buttons=document.querySelectorAll('#lookingFor button');
             console.log('SC',buttons)
             for(let i=0; i<buttons.length;i++){
@@ -83,7 +82,7 @@ export default {
                     buttons[i].classList.add('selected')
                 }
                 else{
-                    console.log('SC Toto')
+                    console.log('SC')
                 }
             }
             
@@ -95,8 +94,7 @@ export default {
             this.selectingClass();
             let $this=this
             this.$store.dispatch('getAllUsers')
-            .then(()=>{
-                
+            .then(()=>{                
                 $this.$store.state.page='user';
                 $this.$router.push('Admin');  
             })
@@ -138,6 +136,7 @@ export default {
     background: black;
     font-weight: bold;
 }
+
 @media screen and (max-width: 680px) {
     .admin{
         width:300px;

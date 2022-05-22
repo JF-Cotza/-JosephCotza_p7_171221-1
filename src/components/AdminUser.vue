@@ -160,14 +160,14 @@ export default {
             let list=document.getElementsByTagName('select');
             let listed=[];
             
-            console.log(list);
+            //console.log(list);
             for(let i=0;i<list.length;i++){
                 let opt={};    
                 
                 opt.name=list[i].name;
                 opt.value=list[i].value
                 listed.push(opt)
-                console.log('longueur: ',list.length,' indice: ',i,' nom: ',list[i].name, ' valeur: ',list[i].value,' objet: ',opt,'liste agrégée :',listed)
+                //console.log('longueur: ',list.length,' indice: ',i,' nom: ',list[i].name, ' valeur: ',list[i].value,' objet: ',opt,'liste agrégée :',listed)
             }
     
             this.$store.state.wait=true;
@@ -329,7 +329,6 @@ th{
         grid-row:6/7;
         border-radius:0 0 20px 0;
     }
-
 }
 
 @media screen and (min-width: 681px) {
@@ -343,8 +342,6 @@ th{
     .searchSmall, .searchSmall *{
         display: none;        
     }
-
-    
 
     .searchMedium{
         width: 600px;

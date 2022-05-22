@@ -102,8 +102,6 @@ export default createStore({
         instance.defaults.headers.common={'Authorization':'Bearers '+this.state.token}
         instance.get('/publications/getAllPublications', {params:{'page':this.state.publicationPage}}) //attention à l'ordre si l'on met le headers après le params, il n'est pas pris en compte
           .then(function(res){
-            console.log('then',res.data);
-            console.log(res.data.counted)
             commit('waiting',false);
             
             commit('listOfPublication',res.data)
@@ -117,7 +115,6 @@ export default createStore({
       })
     },
     getAllUsers({commit}){
-      console.log('index admin get all users')
       return new Promise((resolve, reject)=>{
         //console.log(commit)
         commit('waiting',true);
@@ -138,7 +135,6 @@ export default createStore({
       })
     },
     getAllPubs({commit}){
-      console.log('index admin get all pubs')
       return new Promise((resolve, reject)=>{
         //console.log(commit)
         commit('waiting',true);
@@ -185,15 +181,14 @@ export default createStore({
 
       commit('resetConnexion')
     },
-    tokenChecking({commit},value){
-      console.log('tokenCheking call by',value,'  ',sessionStorage.getItem('token'))
-      console.log(commit);
+    tokenChecking({commit}){//,value){
+      //console.log('tokenCheking call by',value,'  ',sessionStorage.getItem('token'))
+      //console.log(commit);
       if(sessionStorage.getItem('token')){
         let user=JSON.parse(sessionStorage.getItem('token'))
         commit('setUser',user)
       }
     }
   },
-  modules: { 
-  }
+  
 })

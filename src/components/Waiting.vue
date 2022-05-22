@@ -66,8 +66,6 @@ export default {
     animation-timing-function: ease-in-out;
 }
 
-
-
 @keyframes keys{
     0%{
         background-color:red;

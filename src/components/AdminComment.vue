@@ -281,7 +281,6 @@ export default ({
         background: grey;
     }
 
-
     .IdCellTwoOne, .IdCellTwoTwo,.IdCellTwoThree, .statusOneOne,.statusOneTwo, .comment p, tr{
         background: silver;
         margin:2px;
@@ -304,7 +303,6 @@ export default ({
 
     .comment{
         width: 95%;
-
         border:1px solid black;
         border-radius: 20px;
         margin:3px auto;
@@ -318,30 +316,33 @@ export default ({
         border-bottom: 1px solid black;
     }
 
-   
-
     .IdCellOneOne{
         border-radius: 20px 0 0 0;
         grid-column: 1 / 2;
         grid-row: 1 / 2;
     }
+
     .IdCellOneTwo{
         grid-column: 2 / 3;
         grid-row: 1 / 2;
     }
+
     .IdCellOneThree{
         border-radius: 0 20px 0 0;
         grid-column: 3 / 4;
         grid-row: 1 / 2;
     }
+
     .IdCellTwoOne{
         grid-column: 1 / 2;
         grid-row: 2 / 3;
     }
+
     .IdCellTwoTwo{
         grid-column: 2 / 3;
         grid-row: 2 / 3;
     }
+
     .IdCellTwoThree{
         grid-column: 3 / 4;
         grid-row: 2 / 3;
@@ -371,8 +372,7 @@ export default ({
         grid-column: 2 / 3;
         grid-row: 2 / 3;
     }
-
-    }
+}
 
     @media screen and (min-width: 681px) {
         .searchSmall{

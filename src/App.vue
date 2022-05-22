@@ -118,7 +118,6 @@ export default {
 }
 </script>
 
-
 <style lang="scss">
 html{
   height: fit-content;
@@ -179,8 +178,6 @@ h1{
   border-radius: 20px;
 }
 
-
-
 .body, .nav{
   min-width: 300px;
   margin:auto;
@@ -219,7 +216,6 @@ h1{
   padding:5px 0;
   margin: 5px 0;
 }
-
 
 //les boutons
 //bouton
@@ -274,11 +270,7 @@ h1{
   padding: 0;
 }
 
-
-
-
-@media screen and (max-width: 680px)
-{
+@media screen and (max-width: 680px){
   .container{
     width: 300px;
     margin: auto;

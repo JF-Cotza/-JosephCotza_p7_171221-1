@@ -180,13 +180,10 @@ export default {
         choixPage(e){
             this.page=e.target.value
             this.$store.state.publicationPage=this.page;
-            console.log('choixpage/ page',this.page,' / publicationPage', this.$store.state.publicationPage)
-            //this.listePublication();
+            //console.log('choixpage/ page',this.page,' / publicationPage', this.$store.state.publicationPage)
             this.$store.dispatch('getPublications')
         },
-        
         supprimer(e){
-
             let publicationId=e.target.value;
             let authorId=this.$store.state.author;
             console.log('supprimer la publication',this.onePublication, publicationId, this.tokenValue)
@@ -229,9 +226,6 @@ export default {
             console.log('modifier')
             this.$store.state.page='modifier';
         },
-        addComment(){
-            console.log('pour ajouter un commentaire, state',this.$store.state)
-        },
         forActing(e){
             let cible=e.target;
             let $this=this;
@@ -265,7 +259,6 @@ export default {
             }
             
             let action=cible.getAttribute('act')
-            
 
             let toDo={id:cible.value,action:action}
             this.$store.state.wait=true;
@@ -283,14 +276,10 @@ export default {
             .catch(err=>console.log(err))
         },
         poping(e){
-            
-            console.log(e.target)
             if(e.target.tagName=='BUTTON'){
-                console.log('bouton:',e.target.value)
                 this.toPop=e.target.value
             }    
             if(e.target.tagName=='IMG'){
-                console.log('IMG',e.target.parentNode.value)
                 this.toPop=e.target.parentNode.value
             }
             this.hover=true;
@@ -416,7 +405,6 @@ span{
     box-sizing: border-box;
     color:white;
 }
-
 
 .relative{
   position: relative;

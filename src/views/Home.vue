@@ -41,9 +41,5 @@ export default {
       password:''
     }
   },
-  //props:['nom', 'prenom','mail','password'],
-  methods:{
-        
-  }
 }
 </script>
