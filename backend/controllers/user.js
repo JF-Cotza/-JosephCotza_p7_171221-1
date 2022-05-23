@@ -77,7 +77,7 @@ exports.connectUser=async function(req,res,next){
       console.log('R-C1 check', check)
 
     if(check==''){
-      console.log('pas de data', user)
+      //console.log('pas de data', user)
       return res.status(500).json({message:"l'utililisateur n'existe pas"})
     }
     if(check!=''){
@@ -113,12 +113,12 @@ exports.pswComparaison=async function(req, res, next){
 
 //R-C3 confirmation que l'utilisateur est reconnu, envoi du token
 exports.confirmUser=async function(req,res,next){
-    console.log('R-C3 : des data',req.body)
-    let user=req.body.check[0]
+  //console.log('R-C3 : des data',req.body)
+  let user=req.body.check[0]
 
-    let tok=await jwt.sign({userId:user.users_id+' '+user.users_mail},token.value ,{expiresIn:token.end})
-    console.log('R-c3 token', tok)
-    res.status(200).json({message:'user reconnu',id:tok, author:user.users_id, authorStatus:user})
+  let tok=await jwt.sign({userId:user.users_id+' '+user.users_mail},token.value ,{expiresIn:token.end})
+  //console.log('R-c3 token', tok)
+  res.status(200).json({message:'user reconnu',id:tok, author:user.users_id, authorStatus:user})
 }
 
 //R-P1 
@@ -126,7 +126,7 @@ exports.getMyProfile=async function(req,res,next){
   console.log('get1-mail','headers',req.headers, 'query', req.headers, 'body', req.body)
   const checkToken=jwt.verify(req.headers.authorization.split(' ')[1],token.value).userId;
   let split=checkToken.split(' ')
-  console.log('get1',checkToken,'split', split);
+  //console.log('get1',checkToken,'split', split);
   
   let email=split[1];
   let id=split[0]
@@ -136,10 +136,8 @@ exports.getMyProfile=async function(req,res,next){
   );
   const data = helper.emptyOrRows(rows);
 
-  
-
   if(data){
-    console.log('profile : ', data)
+    //console.log('profile : ', data)
     return res.status(200).json({'data':data})
   }
   else{
@@ -155,7 +153,7 @@ exports.uniqueMail=async function(req,res,next) {
   const checkToken=jwt.verify(req.headers.authorization.split(' ')[1],token.value).userId;
   let id=checkToken.split(' ')[0]
 
-  console.log('U-P1 checktoken',checkToken)
+  //console.log('U-P1 checktoken',checkToken)
 
   const offset = helper.getOffset(page, config.listPerPage);
   const rows = await query(
@@ -164,20 +162,21 @@ exports.uniqueMail=async function(req,res,next) {
    const data = helper.emptyOrRows(rows);
 
   //console.log('U-P1',req.body, data,data[0].users_id,id);
+    /*
     if(data==''){
       console.log("pas d'id",id)
     }  
     else if(data[0].users_id==id){
       console.log('to next')
     }
-    
+    */
     if(data=='' || data[0].users_id==id){
-      console.log('U-P1 next',id)
+      //console.log('U-P1 next',id)
       req.body.id=id;
       next()
     }
     else{
-      console.log('U-P1 else')
+      //console.log('U-P1 else')
       let message='Un autre utilisateur utilise déjà cette adresse mail'
       return res.status(500).json({error:message})
     }
@@ -193,31 +192,29 @@ exports.updatingUser=async function(req,res,next){
   let message='erreur lors de la mise à jour'
 
   if(user.psw==''){
-    console.log('pas de mise à jour du mot de passe')
+    //console.log('pas de mise à jour du mot de passe')
     update = await query(
     `UPDATE users SET users_name='${user.name}', users_firstname='${user.firstname}', users_mail='${user.email}' WHERE users_id=${user.id}`)
   }
   else{
-    console.log('on doit hasher le mot de passe')
+    //console.log('on doit hasher le mot de passe')
     await bcrypt.hash(user.psw,10).then((hash)=>{crypted=(hash)}).catch((err)=>{console.log(err.message)})
-    console.log('U-P2 hash',user.psw,crypted)
+    //console.log('U-P2 hash',user.psw,crypted)
     update = await query(
     `UPDATE users SET users_name='${user.name}', users_firstname='${user.firstname}', users_mail='${user.email}', users_password='${crypted}' WHERE users_id=${user.id}`)
   }
   
   const verified = helper.emptyOrRows(update);
-  console.log('U-P2 verified',verified.affectedRows)
+  //console.log('U-P2 verified',verified.affectedRows)
   if(verified.affectedRows!=0){
     code=200
     message=verified.affectedRows + ' mises à jours'
     //res.status(code).json({'message':message});   
-    
     next()
   }
   else{
     return res.status(code).json({'message':message})
   }
-  
 }
 
 //D-P suppression d'un utilisateur
@@ -234,11 +231,11 @@ exports.deleteProfile=async function(req, res, next){
    );
    const data = helper.emptyOrRows(rows);
 
-   console.log('D-P select publications',data)
+   //console.log('D-P select publications',data)
   
    for(let i=0;i<data.length; i++){
      imageName=data[i].publications_image
-     console.log(data[i].publications_image)
+     //console.log(data[i].publications_image)
       if(imageName){
         fileSystem.unlink(`./images/${imageName}`,async function(){       
            // on appele la méthode unlink de fs pour supprimer le fichier .unlink('chemin+nom du fichier à supprimer', fonction à éxécuter quand la suppression est effectuée)
@@ -253,12 +250,11 @@ exports.deleteProfile=async function(req, res, next){
   let code=500;
   let message = 'Error in deleting user';
 
-  console.log('delete')
+  //console.log('delete')
 
   if (result.affectedRows) {
     code=200
     message = 'User deleted successfully';
   }
   return res.status(code).json({'message':message})
-
 }

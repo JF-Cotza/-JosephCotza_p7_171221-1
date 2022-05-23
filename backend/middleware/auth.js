@@ -16,8 +16,7 @@ module.exports =async (req, res, next) =>{
         const user_id=checkToken.userId.split(' ')[0];
         const user_mail=checkToken.userId.split(' ')[1]
 
-        console.log('auth decrypage du token',checkToken);
-        
+        //console.log('auth decrypage du token',checkToken);
 
         //const offset = helper.getOffset(page, config.listPerPage);
         const rows = await query(
@@ -26,7 +25,7 @@ module.exports =async (req, res, next) =>{
         const check = helper.emptyOrRows(rows);
         //const meta = {page}
 
-        console.log('check',check)
+        //console.log('check',check)
         
         if(check==''){
             console.log('user invalide');

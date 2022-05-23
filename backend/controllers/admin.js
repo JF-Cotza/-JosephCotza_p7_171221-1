@@ -7,13 +7,12 @@ const connect = require('./connect');
 /*********************************** récupérations des datas *******************************/
 //G-AU
 exports.getAllProfile=async function(req,res, next){
-  console.log('get all users')
-
+  //console.log('get all users')
   const rows = await query(`SELECT * FROM users `);
   const data = helper.emptyOrRows(rows);
  
   if(data){
-    console.log('profiles : ', data)
+    //console.log('profiles : ', data)
     return res.status(200).json({'data':data})
   }
   else{
@@ -78,10 +77,10 @@ exports.updateUser=async function(req,res, next){
 
 //P-UP
 exports.updatePublication=async function(req,res, next){
-  console.log('update publication', req.body.publications)
+  //console.log('update publication', req.body.publications)
   let publications=req.body.publications
   for(let i=0; i<publications.length;i++){
-    console.log(i, publications[i].id, publications[i].value)
+    //console.log(i, publications[i].id, publications[i].value)
     if(publications[i].value!='' && publications[i].id!='')
     {let update = await query(
     `UPDATE publications SET publications_status='${publications[i].value}' WHERE publications_id=${publications[i].id}`)
@@ -100,10 +99,10 @@ exports.updatePublication=async function(req,res, next){
 
 //P-UC
 exports.updateComments=async function(req,res, next){
-  console.log('update comments', req.body.commentaire)
+  //console.log('update comments', req.body.commentaire)
   let comment=req.body.commentaire
   for(let i=0; i<comment.length;i++){
-    console.log(i, comment[i].id, comment[i].value)
+    //console.log(i, comment[i].id, comment[i].value)
     if(comment[i].value!='' && comment[i].id!='')
     {let update = await query(
     `UPDATE comments SET comments_status='${comment[i].value}' WHERE comments_id=${comment[i].id}`)
@@ -114,7 +113,7 @@ exports.updateComments=async function(req,res, next){
 
   let quer=await query('select * from publications');
   const list = helper.emptyOrRows(quer);
-  console.log(list)
+  //console.log(list)
 
   return res.status(200).json({'message':'publications mises à jours'})
   

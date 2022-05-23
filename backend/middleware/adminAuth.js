@@ -19,7 +19,7 @@ module.exports =async (req, res, next) =>{
         const user_id=checkToken.userId.split(' ')[0];
         const user_mail=checkToken.userId.split(' ')[1]
 
-        console.log('adminAuth decrypage du token',checkToken);
+        //console.log('adminAuth decrypage du token',checkToken);
         
         //ajout de la condition users_status=2 pour être sûr que c'est bien un admin
 
@@ -30,11 +30,11 @@ module.exports =async (req, res, next) =>{
         //const meta = {page}
 
         if(check==''){
-            console.log('user invalide');
+            //console.log('user invalide');
             throw 'user ID invalide'
         }
         else{
-            console.log('admin identifié');
+            //console.log('admin identifié');
             next();
         }
     }
