@@ -3,6 +3,7 @@ node_modules
 /dist
 /backend/images
 /backend/node_modules
+/backend/.env
 
 /public/retires
 

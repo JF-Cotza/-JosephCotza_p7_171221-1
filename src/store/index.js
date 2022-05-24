@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 import axios from 'axios'
 
-const port='3000';
+const port='5000';
 const defaultUrl='http://localhost:'+port;
 const instance =axios.create({ baseURL:defaultUrl+'/api'});
 //

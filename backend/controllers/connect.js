@@ -1,17 +1,14 @@
-exports.port={
-  value:'3000'
-}
-
-
+require('dotenv').config();
+let ENV=process.env
 exports.config_toad = {
   db: {
     /* don't expose password or any sensitive info, done only for demo */
-    host: "localhost",
-    user: "freejackjc",
-    password: "Fr33jack$01-PN",
-    database: "groupomaniadb",
+    host: ENV.db_host,
+    user: ENV.db_user,
+    password: ENV.db_password,
+    database: ENV.db_database,
   },
-  listPerPage: 5,
+  listPerPage: ENV.listPerPage,
 };
 
-exports.token = { value: 'RANDOM_TOKEN_SECRET_FOR_DEVELOPPEMENT', end: '24h' }
+exports.token = { value: ENV.token, end: ENV.token_end }

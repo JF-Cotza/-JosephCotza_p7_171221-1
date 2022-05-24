@@ -1,5 +1,7 @@
 const http = require('http');
 const app = require('./app'); //on importe le contenu du fichier app
+require('dotenv').config();
+let PORT=process.env.connecting_port;
 const connect =require('./controllers/connect'); //on accéde au fichier connect pour les paramètres 
 
 //fonction pour vérifier le port
@@ -14,7 +16,7 @@ const normalizePort = val => {
     return false;                       // un port ne peut pas être négatif => on renvoit false
 };
 
-const port = normalizePort(process.env.PORT || connect.port.value);     //on écoute le port 3000 s'il n'y a pas un autre défini par le système.app.set('port', port);
+const port = normalizePort(PORT || 3000);     //on écoute le port 3000 s'il n'y a pas un autre défini par le système.app.set('port', port);
 
 const errorHandler = error => {
     if (error.syscall !== 'listen') {                      //si le système n'arrive pas à écouter
