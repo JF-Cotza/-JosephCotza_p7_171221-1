@@ -8,8 +8,10 @@ exports.config_toad = {
     user: ENV.db_user,
     password: ENV.db_password,
     database: ENV.db_database,
+    connectionLimit:ENV.db_connectionLimit,
   },
   listPerPage: ENV.listPerPage,
+
 };
 
 exports.token = { value: ENV.token, end: ENV.token_end }

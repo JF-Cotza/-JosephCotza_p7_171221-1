@@ -1,6 +1,6 @@
 const query=require('../query');
-const helper=require('../helper');
-const config=require('../routes/connect');
+//const helper=require('../helper');
+//const config=require('../routes/connect');
 
 //C : ajouter un commentaire
 exports.addComment=async function(req,res,next){   

@@ -15,9 +15,6 @@ const commentRt=require('./routes/comment');
 const publication=require('./routes/publications');
 const admin=require('./routes/admin');
 
-//paramètres divers
-const port = 3000;
-
 //fonctions
 
 let config=connect;
@@ -46,8 +43,6 @@ app.get('/');
 app.use('/images', express.static(path.join(__dirname, 'images'))); //Attention, à ne pas oublier sinon le front ne peut pas accéder au répertoire image
 
 app.use(fileUpload())
-
-
 
 app.use('/api/auth', user);
 app.use('/api/publications', publication);

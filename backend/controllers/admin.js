@@ -1,8 +1,8 @@
 //modules créés
 const query=require('../query');
 const helper=require('../helper');
-const config=require('../routes/connect');
-const connect = require('./connect');
+//const config=require('../routes/connect');
+//const connect = require('./connect');
 
 /*********************************** récupérations des datas *******************************/
 //G-AU
