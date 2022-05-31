@@ -1,6 +1,6 @@
 <template>
     <div class='containing'>
-        {{ message }}  url :{{ defaultUrl }}
+        {{ message }}
         <form :action="defaultUrl+cible" method="POST" enctype="multipart/form-data" class='flex column'>
         <!-- nom et prénom visible lors de la création et lorsque l'on est connecté sur le profile -->
             <label for="name" v-if="this.$store.state.page=='sign'" aria-label='saisissez votre nom de famille'>Votre Nom :</label>
