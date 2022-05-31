@@ -51,8 +51,8 @@ export default {
             //axios.defaults.headers.common = {'Authorization': `bearer ${this.$store.state.token}`}
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
-            let instance= axios.create({ baseURL:this.$store.state.url+'/comments'});
-            instance.post('/addComment', form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
+            
+            axios.post(this.$store.state.url+'/comments/addComment', form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
                     $this.$store.state.wait=false;
                     $this.$store.state.message=res.data.message

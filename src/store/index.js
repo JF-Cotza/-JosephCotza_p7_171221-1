@@ -1,9 +1,8 @@
 import { createStore } from 'vuex'
 import axios from 'axios'
 
-const port='5000';
-const defaultUrl='http://localhost:'+port;
-const instance =axios.create({ baseURL:defaultUrl+'/api'});
+const defaultUrl=process.env.VUE_APP_url;
+//const instance =axios.create({ baseURL:defaultUrl+'/api'});
 //
 
 export default createStore({
@@ -48,7 +47,7 @@ export default createStore({
       }
     },
     resetConnexion(state){
-      instance.get('/kill');
+      axios.get(this.state.url+'/kill');
       localStorage.clear();
       sessionStorage.clear();
       state.connectionStatus='unconnected';
@@ -99,8 +98,8 @@ export default createStore({
       return new Promise((resolve, reject)=>{
         commit('waiting',true);
         setTimeout(()=>commit('waiting',false),this.state.time)
-        instance.defaults.headers.common={'Authorization':'Bearers '+this.state.token}
-        instance.get('/publications/getAllPublications', {params:{'page':this.state.publicationPage}}) //attention à l'ordre si l'on met le headers après le params, il n'est pas pris en compte
+        axios.defaults.headers.common={'Authorization':'Bearers '+this.state.token}
+        axios.get(this.state.url+'/publications/getAllPublications', {params:{'page':this.state.publicationPage}}) //attention à l'ordre si l'on met le headers après le params, il n'est pas pris en compte
           .then(function(res){
             commit('waiting',false);
             
@@ -119,7 +118,7 @@ export default createStore({
         //console.log(commit)
         commit('waiting',true);
         setTimeout(()=>commit('waiting',false),this.state.time)
-        instance.get('/admin/getAllusers', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
+        axios.get(this.state.url+'/admin/getAllusers', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
             commit('waiting',false)
             commit('users',res.data)
@@ -139,7 +138,7 @@ export default createStore({
         //console.log(commit)
         commit('waiting',true);
         setTimeout(()=>commit('waiting',false),this.state.time)
-        instance.get('/admin/getAllPubs', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
+        axios.get(this.state.url+'/admin/getAllPubs', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
             commit('waiting',false)
             commit('pubs',res.data)
@@ -160,7 +159,7 @@ export default createStore({
         //console.log(commit)
         commit('waiting',true);
         setTimeout(()=>commit('waiting',false),this.state.time)
-        instance.get('/admin/getAllComments', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
+        axios.get(this.state.url+'/admin/getAllComments', {headers:{'Authorization': `bearer ${this.state.token}`}}) 
           .then(function(res){
             commit('waiting',false)
             commit('comments',res.data)

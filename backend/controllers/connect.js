@@ -1,5 +1,6 @@
 require('dotenv').config();
-let ENV=process.env
+let ENV=process.env;
+
 exports.config_toad = {
   db: {
     /* don't expose password or any sensitive info, done only for demo */

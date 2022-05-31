@@ -1,6 +1,6 @@
 <template>
     <div class='containing'>
-        {{ message }}
+        {{ message }}  url :{{ defaultUrl }}
         <form :action="defaultUrl+cible" method="POST" enctype="multipart/form-data" class='flex column'>
         <!-- nom et prénom visible lors de la création et lorsque l'on est connecté sur le profile -->
             <label for="name" v-if="this.$store.state.page=='sign'" aria-label='saisissez votre nom de famille'>Votre Nom :</label>
@@ -183,8 +183,8 @@ export default {
             
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url});
-            instance.post('/auth/addUser', form)
+            console.log('add : url',this.$store.state.url)
+            axios.post(this.$store.state.url+'/auth/addUser', form)
                 .then(function(res){
                     $this.$store.state.wait=false;
                     console.log('add res then',res) 
@@ -217,8 +217,9 @@ export default {
             
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
-            let instance= axios.create({ baseURL:this.$store.state.url});
-            instance.post('/auth/connectUser', form)
+            //console.log('auth/connectUser',this.$store.state.url)
+        
+            axios.post(this.$store.state.url+'/auth/connectUser', form)
                 .then(function(res){
                     $this.$store.state.wait=false;
                     console.log('status',res.data.authorStatus.users_status)
@@ -247,7 +248,7 @@ export default {
                     }
                                         
                     console.log('erreur log ',error.message, $this.message)
-                    $this.$router.push('http://localhost:8000/')
+                    $this.$router.push('Home')
                 })
         },
     //connected
@@ -278,8 +279,8 @@ export default {
             
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url});
-            instance.delete('/auth/suppressMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
+            
+            axios.delete(this.$store.state.url+'/auth/suppressMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
             .then(res=>{
                 console.log(res)
                 $this.$store.state.wait=false;
@@ -329,8 +330,8 @@ export default {
 
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url});
-            instance.put('/auth/updateUser', form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
+            
+            axios.put(this.$store.state.url+'/auth/updateUser', form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
             .then(res=>{
                 $this.$store.state.wait=false;
                 $this.$store.dispatch('deconnection');

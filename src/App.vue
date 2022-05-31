@@ -102,8 +102,7 @@ export default {
       let $this=this;
       this.$store.state.wait=true;
       setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
-      let instance= axios.create({ baseURL:this.$store.state.url});
-      instance.get('/auth/getMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
+      axios.get(this.$store.state.url+'/auth/getMyProfile', {headers: {'Authorization': `bearer ${this.token}`}})
       .then(res=>{
         $this.$store.state.wait=false;
         let user=res.data.data[0];

@@ -26,11 +26,11 @@ C) Lors de la création du projet :
         3. lancer ensuite soit : nodemon server , soit :npm run serve
 
 D)Fichier .env
-	Renommer le fichier .env_template en .env
+	dans le backend et le front end : renommer les fichier .env_template en .env
 
 E) Configuration du port backend
 	Cela doit être la même valeur dans le frontend et le backend
-- dans le frontend : Dans le fichier:src/store/index.js : modifier la valeur de port. 
+- dans le frontend : Dans le fichier:.env : modifier la valeur de port qui suit localhost s'il le dépôt est déployé en local sinon modifier complément le lien. 
 - dans le backend : dans le fichier : backend/.env  modifier la valeur contenu dans connecting_port
 
 F) Configuration d’accés à la base de donnée :

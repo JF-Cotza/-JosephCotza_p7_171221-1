@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.26.1",
     "core-js": "^3.6.5",
+    "dotenv": "^16.0.1",
     "form-data": "^4.0.0",
     "sequelize": "^6.17.0",
     "vue": "^3.0.0",

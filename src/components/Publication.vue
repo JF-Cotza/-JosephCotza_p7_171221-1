@@ -194,8 +194,8 @@ export default {
 
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url+'/publications'});
-            instance.post('/addPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
+            
+            axios.post(this.$store.state.url+'/publications/addPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
                     $this.$store.state.wait=false;
                     $this.$store.state.message=res.data.message
@@ -249,8 +249,8 @@ export default {
             console.log('titre:',this.title, this.propsTitle, ' texte:',this.texte, 'form',form)
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url+'/publications'});
-            instance.put('/modifyPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
+            
+            axios.put(this.$store.state.url+'/publications/modifyPublication',form,{headers: {'Authorization': `bearer ${this.$store.state.token}`}})
                 .then(res=>{
                     $this.$store.state.wait=false;
                     $this.$store.state.message=res.data.message
@@ -278,9 +278,9 @@ export default {
 
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time);
-            let instance= axios.create({ baseURL:this.$store.state.url+'/publications'});
-            instance.defaults.headers.common ={'Authorization':'Bearer '+ this.$store.state.token}
-            instance.get('/getOnePublication', {params:{'id':publicationId}})
+            
+            axios.defaults.headers.common ={'Authorization':'Bearer '+ this.$store.state.token}
+            axios.get(this.$store.state.url+'/publications/getOnePublication', {params:{'id':publicationId}})
             .then(function(res){
                 $this.$store.state.wait=false;
                 let returned=res.data.publication[0];
