@@ -53,5 +53,8 @@ app.use('/api/auth', user);
 app.use('/api/publications', publication);
 app.use('/api/comments', commentRt)
 app.use('/api/admin',admin)
-app.use('/api/kill',function(req){req.session.destroy()})
+app.use('/api/kill',function(req,res,next){
+  req.session.destroy(),
+  res.status(200).json({message:'Vous avez été déconnceté'})
+})
 module.exports=app;

@@ -185,13 +185,13 @@ exports.deleteOnePublication=async function(req, res, next){
 
 //U-UP : Update Publication
 exports.updatePublication=async function(req, res, next){
-  //console.log('U-UP: body: ',req.body, '/ files: ',req.files)
+  console.log('U-UP: body: ',req.body, '/ files: ',req.files,'headers',req.headers)
 
   let publication=req.body
   let sql;
     if(publication.imageChanged=='false'){ //l'image n'a pas été changée, ni supprimée
-      //console.log("U-UP, console 1, l'image n'a pas été changée, ni supprimée")
-      sql =await query(`UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}' WHERE publications_id=${publication.publicationId}`);
+      console.log("U-UP, console 1, l'image n'a pas été changée, ni supprimée")
+      sql =await query(`UPDATE publications SET publications_title="${publication.title}", publications_texte="${publication.texte}" WHERE publications_id='${publication.publicationId}'`);
     }
     else{//l'image a été changée ou supprimée
       //console.log("U-UP, console 2, l'image a été changée ou supprimée")
@@ -257,19 +257,19 @@ exports.updatePublication=async function(req, res, next){
   
   //mise à jour
   sql = await query( 
-      `UPDATE publications SET publications_title='${publication.title}', publications_texte='${publication.texte}', publications_image='${name}' WHERE publications_id=${publication.publicationId}`);
+      `UPDATE publications SET publications_title="${publication.title}", publications_texte="${publication.texte}", publications_image='${name}' WHERE publications_id=${publication.publicationId}`);
   }
 
   //mise à jour quel que soit le cas + vérification
   const updating = helper.emptyOrRows(sql);
 
-  //console.log('U-UP,console 12',updating)
+  console.log('U-UP,console 12',updating)
   
   const verify = await query(
     `SELECT * from publications WHERE publications_id=${publication.publicationId}`
   );
 
   const verified = helper.emptyOrRows(verify);
-  //console.log('u-UP,console 13, vérification de la modification',verified)
+  console.log('u-UP,console 13, vérification de la modification',verified)
   res.status(200).json({message:'publication mise à jour'})
 }

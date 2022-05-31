@@ -18,6 +18,6 @@ router.get('/getOnePublication', authorization, pubFunction.getOnePublication)
 router.delete('/suppressOne', authorization, pubFunction.deleteOnePublication)
 
 //U : modifier une publication
-router.put('/modifyPublication',authorization, pubFunction.updatePublication)
+router.put('/modifyPublication',authorization, function(req,res,next){console.log(req.headers),next()},pubFunction.updatePublication)
 
 module.exports = router;

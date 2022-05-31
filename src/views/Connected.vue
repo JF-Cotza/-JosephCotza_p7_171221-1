@@ -192,8 +192,8 @@ export default {
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
             axios.defaults.headers.common = {'Authorization': 'Bearer '+this.tokenValue}
-            let instance= axios.create({ baseURL:this.$store.state.url});
-            instance.delete('/publications/suppressOne', {params:data})//, {headers:{'Authorization': 'Bearer '+this.tokenValue}})
+            
+            axios.delete(this.$store.state.url+'/publications/suppressOne', {params:data})//, {headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 $this.message=res.data.message;
                 $this.$store.state.wait=false;
@@ -237,8 +237,8 @@ export default {
             let toDo={id:cible.value,action:cible.getAttribute('act')}
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
-            let instance= axios.create({ baseURL:this.$store.state.url});
-            instance.put('/admin/publicationUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
+            
+            axios.put(this.$store.state.url+'/admin/publicationUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 console.log(res)
                 $this.$store.state.wait=false;
@@ -263,8 +263,8 @@ export default {
             let toDo={id:cible.value,action:action}
             this.$store.state.wait=true;
             setTimeout(()=>(this.$store.state.wait=false),this.$store.state.time)
-            let instance= axios.create({ baseURL:this.$store.state.url});
-            instance.put('/admin/commentsUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
+            
+            axios.put(this.$store.state.url+'/admin/commentsUpdateOne',toDo,{headers:{'Authorization': 'Bearer '+this.tokenValue}})
             .then(res=>{
                 console.log(res)
                 $this.$store.state.wait=false;
