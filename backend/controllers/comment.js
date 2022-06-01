@@ -23,5 +23,5 @@ exports.addComment=async function(req,res,next){
   else{
     console.log('erreur ')
   }
-  return res.status(code).json({message:message})
+  return res.status(code).json({message:message}).end()
 }

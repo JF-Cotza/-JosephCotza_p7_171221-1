@@ -63,10 +63,10 @@ exports.getPublications=async function(req,res, next){
   //console.log(publications)
 
   if(publications){
-    return res.status(200).json({message: total+' publications trouvées',liste: publications, counted:table})
+    return res.status(200).json({message: total+' publications trouvées',liste: publications, counted:table}).end()
   }
   else{
-    return res.status(500).json({error})
+    return res.status(500).json({error}).end()
   }
 }
 
@@ -84,10 +84,10 @@ exports.getOnePublication=async function(req,res,next){
   
   if(pub){
     //console.log('R-OP if data',pub, commentList )
-    return res.status(200).json({publication:pub,comments:commentList})
+    return res.status(200).json({publication:pub,comments:commentList}).end()
   }
   else{
-    return res.status(500).json({error})
+    return res.status(500).json({error}).end()
   }
 
 }
@@ -106,7 +106,7 @@ exports.addPublication=async function(req,res,next){
     const extension=MIMES_TYPES[req.files.image.mimetype];
     if(!extension){console.log('format non reconnu')};
     if (!req.files || Object.keys(req.files).length === 0 || !extension) {
-        return res.status(400).send('No files were uploaded.');
+        return res.status(400).send('No files were uploaded.').end();
     }
 
     imageFile= req.files.image;
@@ -123,7 +123,7 @@ exports.addPublication=async function(req,res,next){
       //console.log('mv')
       //console.log(imageFile)
         if (err){
-          return res.status(500).send(err);
+          return res.status(500).send(err).end();
         }
         else{
           //console.log('name '+name)
@@ -145,12 +145,12 @@ exports.addPublication=async function(req,res,next){
   if (result.affectedRows) {
     message = 'publication added successfully';
     console.log('if result ', message)
-    return res.status(200).json({message:message})
+    return res.status(200).json({message:message}).end()
   }
   else{
     console.log('erreur ')
   }
-  return res.status(500).json({error})
+  return res.status(500).json({error}).end()
 }
 
 //D-OP
@@ -175,10 +175,10 @@ exports.deleteOnePublication=async function(req, res, next){
     //console.log('D-OP data',data)
     
     if(data){
-      return res.status(200).json({message:'publication supprimée'})
+      return res.status(200).json({message:'publication supprimée'}).end()
     }
     else{
-      return res.status(500).json({error})
+      return res.status(500).json({error}).end()
     }
   })
 }
@@ -211,7 +211,7 @@ exports.updatePublication=async function(req, res, next){
         if(!extension){console.log('U-UP,console 4,format non reconnu')};
         
         if (!req.files || Object.keys(req.files).length === 0 || !extension) {
-        return res.status(400).send('No files were uploaded.');
+        return res.status(400).send('No files were uploaded.').end();
         }
 
         imageFile= image;
@@ -224,7 +224,7 @@ exports.updatePublication=async function(req, res, next){
 
         imageFile.mv(uploadPath, function(err) {  
           if (err){
-            return res.status(500).send(err);
+            return res.status(500).send(err).end();
           }
           else{
             //console.log('U-UP,console 6,image importé dans /backend/images')
@@ -271,5 +271,5 @@ exports.updatePublication=async function(req, res, next){
 
   const verified = helper.emptyOrRows(verify);
   console.log('u-UP,console 13, vérification de la modification',verified)
-  res.status(200).json({message:'publication mise à jour'})
+  res.status(200).json({message:'publication mise à jour'}).end()
 }

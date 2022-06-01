@@ -11,6 +11,7 @@ const query=require('../query');
 const helper=require('../helper');
 const config=require('../routes/connect');
 const connect = require('./connect');
+const connection = require('../routes/connect');
 
 //variables globales
 let token=connect.token
@@ -26,7 +27,7 @@ exports.checkExisting=async function(req,res,next) {
     `SELECT * FROM users WHERE users_mail = '${email}'`
    );
    const data = helper.emptyOrRows(rows);
-
+    
 
   console.log('checkexisting',req.body, data);
    if (data==''){
@@ -35,7 +36,7 @@ exports.checkExisting=async function(req,res,next) {
    }
    else{
      console.log('check data', data)
-     return res.status(401).json({message:'email déjà utilisé'})
+     return res.status(401).json({message:'email déjà utilisé'}).end()
    }
 };
 
@@ -43,8 +44,7 @@ exports.checkExisting=async function(req,res,next) {
 exports.addUser=async function(req,res,next){
   console.log('add user', req.body);
   let user=req.body
-  
-  
+    
   await bcrypt.hash(user.password,10).then((hash)=>{crypted=(hash)}).catch((err)=>{console.log(err.message)})
   
   console.log(crypted)
@@ -58,7 +58,7 @@ exports.addUser=async function(req,res,next){
     message = 'User added successfully';
   }
 
-  return res.status(code).json({'message':message})
+  return res.status(code).json({'message':message}).end()
 }
 
 //R connexion
@@ -78,7 +78,7 @@ exports.connectUser=async function(req,res,next){
 
     if(check==''){
       //console.log('pas de data', user)
-      return res.status(500).json({message:"l'utililisateur n'existe pas"})
+      return res.status(500).json({message:"l'utililisateur n'existe pas"}).end()
     }
     if(check!=''){
       req.body.check=check;
@@ -99,7 +99,7 @@ exports.pswComparaison=async function(req, res, next){
     .then(function(bcryptResult){
       if(!bcryptResult){
         console.log('mot de passe erroné', bcryptResult)
-        return res.status(401).json({message:'mot de passe erroné'})
+        return res.status(401).json({message:'mot de passe erroné'}).end()
       }
       else{
         console.log('mot de passe confirmé')
@@ -107,7 +107,7 @@ exports.pswComparaison=async function(req, res, next){
       } 
     })
     .catch(function(error){
-      return res.status(500).json(error)
+      return res.status(500).json(error).end()
     })
 }
 
@@ -118,7 +118,7 @@ exports.confirmUser=async function(req,res,next){
 
   let tok=await jwt.sign({userId:user.users_id+' '+user.users_mail},token.value ,{expiresIn:token.end})
   //console.log('R-c3 token', tok)
-  res.status(200).json({message:'user reconnu',id:tok, author:user.users_id, authorStatus:user})
+  res.status(200).json({message:'user reconnu',id:tok, author:user.users_id, authorStatus:user}).end()
 }
 
 //R-P1 
@@ -138,10 +138,10 @@ exports.getMyProfile=async function(req,res,next){
 
   if(data){
     //console.log('profile : ', data)
-    return res.status(200).json({'data':data})
+    return res.status(200).json({'data':data}).end()
   }
   else{
-    return res.status(500).json({error})
+    return res.status(500).json({error}).end()
   }
 }
 
@@ -178,7 +178,7 @@ exports.uniqueMail=async function(req,res,next) {
     else{
       //console.log('U-P1 else')
       let message='Un autre utilisateur utilise déjà cette adresse mail'
-      return res.status(500).json({error:message})
+      return res.status(500).json({error:message}).end()
     }
 
 
@@ -209,11 +209,11 @@ exports.updatingUser=async function(req,res,next){
   if(verified.affectedRows!=0){
     code=200
     message=verified.affectedRows + ' mises à jours'
-    //res.status(code).json({'message':message});   
+    
     next()
   }
   else{
-    return res.status(code).json({'message':message})
+    return res.status(code).json({'message':message}).end()
   }
 }
 
@@ -256,5 +256,5 @@ exports.deleteProfile=async function(req, res, next){
     code=200
     message = 'User deleted successfully';
   }
-  return res.status(code).json({'message':message})
+  return res.status(code).json({'message':message}).end()
 }

@@ -19,11 +19,11 @@ C) Lors de la création du projet :
     4. Aller dans le répertoire d’installation :
     1. dans le terminal 
         1. lancer : npm install pour installer les paquets de node manquants
-        2. une fois cela fait lancer : npm run serve
+        
     2. dans un autre terminal
         1. aller dans le répertoire backend
         2. lancer : npm install pour installer les paquets de node manquants
-        3. lancer ensuite soit : nodemon server , soit :npm run serve
+        3. Si nécessire faire un : npm audit fix
 
 D)Fichier .env
 	dans le backend et le front end : renommer les fichier .env_template en .env
@@ -42,6 +42,17 @@ G) Paramètres du token
 H) La valeur listPerPage
 	dans le fichier :  backend/.env, listPerPage accepte une valeur numérique uniquement. C’est le nombre de publications qui seront affichées sur la page d’accueil connectée. 
 
+I) Lancer le projet
+    a) Frontend : dans le terminal saisir : npm run serve
+    b) Backend : dans le terminal, il y a 2 possibilités soit:
+        * nodemon est installé => saisir nodemon server
+        * sinon saisir : node server
+
+J) Optionnel
+    si on veut installer nodemon :
+    - en global : npm install -g nodemon
+    - juste sur le projet : npm install --save-dev nodemon
+    
 ### Compiles and minifies for production
 ```
 npm run build

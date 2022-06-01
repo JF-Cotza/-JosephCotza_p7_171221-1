@@ -13,11 +13,12 @@ exports.getAllProfile=async function(req,res, next){
  
   if(data){
     //console.log('profiles : ', data)
-    return res.status(200).json({'data':data})
+    return res.status(200).json({'data':data}).end()
   }
   else{
-    return res.status(500).json({error})
+    return res.status(500).json({error}).end()
   }
+  
 }
 
 //G-AP
@@ -29,11 +30,13 @@ exports.getAllPublications=async function(req,res, next){
  
   if(data){
     console.log('publication : ', data)
-    return res.status(200).json({'data':data})
+    return res.status(200).json({'data':data}).end()
   }
   else{
-    return res.status(500).json({error})
+    return res.status(500).json({error}).end()
   }
+
+  
 }
 
 //G-AC
@@ -45,10 +48,10 @@ exports.getAllComments=async function(req,res, next){
  
   if(data){
     console.log('comment : ', data)
-    return res.status(200).json({'data':data})
+    return res.status(200).json({'data':data}).end()
   }
   else{
-    return res.status(500).json({error})
+    return res.status(500).json({error}).end()
   }
 }
 
@@ -71,8 +74,7 @@ exports.updateUser=async function(req,res, next){
   const list = helper.emptyOrRows(quer);
   console.log(list)
 
-  return res.status(200).json({'message':'utilisateurs mis à jours'})
-  
+  return res.status(200).json({'message':'utilisateurs mis à jours'}).end()
 }
 
 //P-UP
@@ -93,7 +95,7 @@ exports.updatePublication=async function(req,res, next){
   const list = helper.emptyOrRows(quer);
   console.log(list)
 
-  return res.status(200).json({'message':'publications mises à jours'})
+  return res.status(200).json({'message':'publications mises à jours'}).end()
   
 }
 
@@ -115,7 +117,7 @@ exports.updateComments=async function(req,res, next){
   const list = helper.emptyOrRows(quer);
   //console.log(list)
 
-  return res.status(200).json({'message':'publications mises à jours'})
+  return res.status(200).json({'message':'publications mises à jours'}).end()
   
 }
 
@@ -142,7 +144,7 @@ exports.publicationUpdateOne=async function(req,res,next){
     const verified = helper.emptyOrRows(update);
   
     
-    return res.status(200).json({'message':'publication mise à jours'})
+    return res.status(200).json({'message':'publication mise à jours'}).end()
    
 }
 
@@ -168,6 +170,6 @@ exports.commentsUpdateOne=async function(req,res,next){
     const verified = helper.emptyOrRows(update);
   
     
-    return res.status(200).json({'message':'commentaire mis à jours'})
+    return res.status(200).json({'message':'commentaire mis à jours'}).end()
    
 }
