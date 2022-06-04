@@ -52,6 +52,13 @@ J) Optionnel
     si on veut installer nodemon :
     - en global : npm install -g nodemon
     - juste sur le projet : npm install --save-dev nodemon
+
+K) Divers
+    Dans le répertoire Documents on trouve
+    * Le répertoire structureDB qui contient une copie de la base de données vide avec juste un compte administrateur par défaut pour le déploiement
+    * Le fichier fonctions.xls contient le descriptif des fonctions principales de l'application ainsi que les erreurs probables les plus problèmatiques pouvant survenir
+    * Le fichier sourcesConsultées contient la majorité des liens utilisés pour la réalisation de cette application. Il est possible qu'il en manque mais en cas de besoin, cela peut être utile
+    * Le fichier UML.pdf défini les actions / parcours des différents utilisateurs 
     
 ### Compiles and minifies for production
 ```

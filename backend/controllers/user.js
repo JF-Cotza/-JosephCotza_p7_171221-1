@@ -29,25 +29,25 @@ exports.checkExisting=async function(req,res,next) {
    const data = helper.emptyOrRows(rows);
     
 
-  console.log('checkexisting',req.body, data);
+  //console.log('checkexisting',req.body, data);
    if (data==''){
-     console.log("l'utilisateur peut être créé", data)
+     //console.log("l'utilisateur peut être créé", data)
      next()
    }
    else{
-     console.log('check data', data)
+     //console.log('check data', data)
      return res.status(401).json({message:'email déjà utilisé'}).end()
    }
 };
 
 //c-A2) Appelée par la route addUser pour ajouter l'utilisateur
 exports.addUser=async function(req,res,next){
-  console.log('add user', req.body);
+  //console.log('add user', req.body);
   let user=req.body
     
   await bcrypt.hash(user.password,10).then((hash)=>{crypted=(hash)}).catch((err)=>{console.log(err.message)})
   
-  console.log(crypted)
+  //console.log(crypted)
   let sql='INSERT INTO users (users_name, users_firstname ,users_mail, users_password) VALUES (?,?,?,?)'
   let result = await query(sql, [user.name, user.firstname, user.email, crypted]);
   let code=500
@@ -65,7 +65,7 @@ exports.addUser=async function(req,res,next){
 //R-C1
 exports.connectUser=async function(req,res,next){
   try{
-    console.log('connectUser async', req.body)
+    //console.log('connectUser async', req.body)
     let user=req.body;
     let mail=user.email;
 
@@ -74,7 +74,7 @@ exports.connectUser=async function(req,res,next){
         );
     const check = helper.emptyOrRows(rows);
     
-      console.log('R-C1 check', check)
+      //console.log('R-C1 check', check)
 
     if(check==''){
       //console.log('pas de data', user)
@@ -85,24 +85,26 @@ exports.connectUser=async function(req,res,next){
       next()
     }
   }
-  catch(err){console.log(err.message)}
+  catch(err){
+    //console.log(err.message)
+  }
 }
 
 //R-C2 verification du mot de passe
 exports.pswComparaison=async function(req, res, next){
-  console.log('psw comparaison ',req.body)
+  //console.log('psw comparaison ',req.body)
   let user=req.body;
   let checked=user.check[0]
-  console.log('user password:',user.password,' checked  password: ', checked.users_password)
+  //console.log('user password:',user.password,' checked  password: ', checked.users_password)
  
   bcrypt.compare(user.password, checked.users_password) // attention à l'ordre !
     .then(function(bcryptResult){
       if(!bcryptResult){
-        console.log('mot de passe erroné', bcryptResult)
+        //console.log('mot de passe erroné', bcryptResult)
         return res.status(401).json({message:'mot de passe erroné'}).end()
       }
       else{
-        console.log('mot de passe confirmé')
+        //console.log('mot de passe confirmé')
         next()      
       } 
     })
@@ -123,7 +125,7 @@ exports.confirmUser=async function(req,res,next){
 
 //R-P1 
 exports.getMyProfile=async function(req,res,next){
-  console.log('get1-mail','headers',req.headers, 'query', req.headers, 'body', req.body)
+  //console.log('get1-mail','headers',req.headers, 'query', req.headers, 'body', req.body)
   const checkToken=jwt.verify(req.headers.authorization.split(' ')[1],token.value).userId;
   let split=checkToken.split(' ')
   //console.log('get1',checkToken,'split', split);
@@ -187,7 +189,7 @@ exports.uniqueMail=async function(req,res,next) {
 //U-P2 : mise à jour
 exports.updatingUser=async function(req,res,next){
   let user=req.body
-  console.log('U-P2',user)
+  //console.log('U-P2',user)
   let code=500;
   let message='erreur lors de la mise à jour'
 
@@ -239,7 +241,7 @@ exports.deleteProfile=async function(req, res, next){
       if(imageName){
         fileSystem.unlink(`./images/${imageName}`,async function(){       
            // on appele la méthode unlink de fs pour supprimer le fichier .unlink('chemin+nom du fichier à supprimer', fonction à éxécuter quand la suppression est effectuée)
-           console.log('suppression de : '+imageName+' effectué')
+           //console.log('suppression de : '+imageName+' effectué')
         })
       }
    }

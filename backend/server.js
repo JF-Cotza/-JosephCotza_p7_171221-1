@@ -1,8 +1,9 @@
+// tiré du P6
+
 const http = require('http');
 const app = require('./app'); //on importe le contenu du fichier app
 require('dotenv').config();
 let PORT=process.env.connecting_port;
-const connect =require('./controllers/connect'); //on accéde au fichier connect pour les paramètres 
 
 //fonction pour vérifier le port
 const normalizePort = val => {
@@ -46,7 +47,7 @@ const server = http.createServer(app);
 server.on('error', errorHandler);
 
 
-//on vérifie que l'écoute se fait bien. si tout se passe bien on doit avoir dans le terminal : listening on port connect.port.value par défaut 3000
+//on vérifie que l'écoute se fait bien.
 server.on('listening', () => {
     const address = server.address();
     const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;

@@ -28,11 +28,11 @@ module.exports =async (req, res, next) =>{
         //console.log('check',check)
         
         if(check==''){
-            console.log('user invalide');
+            //console.log('user invalide');
             throw 'user ID invalide'
         }
         else{
-            console.log('user identifié');
+            //console.log('user identifié');
             next();
         }
     }

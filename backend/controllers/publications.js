@@ -102,9 +102,11 @@ exports.addPublication=async function(req,res,next){
   let date=Date.now();
     
   if(req.files){
-    console.log('add if files',req.files.image)  
+    //console.log('add if files',req.files.image)  
     const extension=MIMES_TYPES[req.files.image.mimetype];
-    if(!extension){console.log('format non reconnu')};
+    if(!extension){
+      //console.log('format non reconnu')
+    };
     if (!req.files || Object.keys(req.files).length === 0 || !extension) {
         return res.status(400).send('No files were uploaded.').end();
     }
@@ -117,7 +119,7 @@ exports.addPublication=async function(req,res,next){
     // console.log('ext '+extension)
     // Use the mv() method to place the file somewhere on your server
     let imageUrl=`${req.protocol}://${req.get('host')}/images/${imageFile}`;
-    console.log('create imageUrl',imageUrl)
+    //console.log('create imageUrl',imageUrl)
 
     imageFile.mv(uploadPath, function(err) {
       //console.log('mv')
@@ -135,20 +137,20 @@ exports.addPublication=async function(req,res,next){
       name=''
     }
     //console.log('name', name)
-    console.log('add publication',publication)
+    //console.log('add publication',publication)
 
     let sql=`INSERT INTO publications (publications_title, publications_texte ,publications_author, publications_image) VALUES (?,?,?,?)`
     let result = await query(sql, [publication.title, publication.texte, publication.id, name]);
 
-    console.log('result', result)
+    //console.log('result', result)
 
   if (result.affectedRows) {
     message = 'publication added successfully';
-    console.log('if result ', message)
+    //console.log('if result ', message)
     return res.status(200).json({message:message}).end()
   }
   else{
-    console.log('erreur ')
+    //console.log('erreur ')
   }
   return res.status(500).json({error}).end()
 }
@@ -185,12 +187,12 @@ exports.deleteOnePublication=async function(req, res, next){
 
 //U-UP : Update Publication
 exports.updatePublication=async function(req, res, next){
-  console.log('U-UP: body: ',req.body, '/ files: ',req.files,'headers',req.headers)
+  //console.log('U-UP: body: ',req.body, '/ files: ',req.files,'headers',req.headers)
 
   let publication=req.body
   let sql;
     if(publication.imageChanged=='false'){ //l'image n'a pas été changée, ni supprimée
-      console.log("U-UP, console 1, l'image n'a pas été changée, ni supprimée")
+      //console.log("U-UP, console 1, l'image n'a pas été changée, ni supprimée")
       sql =await query(`UPDATE publications SET publications_title="${publication.title}", publications_texte="${publication.texte}" WHERE publications_id='${publication.publicationId}'`);
     }
     else{//l'image a été changée ou supprimée
@@ -208,7 +210,9 @@ exports.updatePublication=async function(req, res, next){
         //console.log("U-UP update if,console 3, il y a un nouveau fichier => on change l'image, ou on remplace le fichier existant",image)  
         const extension=MIMES_TYPES[image.mimetype];
         
-        if(!extension){console.log('U-UP,console 4,format non reconnu')};
+        if(!extension){
+          //console.log('U-UP,console 4,format non reconnu')
+        };
         
         if (!req.files || Object.keys(req.files).length === 0 || !extension) {
         return res.status(400).send('No files were uploaded.').end();
@@ -263,13 +267,13 @@ exports.updatePublication=async function(req, res, next){
   //mise à jour quel que soit le cas + vérification
   const updating = helper.emptyOrRows(sql);
 
-  console.log('U-UP,console 12',updating)
+  //console.log('U-UP,console 12',updating)
   
   const verify = await query(
     `SELECT * from publications WHERE publications_id=${publication.publicationId}`
   );
 
   const verified = helper.emptyOrRows(verify);
-  console.log('u-UP,console 13, vérification de la modification',verified)
+  //console.log('u-UP,console 13, vérification de la modification',verified)
   res.status(200).json({message:'publication mise à jour'}).end()
 }

@@ -4,19 +4,11 @@ const router = express.Router();
 const userFunction=require('../controllers/user');
 const authorization=require('../middleware/auth');
 
-
 //C-A : ajouter un utilisateur
-router.post('/addUser', function(req,res,next){
-    console.log(req.body);
-    next();
-},  userFunction.checkExisting, userFunction.addUser);
+router.post('/addUser', userFunction.checkExisting, userFunction.addUser);
 
 //R-C: connexion
-router.post('/connectUser', function(req,res,next){
-    console.log('body',req.body);
-    console.log('header',req.headers)
-    next();
-}, userFunction.connectUser, userFunction.pswComparaison, userFunction.confirmUser);
+router.post('/connectUser', userFunction.connectUser, userFunction.pswComparaison, userFunction.confirmUser);
 
 //R-P: voir mon profil
 router.get('/getMyProfile', authorization, userFunction.getMyProfile);
